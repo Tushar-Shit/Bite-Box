@@ -1,15 +1,15 @@
 import React from "react";
+import SubTitle from "./atomic"
 
-const Subheading = (data) => {
-//   console.log(data);
+
+const Subheadsee = (data) => {
+    // console.log(data);
   return (
     <div className="flex px-4 my-3 justify-between ">
-      <span className="text-gray-900 text-[1.25rem]">
-        <b>{data.heading}</b>
-      </span>
+      <SubTitle data={data.heading}/>
       <span className="text-red-500 text-md">See more</span>
     </div>
   );
 };
 
-export default Subheading;
+export default Subheadsee;

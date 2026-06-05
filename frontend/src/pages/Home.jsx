@@ -1,13 +1,14 @@
 import Navbar from "../components/Navbar";
 import HeroImage from "../components/HeroImage";
-import Subheading from "../atomic/Subheading";
+import Subheadsee from "../atomic/Subheading";
 import Category from "../components/Categories";
 import HorizontalFc from "../components/HorizontalFC";
 import SquareFc from "../components/SquareFC";
 import BottomBar from "../components/BottomBar";
-import { SeeMore } from "../components/atomic";
+import Subheading from "../atomic/atomic";
+import { SeeMore,Heartclick } from "../atomic/atomic";
 import {
-  Heart,
+  
   House,
   Blocks,
   Bell,
@@ -71,8 +72,8 @@ const Home = () => {
       </section>
 
       {/* catgories section  */}
-      <section className=" mb-8">
-        <Subheading heading="Categories" />
+      <section className=" mb-4">
+        <Subheadsee heading="Categories" />
         <div className="flex justify-evenly">
           <Category text="Burger" image={data.heroImage} />
           <Category text="Pizza" image={data.heroImage} />
@@ -81,9 +82,22 @@ const Home = () => {
         </div>
       </section>
 
+      {/* trending now  */}
+      <section className="mb-2 px-4">
+        <Subheading data="Trending Now" className="ml-4" />
+        <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
+          <SquareFc />
+          <SquareFc />
+          <SquareFc />
+          <SquareFc />
+
+          <SeeMore />
+        </div>
+      </section>
+
       {/* Popular meals section  */}
       <section className="mb-5">
-        <Subheading heading="Popular Meals" />
+        <Subheadsee heading="Popular Meals" />
         <div className="px-5">
           <HorizontalFc
             para={para}
@@ -101,17 +115,20 @@ const Home = () => {
             image={data.heroImage}
           />
         </div>
-        <SeeMore />
       </section>
 
-      {/* trending now  */}
-      <section className="mb-50 border">
-        <p>Trending Now</p>
-        <div className="px-2 flex overflow-x-auto gap-5 py-10">
+      {/* recomended for you*/}
+      <section className="mb-18 px-4">
+        <Subheading data="Recomended for you" className="ml-4" />
+        <div className=" flex justify-evenly flex-wrap items-center gap-5 py-3 scrollbar-none">
           <SquareFc />
           <SquareFc />
           <SquareFc />
           <SquareFc />
+          {/* <SquareFc />
+          <SquareFc /> */}
+
+          <SeeMore />
         </div>
       </section>
 

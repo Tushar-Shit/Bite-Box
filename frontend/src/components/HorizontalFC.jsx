@@ -1,11 +1,11 @@
 import {
-  Heart,
   ShoppingCart,
   ShoppingBag,
   Search,
   UserRound,
   Component,
 } from "lucide-react";
+import {Heartclick} from "../atomic/atomic";
 const HorizontalFC = (data) => {
   //   console.log(data);
   return (
@@ -24,7 +24,7 @@ const HorizontalFC = (data) => {
           <span className="text-md font-bold ">
             <b>{data.item}</b>
           </span>
-          <Heart />
+          <Heartclick />
         </div>
 
         {/* short description  */}
