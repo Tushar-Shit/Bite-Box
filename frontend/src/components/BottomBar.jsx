@@ -11,29 +11,32 @@ const BottomBar = () => {
         <Blocks strokeWidth={1.5} />
         Categories
       </Link>
-      <div className="flex flex-col items-center">
+      <Link to="/orders" className="flex flex-col items-center">
         <NotebookPen strokeWidth={1.5} />
         Orders
-      </div>
-      <div className="flex flex-col items-center">
+      </Link>
+      <Link to="/favorite" className="flex flex-col items-center">
         <Heart strokeWidth={1.5} />
         Favorites
-      </div>
+      </Link>
     </div>
   );
 };
 
 export default BottomBar;
 
-const BottomActionBar = () => {
+const BottomActionBar = ({ price }) => {
+  console.log(price);
   return (
-    <div className="flex border justify-center py-2">
-      <div className="flex-2/5 border">hello</div>
-      <div className=" flex gap-2 flex-2/5 py-2 rounded-lg justify-center bg-amber-500">
+    <div className="flex justify-around py-4 items-center rounded-t-lg bg-zinc-300">
+      <div className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50">
         <ShoppingBag /> Add to Cart
+      </div>
+      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500">
+        Buy at <span>₹{price}</span>
       </div>
     </div>
   );
 };
 
-export {BottomActionBar};
+export { BottomActionBar };

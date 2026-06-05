@@ -11,9 +11,10 @@ import {
   Component,
 } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
+import {Link} from "react-router-dom";
 const SquareFC = () => {
   return (
-    <div className="shrink-0 w-[40%] h-fit shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative">
+    <Link to="/mealdetails" className="shrink-0 w-[42%] h-fit shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative">
       <div className="bg-zinc-50 rounded-full p-1 w-7 h-7 absolute right-1 top-1 flex items-center">
         <Heartclick />
       </div>
@@ -33,7 +34,7 @@ const SquareFC = () => {
           <span className="mr-3">🔥 4.3</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

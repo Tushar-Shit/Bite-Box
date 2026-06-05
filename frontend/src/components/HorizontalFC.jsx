@@ -1,15 +1,15 @@
 import {
-  ShoppingCart,
   ShoppingBag,
   Search,
   UserRound,
   Component,
 } from "lucide-react";
 import {Heartclick} from "../atomic/atomic";
+import { Link } from "react-router-dom";
 const HorizontalFC = (data) => {
   //   console.log(data);
   return (
-    <div className="bg-zinc-200 p-3 mb-3 h-40 flex  gap-3 items-center rounded-lg">
+    <Link to="/mealdetails" className="bg-zinc-200 p-3 mb-3 h-40 flex  gap-3 items-center rounded-lg">
       {/* food image  */}
       <div className="flex-2 h-full rounded-l-lg">
         <img
@@ -38,11 +38,11 @@ const HorizontalFC = (data) => {
             <span>🔥 4.3</span>
           </div>
           <button className="bg-zinc-100 p-1 rounded-full absolute -right-1 -bottom-1">
-            <ShoppingCart />
+            <ShoppingBag strokeWidth={1} />
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

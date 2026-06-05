@@ -30,7 +30,7 @@ const Heartclick = () => {
   const fill = () => {
     state ? setState(false) : setState(true);
   };
-  return (state ? <Heart onClick={fill} /> : <FontAwesomeIcon icon={faHeart} onClick={fill} className="text-red-500"/>);
+  return (state ? <Heart strokeWidth={1} size={24} onClick={fill} /> : <Heart fill="red" size={24} strokeWidth={0} onClick={fill} />);
 };
 
 export default Subheading;

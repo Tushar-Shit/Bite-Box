@@ -9,18 +9,16 @@ const Categories = () => {
       <CustomNav text="Categories" />
 
       <div className="flex flex-wrap justify-center gap-5 mt-5 mb-23">
-        <CategoryCards />
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
-        <CategoryCards/>
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
+        <CategoryCards />        
         </div>
 
 

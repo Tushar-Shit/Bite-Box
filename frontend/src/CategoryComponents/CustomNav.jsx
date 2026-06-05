@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import React from "react";
 
 const CustomNav = (data) => {
-  console.log(data);
+  // console.log(data);
   return (
     <div className="bg-red-600 flex items-center justify-between text-white p-4 px-6">
       <Link to="/">

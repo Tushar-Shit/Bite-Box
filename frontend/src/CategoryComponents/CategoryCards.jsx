@@ -1,8 +1,9 @@
 import { Heartclick } from "../atomic/atomic";
 import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 const CategoryCards = () => {
   return (
-    <div className="shrink-0 w-[43%] h-fit shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg">
+    <Link  to="/categories/items"className="shrink-0 w-[43%] h-fit shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg">
       <img
         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s"
         alt=""
@@ -15,7 +16,7 @@ const CategoryCards = () => {
           <ChevronRight />
         </span>
       </div>
-    </div>
+    </Link>
   );
 };
 
