@@ -4,6 +4,7 @@ const port = 7000;
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Category = require("./models/categories");
+const FoodItem = require("./models/foodItem");
 require('dotenv').config();
 mongoose.connect(process.env.DB_URL)
     .then(() => console.log(" Successfully connected to MongoDB!"))
@@ -27,6 +28,29 @@ app.get("/categories", async (req, res) => {
     // console.log(categoriesData);
     res.json(categoriesData);
 });
+
+
+
+app.get("/categories/:item/:id", async(req, res) => {
+    const { item, id } = req.params;
+    // console.log(item, id);
+    const foodItem = await FoodItem.findById(id);
+    // console.log(data);
+    res.json({foodItem });
+
+});
+
+app.get("/categories/:item", async (req, res) => {
+    const { item } = req.params;
+    // console.log(item);
+
+    const categoryId = (await Category.findOne({ name: item }))._id;
+
+    const fooditems = await FoodItem.find({ category: categoryId });
+    // console.log(fooditems[0]);
+    res.json({ fooditems });
+});
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

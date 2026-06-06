@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const CategoryCards = ({text,items,image}) => {
   // console.log(data);
   return (
-    <Link  to="/categories/items"className="shrink-0 w-[43%] h-50 shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg">
+    <Link  to={`/categories/${text}`} className="shrink-0 w-[43%] h-50 shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg">
       <img
         src={image}
         alt=""

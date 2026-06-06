@@ -1,20 +1,21 @@
-import {
-  ShoppingBag,
-  Search,
-  UserRound,
-  Component,
-} from "lucide-react";
-import {Heartclick} from "../atomic/atomic";
-import { Link } from "react-router-dom";
-const HorizontalFC = (data) => {
-  //   console.log(data);
+import { ShoppingBag, Search, UserRound, Component } from "lucide-react";
+import { Heartclick } from "../atomic/atomic";
+import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+const HorizontalFC = ({ name, image, description, path }) => {
+  // console.log(path);
+  
+ 
   return (
-    <Link to="/mealdetails" className="bg-zinc-200 p-3 mb-3 h-40 flex  gap-3 items-center rounded-lg">
+    <Link
+      to={path}
+      className="bg-zinc-200 p-3 mb-3 h-40 flex  gap-3 items-center rounded-lg"
+    >
       {/* food image  */}
       <div className="flex-2 h-full rounded-l-lg">
         <img
           className="w-full h-full object-cover rounded-l-lg"
-          src={data.image}
+          src={image}
           alt=""
         />
       </div>
@@ -22,13 +23,13 @@ const HorizontalFC = (data) => {
       <div className="flex-3">
         <div className="flex justify-between mt-2">
           <span className="text-md font-bold ">
-            <b>{data.item}</b>
+            <b>{name}</b>
           </span>
           <Heartclick />
         </div>
 
         {/* short description  */}
-        <div className="text-xs mb-2">{data.para}</div>
+        <div className="text-xs mb-2">{description}</div>
         {/* price rating  */}
         <div className="flex justify-between text-md mb-2 relative">
           <div className="flex gap-2">

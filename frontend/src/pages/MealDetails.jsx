@@ -4,22 +4,45 @@ import FeedBackCard from "../components/FeedbackCard";
 import { Heartclick } from "../atomic/atomic";
 import { ChevronRight, Minus, Plus, ThumbsDown, ThumbsUp } from "lucide-react";
 import { SeeMore } from "../atomic/atomic";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const MealDetails = () => {
+  const [food, setFood] = useState({});
+  const { items, id } = useParams();
+  useEffect(() => {
+    async function getData() {
+      try {
+        const res = await fetch(`/api/categories/${items}/${id}`);
+        const { foodItem } = await res.json();
+        setFood(foodItem);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    getData();
+  }, []);
+
   const [quantity, setQuantity] = useState(1);
-  let price = 63;
-  const [finalPrice, setFinalPrice] = useState(price);
+  const [finalPrice, setFinalPrice] = useState(0);
+  useEffect(() => {
+    if (food.price) {
+      setFinalPrice(food.price);
+    }
+  }, [food]);
+
+
   const quantityIncrease = () => {
     quantity > 0 ? setQuantity(quantity + 1) : setQuantity(1);
-    setFinalPrice(finalPrice + price);
+    setFinalPrice(finalPrice + food.price);
   };
   const quantityDecrease = () => {
     quantity > 1 ? setQuantity(quantity - 1) : setQuantity(1);
-    finalPrice == price
-      ? setFinalPrice(price)
-      : setFinalPrice(finalPrice - price);
+    finalPrice == food.price
+      ? setFinalPrice(food.price)
+      : setFinalPrice(finalPrice - food.price);
   };
+
   return (
     <div className="Meal-Page h-full relative ">
       {/* top navbar */}
@@ -28,7 +51,7 @@ const MealDetails = () => {
       {/* main food image */}
       <div className="w-[83vw] h-[30vh] rounded-lg m-auto my-5">
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s"
+          src={food.image}
           alt=""
           className=" w-full h-full object-cover rounded-lg"
         />
@@ -37,12 +60,12 @@ const MealDetails = () => {
       {/* title & quantity  */}
       <div className="h-fit px-6 mb-3">
         <div className="flex justify-between items-center ">
-          <span className="text-2xl font-bold">Jumbo Burger</span>
+          <span className="text-2xl font-bold">{food.name}</span>
           <div className="flex justify-evenly gap-2 items-center bg-zinc-300 rounded-2xl p-1">
             <div className="bg-white text-black rounded-full">
               <Minus onClick={quantityDecrease} />
             </div>
-            <div className="font-semibold mx-1">{quantity}</div>
+            <div className="font-semibold mx-1">1</div>
             <div className="bg-orange-500 text-white rounded-full">
               <Plus onClick={quantityIncrease} />
             </div>
@@ -51,8 +74,8 @@ const MealDetails = () => {
 
         {/* price & rating  */}
         <div className="flex gap-1 items-baseline">
-          <span className="text-xl font-semibold">₹63</span>
-          <span className="text-zinc-500 text-sm">/Unit</span>{" "}
+          <span className="text-xl font-semibold">₹{food.price}</span>
+          <span className="text-zinc-500 text-sm">/Unit</span>
           <span className="ml-2">star 4.5</span>
         </div>
       </div>
@@ -60,11 +83,7 @@ const MealDetails = () => {
       {/* description  */}
       <div className="px-6 h-fit">
         <div className="text-lg font-bold text-red-700 mb-1">Description</div>
-        <div>
-          Delicious jumbo burger with all the fixings! new Delicious jumbo
-          burger with all the fixings! good Delicious jumbo burger with all the
-          fixings! Delicious jumbo burger with all the fixings!
-        </div>
+        <div>{food.description}</div>
       </div>
 
       {/* feed backs  */}
