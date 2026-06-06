@@ -6,40 +6,35 @@ import HorizontalFc from "../components/HorizontalFC";
 import SquareFc from "../components/SquareFC";
 import BottomBar from "../components/BottomBar";
 import Subheading from "../atomic/atomic";
-import { SeeMore,Heartclick } from "../atomic/atomic";
-import {
-  
-  House,
-  Blocks,
-  Bell,
-  ShoppingCart,
-  ShoppingBag,
-  Search,
-  NotebookPen,
-  UserRound,
-  Utensils,
-  Component,
-} from "lucide-react";
+import { SeeMore, Heartclick } from "../atomic/atomic";
+import { Utensils } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
-const data = {
-  heroImage:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s",
-  text: "Sink your teeth into the juiciest, flavor-packed bite your cravings have been waiting for.",
-};
-
-const heroImagesArray = [
-  { data: data.heroImage, title: "Burger" },
-  { data: data.heroImage, title: "Pizza" },
-  { data: data.heroImage, title: "Chiken" },
-  { data: data.heroImage, title: "Mutton" },
-  { data: data.heroImage, title: "Drinks" },
-];
+// const heroImagesArray = [
+//   { data: data.heroImage, title: "Burger" },
+//   { data: data.heroImage, title: "Pizza" },
+//   { data: data.heroImage, title: "Chiken" },
+//   { data: data.heroImage, title: "Mutton" },
+//   { data: data.heroImage, title: "Drinks" },
+// ];
 
 const para =
   "Chicken Biryani is an aromatic, flavorful South Asian dish. It features tender, spiced, marinated chicsdrfeg sfrgvd gxhsys";
 
 const Home = () => {
+  const [image, setImage] = useState({heroImage:""});
+  useEffect(() => {
+    async function getData() {
+      try {
+        const res = await fetch("/api/");
+        const data = await res.json();
+        setImage(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    getData();
+  }, []);
   return (
     <>
       {/* navbar  */}
@@ -55,11 +50,7 @@ const Home = () => {
 
       {/* hero section  */}
       <section className="flex overflow-x-auto mt-2 gap-4 h-60 relative px-[5%] snap-x snap-mandatory scroll-smooth no-scrollbar">
-        <HeroImage {...data} />
-        <HeroImage {...data} />
-        <HeroImage {...data} />
-        <HeroImage {...data} />
-        <HeroImage {...data} />
+        <HeroImage image={image} />
 
         {/* Dynamic Dots Indicator */}
         <ul className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-10">
@@ -73,53 +64,41 @@ const Home = () => {
 
       {/* catgories section  */}
       <section className=" mb-4">
-        <Subheadsee heading="Categories" />
+        <Subheadsee subHeading="Categories" path="/categories" />
         <div className="flex justify-evenly">
-          <Category text="Burger" image={data.heroImage} />
-          <Category text="Pizza" image={data.heroImage} />
-          <Category text="Biriyani" image={data.heroImage} />
-          <Category text="Drinks" image={data.heroImage} />
+          <Category text="Burger" image={image} />
+          <Category text="Pizza" image={image} />
+          <Category text="Biriyani" image={image} />
+          <Category text="Drinks" image={image} />
         </div>
       </section>
 
       {/* trending now  */}
       <section className="mb-2 px-4">
-        <Subheading data="Trending Now" className="ml-4" />
+        <Subheading title="Trending Now" className="ml-4" />
         <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
           <SquareFc />
           <SquareFc />
           <SquareFc />
           <SquareFc />
 
-          <SeeMore />
+          <SeeMore path="/trending" />
         </div>
       </section>
 
       {/* Popular meals section  */}
       <section className="mb-5">
-        <Subheadsee heading="Popular Meals" />
+        <Subheadsee subHeading="Popular Meals" path="/popular" />
         <div className="px-5">
-          <HorizontalFc
-            para={para}
-            item="Chiken Biriyani"
-            image={data.heroImage}
-          />
-          <HorizontalFc
-            para={para}
-            item="Paneer Tikka"
-            image={data.heroImage}
-          />
-          <HorizontalFc
-            para={para}
-            item="Lachha Paratha"
-            image={data.heroImage}
-          />
+          <HorizontalFc para={para} item="Chiken Biriyani" image={image} />
+          <HorizontalFc para={para} item="Paneer Tikka" image={image} />
+          <HorizontalFc para={para} item="Lachha Paratha" image={image} />
         </div>
       </section>
 
       {/* recomended for you*/}
       <section className="mb-18 px-4">
-        <Subheading data="Recomended for you" className="ml-4" />
+        <Subheading title="Recomended for you" className="ml-4" />
         <div className=" flex justify-evenly flex-wrap items-center gap-5 py-3 scrollbar-none">
           <SquareFc />
           <SquareFc />
@@ -128,7 +107,7 @@ const Home = () => {
           {/* <SquareFc />
           <SquareFc /> */}
 
-          <SeeMore />
+          <SeeMore path="/recommended" />
         </div>
       </section>
 

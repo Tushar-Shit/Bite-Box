@@ -38,7 +38,7 @@ const HorizontalFC = (data) => {
             <span>🔥 4.3</span>
           </div>
           <button className="bg-zinc-100 p-1 rounded-full absolute -right-1 -bottom-1">
-            <ShoppingBag strokeWidth={1} />
+            <ShoppingBag strokeWidth={1.5} />
           </button>
         </div>
       </div>
