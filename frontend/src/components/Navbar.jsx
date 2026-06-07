@@ -22,14 +22,17 @@ const ImageSlider = () => {
   ];
 };
 
-const Navbar = () => {
+const Navbar = ({onClick}) => {
+  // console.log(props);
+
   return (
     <nav className="bg-red-500  h-auto py-2">
       <div className="flex justify-between items-center px-4 w-0.5/5">
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center cursor-pointer">
           <UserRound
             strokeWidth={1.5}
-            className="border rounded-full w-10 h-10 p-1"
+            onClick={onClick}
+            className="border rounded-full w-10 h-10 p-1 cursor-pointer"
           />
           <span className="text-lg font-semibold">Tushar Shit</span>
         </div>

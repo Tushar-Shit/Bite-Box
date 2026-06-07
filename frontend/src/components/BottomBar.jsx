@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const BottomBar = () => {
  
   return (
-    <div className="bg-zinc-100 w-full flex justify-around items-center fixed bottom-0 p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)]">
+    <div className="bg-zinc-100 w-full flex justify-around items-center fixed bottom-0 p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500">
       <Link to="/" className="flex flex-col items-center">
         <House strokeWidth={1.5} />
         <span>Home</span>

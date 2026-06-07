@@ -5,6 +5,7 @@ import Category from "../components/Categories";
 import HorizontalFc from "../components/HorizontalFC";
 import SquareFc from "../components/SquareFC";
 import BottomBar from "../components/BottomBar";
+import Sidebar from "../components/Sidebar";
 import Subheading from "../atomic/atomic";
 import { SeeMore, Heartclick } from "../atomic/atomic";
 import { Utensils } from "lucide-react";
@@ -22,7 +23,7 @@ const para =
   "Chicken Biryani is an aromatic, flavorful South Asian dish. It features tender, spiced, marinated chicsdrfeg sfrgvd gxhsys";
 
 const Home = () => {
-  const [image, setImage] = useState({heroImage:""});
+  const [image, setImage] = useState({ heroImage: "" });
   useEffect(() => {
     async function getData() {
       try {
@@ -35,11 +36,16 @@ const Home = () => {
     }
     getData();
   }, []);
+
+  const [showSide, setShowSide] = useState(false);
+  const showSideBar = () => {
+    setShowSide(!showSide);
+  };
   return (
     <>
       {/* navbar  */}
-      <Navbar />
-
+      <Navbar onClick={showSideBar}/>
+      {showSide && <Sidebar onClick={showSideBar} showSide={showSide}/>}
       {/* greeting heading  */}
       <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
         Are you Hungry <Utensils strokeWidth={1} className="w-5" />
