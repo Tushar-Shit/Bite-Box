@@ -5,6 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const Category = require("./models/categories");
 const FoodItem = require("./models/foodItem");
+const Reviews = require("./models/reviews");
 require('dotenv').config();
 mongoose.connect(process.env.DB_URL)
     .then(() => console.log(" Successfully connected to MongoDB!"))
@@ -31,12 +32,13 @@ app.get("/categories", async (req, res) => {
 
 
 
-app.get("/categories/:item/:id", async(req, res) => {
+app.get("/categories/:item/:id", async (req, res) => {
     const { item, id } = req.params;
     // console.log(item, id);
     const foodItem = await FoodItem.findById(id);
-    // console.log(data);
-    res.json({foodItem });
+    const reviews = await Reviews.find({ food_belong: id });
+    // console.log(reviews);
+    res.json({ foodItem, reviews });
 
 });
 
@@ -51,6 +53,28 @@ app.get("/categories/:item", async (req, res) => {
     res.json({ fooditems });
 });
 
+app.patch("/reviews/like/:id", async (req, res) => {
+    const { id } = req.params;
+    const { totalLike } = req.body;
+    try {
+        await Reviews.findByIdAndUpdate(id, { $set: { like: totalLike } })
+        console.log("received");
+    }
+    catch (err) {
+        console.log(err);
+    }
+})
+app.patch("/reviews/unlike/:id", async (req, res) => {
+    const { id } = req.params;
+    const { totalLike } = req.body;
+    try {
+        await Reviews.findByIdAndUpdate(id, { $set: { unlike: totalLike } })
+        console.log("received");
+    }
+    catch (err) {
+        console.log(err);
+    }
+})
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

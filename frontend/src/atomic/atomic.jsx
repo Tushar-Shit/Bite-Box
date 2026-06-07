@@ -13,16 +13,16 @@ const Subheading = ({ title }) => {
   );
 };
 
-//see more
-const SeeMore = ({ path }) => {
+// see more component
+const SeeMore = ({ text, onClick }) => {
   return (
-    <Link to={path} className="w-full flex justify-center">
+    <button onClick={onClick} className="w-full flex justify-center border-none bg-transparent cursor-pointer">
       <b>
         <div className="flex bg-zinc-200 text-red-500 p-1 px-2 items-center justify-center rounded-lg text-lg">
-          seemore <ChevronRight size={16} />
+          {text} <ChevronRight size={16} />
         </div>
       </b>
-    </Link>
+    </button>
   );
 };
 
