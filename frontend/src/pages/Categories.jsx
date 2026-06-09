@@ -2,9 +2,12 @@ import React from "react";
 import BottomBar from "../components/BottomBar";
 import CustomNav from "../CategoryComponents/CustomNav";
 import CategoryCards from "../CategoryComponents/CategoryCards";
-import { Link } from "react-router-dom";
+import { Link,useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 const Categories = () => {
+  // const {id} = useParams();
+  // console.log();
+  
   const [allData, setAllData] = useState([]);
   useEffect(() => {
     async function getData() {
@@ -20,7 +23,7 @@ const Categories = () => {
   }, []);
   return (
     <>
-      <CustomNav text="Categories" />
+      <CustomNav text="Categories" path="/" />
 
       <div className="flex flex-wrap justify-center gap-5 mt-5 mb-23">
         {allData.map((category) => (

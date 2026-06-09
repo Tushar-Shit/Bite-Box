@@ -11,31 +11,39 @@ import { SeeMore, Heartclick } from "../atomic/atomic";
 import { Utensils } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
-// const heroImagesArray = [
-//   { data: data.heroImage, title: "Burger" },
-//   { data: data.heroImage, title: "Pizza" },
-//   { data: data.heroImage, title: "Chiken" },
-//   { data: data.heroImage, title: "Mutton" },
-//   { data: data.heroImage, title: "Drinks" },
-// ];
-
 const para =
   "Chicken Biryani is an aromatic, flavorful South Asian dish. It features tender, spiced, marinated chicsdrfeg sfrgvd gxhsys";
 
 const Home = () => {
   const [image, setImage] = useState({ heroImage: "" });
+  const [trending, setTrending] = useState([]);
   useEffect(() => {
     async function getData() {
       try {
         const res = await fetch("/api/");
-        const data = await res.json();
-        setImage(data);
+        const { data, foodData } = await res.json();
+        setImage(data.heroImage);
+        setTrending(foodData);
       } catch (err) {
         console.error(err);
       }
     }
     getData();
   }, []);
+  // const category;
+  useEffect(() => { 
+    if (trending.category) {
+      async function categoryName() {
+        try {
+          const res = await fetch(`/api/categories?categoryID=${trending.category}`);
+          const data = res.json();
+          console.log(data.single);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    }
+  }, [trending]);
 
   const [showSide, setShowSide] = useState(false);
   const showSideBar = () => {
@@ -44,8 +52,8 @@ const Home = () => {
   return (
     <>
       {/* navbar  */}
-      <Navbar onClick={showSideBar}/>
-      {showSide && <Sidebar onClick={showSideBar} showSide={showSide}/>}
+      <Navbar onClick={showSideBar} />
+      {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
       {/* greeting heading  */}
       <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
         Are you Hungry <Utensils strokeWidth={1} className="w-5" />
@@ -83,12 +91,19 @@ const Home = () => {
       <section className="mb-2 px-4">
         <Subheading title="Trending Now" className="ml-4" />
         <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
-          <SquareFc />
-          <SquareFc />
-          <SquareFc />
-          <SquareFc />
+          {trending.map((item) => (
+            <SquareFc
+              key={item._id}
+              image={item.image}
+              name={item.name}
+              quantity={item.quantity}
+              price={item.price}
+              category={item.Category}
+              id={item._id}
+            />
+          ))}
 
-          <SeeMore path="/trending" />
+          <SeeMore text="See More" path="/trending" />
         </div>
       </section>
 

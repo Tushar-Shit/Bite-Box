@@ -18,7 +18,7 @@ const SeeMore = ({ text, onClick }) => {
   return (
     <button onClick={onClick} className="w-full flex justify-center border-none bg-transparent cursor-pointer">
       <b>
-        <div className="flex bg-zinc-200 text-red-500 p-1 px-2 items-center justify-center rounded-lg text-lg">
+        <div className="flex w-40 bg-zinc-200 text-red-500 p-1 px-2 items-center justify-center rounded-lg text-lg">
           {text} <ChevronRight size={16} />
         </div>
       </b>

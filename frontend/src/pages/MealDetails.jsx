@@ -12,7 +12,7 @@ const MealDetails = () => {
   const [food, setFood] = useState({});
   const [allReviews, setAllReviews] = useState([]);
   const { items, id } = useParams();
-
+  console.log(items, id);
   useEffect(() => {
     async function getData() {
       try {
@@ -38,7 +38,7 @@ const MealDetails = () => {
           (
             allReviews.reduce((sum, review) => sum + review.rating, 0) /
             allReviews.length
-          ).toFixed(1)
+          ).toFixed(1),
         )
       : 0;
 
@@ -56,19 +56,19 @@ const MealDetails = () => {
   const quantityIncrease = () => {
     setQuantity((prev) => prev + 1);
   };
-  
+
   const quantityDecrease = () => {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
   // Description "Read More" logic
   const [fullDescription, setFullDescription] = useState(false);
-  
+
   // Safeguard against missing or undefined description strings
   const words = food.description ? food.description.split(" ") : [];
   const isLongDescription = words.length > 6; // Set to 15 words limit as requested
-  
-  const truncatedDescription = isLongDescription 
+
+  const truncatedDescription = isLongDescription
     ? words.slice(0, 6).join(" ")
     : food.description;
 
@@ -91,11 +91,17 @@ const MealDetails = () => {
         <div className="flex justify-between items-center ">
           <span className="text-2xl font-bold">{food.name}</span>
           <div className="flex justify-evenly gap-2 items-center bg-zinc-300 rounded-2xl p-1">
-            <button onClick={quantityDecrease} className="bg-white text-black rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center">
+            <button
+              onClick={quantityDecrease}
+              className="bg-white text-black rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
+            >
               <Minus size={18} />
             </button>
             <div className="font-semibold mx-1 w-4 text-center">{quantity}</div>
-            <button onClick={quantityIncrease} className="bg-orange-500 text-white rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center">
+            <button
+              onClick={quantityIncrease}
+              className="bg-orange-500 text-white rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
+            >
               <Plus size={18} />
             </button>
           </div>
@@ -114,7 +120,7 @@ const MealDetails = () => {
         <div className="text-lg font-bold text-red-700 mb-1">Description</div>
         <p className="text-zinc-700 leading-relaxed text-sm">
           {fullDescription ? food.description : truncatedDescription}
-          
+
           {isLongDescription && (
             <span
               onClick={() => setFullDescription(!fullDescription)}

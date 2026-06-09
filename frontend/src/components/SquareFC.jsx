@@ -11,30 +11,34 @@ import {
   Component,
 } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
-import {Link} from "react-router-dom";
-const SquareFC = () => {
+import { Link } from "react-router-dom";
+const SquareFC = ({ image, name, quantity, price,category,id}) => {
+// console.log(category+"  "+id);
   return (
-    <Link to="/mealdetails" className="shrink-0 w-[42%] h-fit shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative">
+    <div
+      // to="/mealdetails"
+      className="shrink-0 w-[42%] h-fit shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative"
+    >
       <div className="bg-zinc-50 rounded-full p-1 w-7 h-7 absolute right-1 top-1 flex items-center">
         <Heartclick />
       </div>
 
       <div>
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s"
-          alt=""
+          src={image}
+          alt={name}
           className="object-contain rounded-t-md"
         />
       </div>
       <div className="p-2 pl-3 text-md">
-        <p className="font-bold ">Chicken Lolipop</p>
-        <p className="">6 piece</p>
+        <p className="font-bold ">{name}</p>
+        <p className="">{quantity}</p>
         <div className="flex justify-between">
-          <p className="font-bold ">₹170</p>
+          <p className="font-bold ">{price}</p>
           <span className="mr-3">🔥 4.3</span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

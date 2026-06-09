@@ -15,19 +15,27 @@ app.use(cors());
 app.use(express.json());
 
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
     const data = {
         heroImage:
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s",
         text: "Sink your teeth into the juiciest, flavor-packed bite your cravings have been waiting for.",
     };
-    res.json(data.heroImage);
+    foodData = await FoodItem.find({});
+    const everything = {
+        data,
+        foodData
+    }
+    res.json(everything);
 });
 
 app.get("/categories", async (req, res) => {
-    const categoriesData = await Category.find();
+    const { categoryID } = req.query;
+    console.log(categoryId);
+    const categoriesData = await Category.find({});
+    const single = await Category.findById(categoryId);
     // console.log(categoriesData);
-    res.json(categoriesData);
+    res.json({ categoriesData, single });
 });
 
 
