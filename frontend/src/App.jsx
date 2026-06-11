@@ -14,7 +14,10 @@ const App = () => {
         <Route path="/categories" element={<Categories/>} />
         <Route path="/favorite" element={<Favorite/>} />
         <Route path="/categories/:items" element={<ItemList/>} />
+        <Route path="/meal/:id" element={<MealDetails/>} />
         <Route path="/categories/:items/:id" element={<MealDetails/>} />
+        <Route path="/type/:anything" element={<ItemList/>} />
+
       </Routes>
     </div>
   );

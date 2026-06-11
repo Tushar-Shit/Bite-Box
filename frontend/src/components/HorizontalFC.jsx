@@ -2,13 +2,13 @@ import { ShoppingBag, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
-const HorizontalFC = ({ name, image, description, path }) => {
+const HorizontalFC = ({ name,price, image, description, id }) => {
   // console.log(path);
   
  
   return (
     <Link
-      to={path}
+      to={`meal/${id}`}
       className="bg-zinc-200 p-3 mb-3 h-40 flex  gap-3 items-center rounded-lg"
     >
       {/* food image  */}
@@ -34,7 +34,7 @@ const HorizontalFC = ({ name, image, description, path }) => {
         <div className="flex justify-between text-md mb-2 relative">
           <div className="flex gap-2">
             <span>
-              <b>₹100.000</b>
+              <b>₹{price}</b>
             </span>
             <span>🔥 4.3</span>
           </div>

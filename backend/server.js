@@ -6,6 +6,12 @@ const mongoose = require("mongoose");
 const Category = require("./models/categories");
 const FoodItem = require("./models/foodItem");
 const Reviews = require("./models/reviews");
+
+//routes
+const categoryRoute = require("./routes/category");
+const reviewRoute = require("./routes/reviews");
+
+
 require('dotenv').config();
 mongoose.connect(process.env.DB_URL)
     .then(() => console.log(" Successfully connected to MongoDB!"))
@@ -21,68 +27,41 @@ app.get("/", async (req, res) => {
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s",
         text: "Sink your teeth into the juiciest, flavor-packed bite your cravings have been waiting for.",
     };
-    foodData = await FoodItem.find({});
+    trendingFood = await FoodItem.find({tag:"Trending"});
+    popularFood = await FoodItem.find({tag:"Popular"});
+    // console.log(trendingFood);
+    
     const everything = {
         data,
-        foodData
+        trendingFood,
+        popularFood,
     }
     res.json(everything);
 });
 
-app.get("/categories", async (req, res) => {
-    const { categoryID } = req.query;
-    console.log(categoryId);
-    const categoriesData = await Category.find({});
-    const single = await Category.findById(categoryId);
-    // console.log(categoriesData);
-    res.json({ categoriesData, single });
-});
+app.use("/categories", categoryRoute);
+app.use("/reviews", reviewRoute);
 
 
-
-app.get("/categories/:item/:id", async (req, res) => {
-    const { item, id } = req.params;
-    // console.log(item, id);
+app.get("/meal/:id", async (req, res) => {
+    const { id } = req.params;
     const foodItem = await FoodItem.findById(id);
     const reviews = await Reviews.find({ food_belong: id });
-    // console.log(reviews);
+
     res.json({ foodItem, reviews });
+})
 
-});
 
-app.get("/categories/:item", async (req, res) => {
-    const { item } = req.params;
-    // console.log(item);
-
-    const categoryId = (await Category.findOne({ name: item }))._id;
-
-    const fooditems = await FoodItem.find({ category: categoryId });
-    // console.log(fooditems[0]);
+// Added "/api" to match your front-end fetch exactly
+app.get("/type/:anything", async (req, res) => {
+    const { anything } = req.params;
+console.log(anything);
+    const fooditems = await FoodItem.find({ tag:anything});
     res.json({ fooditems });
 });
 
-app.patch("/reviews/like/:id", async (req, res) => {
-    const { id } = req.params;
-    const { totalLike } = req.body;
-    try {
-        await Reviews.findByIdAndUpdate(id, { $set: { like: totalLike } })
-        console.log("received");
-    }
-    catch (err) {
-        console.log(err);
-    }
-})
-app.patch("/reviews/unlike/:id", async (req, res) => {
-    const { id } = req.params;
-    const { totalLike } = req.body;
-    try {
-        await Reviews.findByIdAndUpdate(id, { $set: { unlike: totalLike } })
-        console.log("received");
-    }
-    catch (err) {
-        console.log(err);
-    }
-})
+
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

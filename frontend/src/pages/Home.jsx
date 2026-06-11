@@ -10,40 +10,28 @@ import Subheading from "../atomic/atomic";
 import { SeeMore, Heartclick } from "../atomic/atomic";
 import { Utensils } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-
+import { Link } from "react-router-dom";
 const para =
   "Chicken Biryani is an aromatic, flavorful South Asian dish. It features tender, spiced, marinated chicsdrfeg sfrgvd gxhsys";
 
 const Home = () => {
   const [image, setImage] = useState({ heroImage: "" });
   const [trending, setTrending] = useState([]);
+  const [popular, setPopular] = useState([]);
   useEffect(() => {
     async function getData() {
       try {
         const res = await fetch("/api/");
-        const { data, foodData } = await res.json();
+        const { data, trendingFood, popularFood } = await res.json();
         setImage(data.heroImage);
-        setTrending(foodData);
+        setTrending(trendingFood);
+        setPopular(popularFood);
       } catch (err) {
         console.error(err);
       }
     }
     getData();
   }, []);
-  // const category;
-  useEffect(() => { 
-    if (trending.category) {
-      async function categoryName() {
-        try {
-          const res = await fetch(`/api/categories?categoryID=${trending.category}`);
-          const data = res.json();
-          console.log(data.single);
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    }
-  }, [trending]);
 
   const [showSide, setShowSide] = useState(false);
   const showSideBar = () => {
@@ -103,17 +91,27 @@ const Home = () => {
             />
           ))}
 
-          <SeeMore text="See More" path="/trending" />
+          <Link to={`/type/${"Trending"}`}>
+            <SeeMore text="See More" />
+          </Link>
         </div>
       </section>
 
       {/* Popular meals section  */}
       <section className="mb-5">
-        <Subheadsee subHeading="Popular Meals" path="/popular" />
+        <Subheadsee subHeading="Popular Meals" path="/type/Popular" />
         <div className="px-5">
-          <HorizontalFc para={para} item="Chiken Biriyani" image={image} />
-          <HorizontalFc para={para} item="Paneer Tikka" image={image} />
-          <HorizontalFc para={para} item="Lachha Paratha" image={image} />
+          {/* <HorizontalFc para={para} item="Chiken Biriyani" image={image} /> */}
+          {popular.map((item) => (
+            <HorizontalFc
+              key={item._id}
+              image={item.image}
+              name={item.name}
+              description={item.description}
+              price={item.price}
+              id={item._id}
+            />
+          ))}
         </div>
       </section>
 
@@ -121,13 +119,17 @@ const Home = () => {
       <section className="mb-18 px-4">
         <Subheading title="Recomended for you" className="ml-4" />
         <div className=" flex justify-evenly flex-wrap items-center gap-5 py-3 scrollbar-none">
-          <SquareFc />
-          <SquareFc />
-          <SquareFc />
-          <SquareFc />
-          {/* <SquareFc />
-          <SquareFc /> */}
-
+          {trending.map((item) => (
+            <SquareFc
+              key={item._id}
+              image={item.image}
+              name={item.name}
+              quantity={item.quantity}
+              price={item.price}
+              category={item.Category}
+              id={item._id}
+            />
+          ))}
           <SeeMore path="/recommended" />
         </div>
       </section>

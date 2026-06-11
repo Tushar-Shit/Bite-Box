@@ -14,6 +14,7 @@ const Categories = () => {
       try {
         const res = await fetch("/api/categories");
         const data = await res.json();
+        // console.log(data);
         setAllData(data);
       } catch (err) {
         console.error(err);

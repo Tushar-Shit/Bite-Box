@@ -12,11 +12,17 @@ const MealDetails = () => {
   const [food, setFood] = useState({});
   const [allReviews, setAllReviews] = useState([]);
   const { items, id } = useParams();
-  console.log(items, id);
+  // console.log(items, id);
   useEffect(() => {
     async function getData() {
       try {
-        const res = await fetch(`/api/categories/${items}/${id}`);
+        if (items && id) {
+          const res = await fetch(`/api/categories/${items}/${id}`);
+          const { foodItem, reviews } = await res.json();
+          setFood(foodItem);
+          setAllReviews(reviews);
+        }
+        const res = await fetch(`/api/meal/${id}`);
         const { foodItem, reviews } = await res.json();
         setFood(foodItem);
         setAllReviews(reviews);

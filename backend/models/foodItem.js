@@ -9,7 +9,8 @@ const foodItem = new mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
-    }
+    },
+    tag:String,
 });
 
 const FoodItems = mongoose.model("foodItem", foodItem);
