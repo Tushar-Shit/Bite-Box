@@ -28,7 +28,7 @@ const Home = () => {
   useEffect(() => {
     async function getData() {
       try {
-        const res = await fetch("/api/");
+        const res = await fetch("/");
         const { data, trendingFood, popularFood } = await res.json();
         setImage(data.heroImage);
         setTrending(trendingFood);
