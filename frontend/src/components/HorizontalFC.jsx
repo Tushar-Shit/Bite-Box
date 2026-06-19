@@ -3,12 +3,12 @@ import { Heartclick } from "../atomic/atomic";
 import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 const HorizontalFC = ({ name,price, image, description, id }) => {
-  // console.log(path);
+  // console.log(id);
   
  
   return (
     <Link
-      to={`meal/${id}`}
+      to={`/meal/${id}`}
       className="bg-zinc-200 p-3 mb-3 h-40 flex  gap-3 items-center rounded-lg"
     >
       {/* food image  */}

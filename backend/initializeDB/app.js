@@ -17,12 +17,12 @@ mongoose.connect(process.env.DB_URL)
 const dataSave = async () => {
     try {
         // await Category.deleteMany({});
-        await FoodItems.deleteMany({});
-        // await Reviews.deleteMany({});
+        // await FoodItems.deleteMany({});
+        await Reviews.deleteMany({});
         console.log("previous data deleted");
         // await Category.insertMany(categoryData);
-        await FoodItems.insertMany(foodData);
-        // await Reviews.insertMany(reviewData);
+        // await FoodItems.insertMany(foodData);
+        await Reviews.insertMany(reviewData);
         console.log("Data Inserted");
        
     }

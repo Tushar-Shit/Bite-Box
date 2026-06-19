@@ -10,7 +10,7 @@ import Subheading from "../atomic/atomic";
 import { SeeMore, Heartclick } from "../atomic/atomic";
 import { Utensils } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
 const para =
   "Chicken Biryani is an aromatic, flavorful South Asian dish. It features tender, spiced, marinated chicsdrfeg sfrgvd gxhsys";
 
@@ -18,6 +18,13 @@ const Home = () => {
   const [image, setImage] = useState({ heroImage: "" });
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
+  const location = useLocation();
+
+  console.log(location.state?.message+" home page");
+  const [user, setUser] = useState({
+    username: "",
+    email: "",
+  });
   useEffect(() => {
     async function getData() {
       try {
@@ -26,6 +33,12 @@ const Home = () => {
         setImage(data.heroImage);
         setTrending(trendingFood);
         setPopular(popularFood);
+
+        const response = await fetch("/api/profile", {
+          credentials: "include",
+        });
+        const userData = await response.json();
+        setUser(userData);
       } catch (err) {
         console.error(err);
       }
@@ -39,10 +52,15 @@ const Home = () => {
   };
   return (
     <>
-      {/* navbar  */}
-      <Navbar onClick={showSideBar} />
+     {location.state?.message && (
+        <div className="h-fit bg-amber-950 text-white absolute top-0">
+          {location.state.message}
+        </div>
+      )}
+      <Navbar onClick={showSideBar} user={user} />
+
       {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
-      {/* greeting heading  */}
+
       <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
         Are you Hungry <Utensils strokeWidth={1} className="w-5" />
       </h1>

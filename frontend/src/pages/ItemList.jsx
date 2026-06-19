@@ -17,7 +17,6 @@ const ItemList = () => {
   const [fooddata, setFoodData] = useState([]);
   const { items } = useParams();
   const { anything } = useParams();
-  // console.log(anything);
 
   useEffect(() => {
     async function getData() {
@@ -25,14 +24,11 @@ const ItemList = () => {
         if (items) {
           const res = await fetch(`/api/categories/${items}`);
           const { fooditems } = await res.json();
-          // console.log(fooditems)
           setFoodData(fooditems);
         }
         if (anything) {
-          // console.log("hello"+anything);
           const res = await fetch(`/api/type/${encodeURIComponent(anything)}`);
           const { fooditems } = await res.json();
-          // console.log(fooditems);
           setFoodData(fooditems);
         }
       } catch (err) {
@@ -49,6 +45,7 @@ const ItemList = () => {
         {fooddata.map((item) => (
           <HorizontalFC
             key={item._id} // MongoDB unique ID required for React loops
+            id={item._id}
             name={item.name}
             price={item.price}
             image={item.image}

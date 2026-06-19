@@ -1,6 +1,6 @@
 const reviewData = [
     {
-        food_belong: "6a24681e10ee11dae963b752",
+        food_belong: "6a2a0fe9ffa1a53312a0c5ba",
         author: "tushar",
         rating: 4,
         like: 59,
@@ -8,7 +8,7 @@ const reviewData = [
         comment: "Nice taste, you must try it. Also value for money."
     },
     {
-        food_belong: "6a24681e10ee11dae963b752",
+        food_belong: "6a2a0fe9ffa1a53312a0c5ba",
         author: "rahul",
         rating: 5,
         like: 87,
@@ -16,7 +16,7 @@ const reviewData = [
         comment: "Absolutely delicious! The flavours were well balanced and the portion size was generous."
     },
     {
-        food_belong: "6a24681e10ee11dae963b752",
+        food_belong: "6a2a0fe9ffa1a53312a0c5ba",
         author: "priya",
         rating: 4,
         like: 42,
@@ -24,7 +24,7 @@ const reviewData = [
         comment: "Fresh ingredients and great presentation. Would definitely order again."
     },
     {
-        food_belong: "6a24681e10ee11dae963b752",
+        food_belong: "6a2a0fe9ffa1a53312a0c5ba",
         author: "amit",
         rating: 3,
         like: 25,
@@ -32,7 +32,7 @@ const reviewData = [
         comment: "Good overall taste, but it was slightly spicy for my preference."
     },
     {
-        food_belong: "6a24681e10ee11dae963b752",
+        food_belong: "6a2a0fe9ffa1a53312a0c5ba",
         author: "sneha",
         rating: 5,
         like: 73,
@@ -40,7 +40,7 @@ const reviewData = [
         comment: "One of the best dishes I have tried recently. Highly recommended for food lovers."
     },
     {
-        food_belong: "6a24681e10ee11dae963b752",
+        food_belong: "6a2a0fe9ffa1a53312a0c5ba",
         author: "arjun",
         rating: 4,
         like: 51,

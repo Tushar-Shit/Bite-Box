@@ -1,16 +1,26 @@
-import { Heart, House, Blocks, NotebookPen, ShoppingBag } from "lucide-react";
+import {
+  Heart,
+  House,
+  Blocks,
+  NotebookPen,
+  ShoppingBag,
+  Search,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 const BottomBar = () => {
- 
   return (
-    <div className="bg-zinc-100 w-full flex justify-around items-center fixed bottom-0 p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500">
+    <div className="bg-zinc-100 w-full flex justify-evenly items-center fixed bottom-0 p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500">
       <Link to="/" className="flex flex-col items-center">
         <House strokeWidth={1.5} />
         <span>Home</span>
       </Link>
+      <Link to="/search" className="flex flex-col items-center">
+        <Search strokeWidth={1.5} />
+        Search
+      </Link>
       <Link to="/categories" className="flex flex-col items-center">
         <Blocks strokeWidth={1.5} />
-        Categories
+        Category
       </Link>
       <Link to="/orders" className="flex flex-col items-center">
         <NotebookPen strokeWidth={1.5} />
