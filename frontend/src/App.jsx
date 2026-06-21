@@ -7,7 +7,9 @@ import ItemList from "./pages/ItemList";
 import Cart from "./pages/Cart";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import UserProfile from "./pages/UserProfile";
 import React from "react";
+import HelpingPage from "./pages/HelpingPage";
 
 const App = () => {
   return (
@@ -17,6 +19,9 @@ const App = () => {
         {/* <Route path="/" element={<Home />} /> */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/userinfo" element={<UserProfile/>}/>
+        <Route path="/help" element={<HelpingPage/>}/>
+        
         <Route path="/categories" element={<Categories />} />
         <Route path="/favorite" element={<Favorite />} />
         <Route path="/categories/:items" element={<ItemList />} />

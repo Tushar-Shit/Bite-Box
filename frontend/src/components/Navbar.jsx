@@ -24,30 +24,34 @@ const ImageSlider = () => {
 };
 
 const Navbar = ({ onClick, user }) => {
-  console.log(user.username);
-  console.log(user.email);
-
+  let visibleName;
+  if (user.username) {
+    visibleName = user.username.split(" ");
+  }
   return (
     <div className="flex justify-between items-center px-4 w-0.5/5 bg-red-500  h-auto py-5">
       <p className="text-lg font-bold">BiteBox</p>
-      {user.username?
-        (<div className="flex gap-2 items-center cursor-pointer">
-          <UserRound
-            strokeWidth={1.5}
-            onClick={onClick}
-            className="border rounded-full w-10 h-10 p-1 cursor-pointer"
-          />
-        </div>)
-            :
-        (<div className="flex gap-2 text-white font-semibold">
+      {user.username ? (
+        <>
+          <div className="gap-2 cursor-pointer">
+            <UserRound
+              strokeWidth={1.5}
+              onClick={onClick}
+              className="border rounded-full w-7 h-7 cursor-pointer m-auto"
+            />
+            <p className="text-sm">{visibleName[0]}</p>
+          </div>
+        </>
+      ) : (
+        <div className="flex gap-2 text-white font-semibold">
           <span>
             <Link to="/signup">SignUp</Link>
           </span>
           <span>
             <Link to="/login">Login</Link>
           </span>
-        </div>)
-}
+        </div>
+      )}
     </div>
   );
 };

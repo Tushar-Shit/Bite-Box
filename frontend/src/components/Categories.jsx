@@ -1,14 +1,18 @@
 import React from "react";
-
-const Categories = (data) => {
+import {Link} from "react-router-dom";
+const Categories = ({image, text}) => {
   // console.log(data);
   return (
-    <div className="w-[21%] h-fit bg-zinc-50 rounded-md flex flex-col items-center justify-center shadow-[0_0_4px_rgba(0,0,0,0.5)] ">
-      <img src={data.image} alt="" className="object-contain rounded-t-md"/>
-      <span>{data.text}</span>
-    </div>
-    
-
+    <Link to={`/categories/${text}`} className="w-[21%] bg-zinc-50 rounded-md flex flex-col items-center justify-center shadow-[0_0_4px_rgba(0,0,0,0.5)] ">
+      <div className="h-[90%]">
+        <img
+          src={image}
+          alt=""
+          className=" h-full w-full object-cover rounded-t-md"
+        />
+      </div>
+      <span>{text}</span>
+    </Link>
   );
 };
 

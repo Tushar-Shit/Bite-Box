@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import CustomNav from "../CategoryComponents/CustomNav";
 function Signup() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -24,8 +26,7 @@ function Signup() {
     }
 
     try {
-      console.log("check 1");
-      const response = await fetch("http://localhost:7000/signup", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,18 +37,17 @@ function Signup() {
           password: formData.password,
         }),
       });
-      console.log("check 2");
 
       const data = await response.json();
-
-      console.log(data);
-      alert("Signup successful!");
 
       setFormData({
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
+      });
+      navigate("/", {
+        state: { message: data.message },
       });
     } catch (error) {
       console.error(error);

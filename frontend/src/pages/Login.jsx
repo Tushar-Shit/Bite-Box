@@ -38,13 +38,9 @@ function Login() {
         password: "",
       });
 
-      
-        navigate("/", {
-          state: {
-            message: `Welcome back !`,
-          },
-        });
-      
+      navigate("/", {
+        state: { message: data.message },
+      });
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
@@ -53,7 +49,6 @@ function Login() {
 
   return (
     <>
-
       <CustomNav text="Login" path="/" />
       <div className="h-[90vh] flex items-center justify-center bg-gray-100">
         <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">

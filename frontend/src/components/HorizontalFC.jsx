@@ -3,7 +3,7 @@ import { Heartclick } from "../atomic/atomic";
 import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 const HorizontalFC = ({ name,price, image, description, id }) => {
-  // console.log(id);
+  
   
  
   return (

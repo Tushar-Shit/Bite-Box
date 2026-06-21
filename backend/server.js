@@ -113,9 +113,9 @@ app.get("/type/:anything", async (req, res) => {
 
 
 app.post("/signup", async (req, res) => {
+  console.log("tygfhbcvfggtredsxzaw");
   try {
     const { username, email, password } = req.body;
-
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -131,9 +131,22 @@ app.post("/signup", async (req, res) => {
       email,
       password: hashedPassword,
     });
-
+    //extracting the newly registered user and make them login
+    const newUser = await User.findOne({ email });
+    const token = jwt.sign(
+      {
+        userId: newUser._id
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+    const messageName = newUser.username.split(" ");
     res.status(201).json({
-      message: "User registered successfully",
+      message: `Have a Great Day ${messageName[0]}!`,
     });
   } catch (err) {
     res.status(500).json({
@@ -148,14 +161,14 @@ app.post("/login", async (req, res) => {
   const existingUser = await User.findOne({ email });
 
   if (!existingUser) {
-    return res.json({ message: "User Not Found" });
+    return res.json({ message: "User Not Found." });
   }
   const isMatch = await bcrypt.compare(
     password,
     existingUser.password
   );
   if (!isMatch) {
-    return res.json({ message: "Worng password" });
+    return res.json({ message: "Worng password Try Again." });
   }
   const token = jwt.sign(
     {
@@ -168,9 +181,9 @@ app.post("/login", async (req, res) => {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
-
+    const messageName = existingUser.username.split(" ");
   res.json({
-    message: `Welcome Back ${existingUser.username}!`
+    message: `Welcome Back ${messageName[0]}!`
   });
 });
 

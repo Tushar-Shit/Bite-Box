@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
-  Calendar,
+  Mail,
   ChevronRight,
   LogOut,
-  CreditCard,
+  KeyRound,
   MapPin,
   Heart,
   UserPlus,
@@ -29,7 +29,7 @@ function Sidebar({ onClick, showSide }) {
   useEffect(() => {
     const profile = async () => {
       try {
-        const response = await fetch("http://localhost:7000/profile", {
+        const response = await fetch("/api/profile", {
           credentials: "include",
         });
 
@@ -46,7 +46,7 @@ function Sidebar({ onClick, showSide }) {
 
   const logout = async () => {
     try {
-      const data = await fetch("http://localhost:7000/logout", {
+      const data = await fetch("/api/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -56,7 +56,7 @@ function Sidebar({ onClick, showSide }) {
         email: "",
       });
       window.location.reload();
-        onClick();
+      onClick();
       // navigate("/", {
       //   state: {
       //     message: data.message,
@@ -80,44 +80,48 @@ function Sidebar({ onClick, showSide }) {
           showSide ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="h-[16%] w-full bg-rose-600 px-5">
-          <div className="flex items-center justify-between mt-8 text-white">
-            <p className="text-2xl font-bold">View Details</p>
-            <span onClick={onClick} className="text-4xl cursor-pointer">
-              &times;
-            </span>
-          </div>
+        <div className="min-h-16 h-20 max-h-17.5 flex items-center justify-between text-white px-5 bg-rose-600">
+          <p className="text-2xl font-bold">My Profile</p>
+          <span onClick={onClick} className="text-4xl cursor-pointer">
+            &times;
+          </span>
         </div>
-        {user.username && (
-          <div className="h-[12%] w-[90%] absolute top-[10%] left-[5%] bg-white flex gap-3 items-center p-3 rounded-md">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHCBu2asBmYHBPRvht-u5d_alNH19z7VhL-w&s"
-              alt=""
-              className="h-20 w-20 rounded-full border"
-            />
+        <div className="h-[88%] w-full bg-orange-100 ">
+          {user.username && (
+            <div className="h-fit w-full bg-white flex gap-3 items-center px-3 py-4 rounded-tr-full">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHCBu2asBmYHBPRvht-u5d_alNH19z7VhL-w&s"
+                alt=""
+                className="h-20 w-20 rounded-full"
+              />
 
-            <div>
-              <p className="text-xl font-bold">{user.username}</p>
-              <p className="text-sm">{user.email}</p>
+              <div className="relative">
+                <p className="text-md font-bold">{user.username}</p>
+                <p className="text-[14px] text-gray-500">{user.email}</p>
+                <Link
+                  to="/userinfo"
+                  className="bg-orange-600 p-1 rounded-md text-white text-sm absolute"
+                >
+                  See Details
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="h-[88%] w-full bg-orange-100 py-17">
-          <div className="flex items-center gap-2 px-10 border-b">
-            <Calendar className="w-[10%]" />
-            <SidebarSupport title="Order History" />
-          </div>
+          <Link to="/help" state={"ce"} className="flex items-center gap-2 px-10 border-b">
+            <Mail className="w-[10%]" />
+            <SidebarSupport title="Change Email" />
+          </Link>
 
-          <div className="flex items-center gap-2 px-10 border-b">
-            <CreditCard className="w-[10%]" />
-            <SidebarSupport title="Payment Method" />
-          </div>
+          <Link to="/help" state={"cp"} className="flex items-center gap-2 px-10 border-b">
+            <KeyRound className="w-[10%]" />
+            <SidebarSupport title="Change Password" />
+          </Link>
 
-          <div className="flex items-center gap-2 px-10 border-b">
+          {/* <div className="flex items-center gap-2 px-10 border-b">
             <MapPin className="w-[10%]" />
             <SidebarSupport title="My Address" />
-          </div>
+          </div> */}
 
           <Link
             to="/favorite"
