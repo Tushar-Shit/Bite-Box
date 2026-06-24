@@ -138,9 +138,9 @@ const Home = () => {
             />
           ))}
 
-          <Link to={`/type/${"Trending"}`}>
+          {/* <Link to={`/type/${"Trending"}`}>
             <SeeMore text="See More" />
-          </Link>
+          </Link> */}
         </div>
       </section>
 
