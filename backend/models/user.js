@@ -20,7 +20,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    favourites: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FoodItems",
+    }],
   },
+
   {
     timestamps: true,
   }

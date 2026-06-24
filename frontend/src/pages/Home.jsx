@@ -154,6 +154,7 @@ const Home = () => {
               image={item.image}
               name={item.name}
               description={item.description}
+              quantity={item.quantity}
               price={item.price}
               unit={item.unit}
               id={item._id}

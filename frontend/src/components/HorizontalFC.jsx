@@ -1,11 +1,45 @@
 import { ShoppingBag, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
-import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react";
-const HorizontalFC = ({ name,price, image, description,unit,id }) => {
-  
-  
- 
+import { Link } from "react-router-dom";
+import { useState } from "react";
+const HorizontalFC = ({
+  name,
+  quantity,
+  price,
+  image,
+  description,
+  unit,
+  id,
+}) => {
+  const [state, setState] = useState(false);
+  const fill = () => {
+    state ? setState(false) : setState(true);
+  };
+
+  async function handle(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!id) return;
+    // try {
+    //   const response = await fetch(
+    //     `${import.meta.env.VITE_API_URL}/user/addfav`,
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         foodId: id,
+    //       }),
+    //     },
+    //   );
+    //   const {message} = await response.json();
+    //   console.log(message);
+    // } catch (e) {
+    //   console.log(e);
+    // }
+  }
+
   return (
     <Link
       to={`/meal/${id}`}
@@ -22,20 +56,22 @@ const HorizontalFC = ({ name,price, image, description,unit,id }) => {
       {/* food name  */}
       <div className="flex-3">
         <div className="flex justify-between mt-2">
-          <span className="text-md font-bold ">
+          <span className="text-md font ">
             <b>{name}</b>
           </span>
-          <Heartclick />
+          <Heartclick onClick={handle} state={state} fill={fill} />
         </div>
 
         {/* short description  */}
         <div className="text-xs mb-2">{description}</div>
         {/* price rating  */}
+        <p>
+          {quantity} <span>{unit}</span>
+        </p>
         <div className="flex justify-between text-md mb-2 relative">
           <div className="flex gap-2">
             <span>
               <b>₹{price}</b>
-              <span>{unit}</span>
             </span>
             <span>🔥 4.3</span>
           </div>

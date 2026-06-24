@@ -113,7 +113,7 @@ app.get("/type/:anything", async (req, res) => {
 
 
 app.post("/signup", async (req, res) => {
-  console.log("tygfhbcvfggtredsxzaw");
+  // console.log("tygfhbcvfggtredsxzaw");
   try {
     const { username, email, password } = req.body;
     const existingUser = await User.findOne({ email });
@@ -193,7 +193,11 @@ app.post("/login", async (req, res) => {
 
 app.post("/logout", async (req, res) => {
   console.log("enter here");
-  res.clearCookie("token");
+   res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
 
   res.json({
     message: "Logged out successfully"
@@ -207,6 +211,17 @@ app.get("/user", async (req, res) => {
     userData
   });
 })
+
+// app.post("/user/addfav", async (req, res) => {
+//   const { foodId } = req.body;
+//   console.log(foodId);
+//   const updatedUser = await User.findByIdAndUpdate(
+//     userId,
+//     { $addToSet: { favourite: foodId } },
+//     { new: true } // Returns the updated document instead of the old one
+//   );
+//   res.json({ message: "Successful" });
+// })
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
