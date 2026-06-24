@@ -12,7 +12,7 @@ const Categories = () => {
   useEffect(() => {
     async function getData() {
       try {
-        const res = await fetch("/api/categories");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}categories`);
         const data = await res.json();
         // console.log(data);
         setAllData(data);

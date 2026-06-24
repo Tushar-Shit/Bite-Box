@@ -17,12 +17,12 @@ const MealDetails = () => {
     async function getData() {
       try {
         if (items && id) {
-          const res = await fetch(`/api/categories/${items}/${id}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/categories/${items}/${id}`);
           const { foodItem, reviews } = await res.json();
           setFood(foodItem);
           setAllReviews(reviews);
         }
-        const res = await fetch(`/api/meal/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/meal/${id}`);
         const { foodItem, reviews } = await res.json();
         setFood(foodItem);
         setAllReviews(reviews);

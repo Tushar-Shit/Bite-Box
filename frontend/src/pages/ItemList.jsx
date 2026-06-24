@@ -22,12 +22,12 @@ const ItemList = () => {
     async function getData() {
       try {
         if (items) {
-          const res = await fetch(`/api/categories/${items}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/categories/${items}`);
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }
         if (anything) {
-          const res = await fetch(`/api/type/${encodeURIComponent(anything)}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/type/${encodeURIComponent(anything)}`);
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }

@@ -22,7 +22,7 @@ const UserProfile = () => {
   const [joinDate, setJoinDate] = useState("");
   useEffect(() => {
     const getdata = async () => {
-      const res = await fetch(`/api/user?e=${email}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user?e=${email}`);
       const { userData } = await res.json();
       setUser(userData);
       const dateObj = new Date(userData.createdAt);
