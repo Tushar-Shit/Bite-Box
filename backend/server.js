@@ -145,6 +145,8 @@ app.post("/signup", async (req, res) => {
     );
     res.cookie("token", token, {
       httpOnly: true,
+      secure:true,
+      sameSite:"none",
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
     const messageName = newUser.username.split(" ");
@@ -182,6 +184,8 @@ app.post("/login", async (req, res) => {
   );
   res.cookie("token", token, {
     httpOnly: true,
+    secure:true,
+    sameSite:"none",
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
   const messageName = existingUser.username.split(" ");
