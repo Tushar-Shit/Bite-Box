@@ -24,7 +24,8 @@ mongoose.connect(process.env.DB_URL)
 
 app.use(
   cors({
-    origin: ["http://localhost:5173","bite-box-weld.vercel.app"]
+    origin: ["http://localhost:5173",
+      "https://bite-box-weld.vercel.app"]
     ,credentials: true,
   })
 );
