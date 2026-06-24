@@ -20,6 +20,7 @@ lerna-debug.log*
 
 # Dependency directories
 frontend/node_modules
+frontend/.env
 backend/node_modules
 backend/.env
 .VSCodeCounter
