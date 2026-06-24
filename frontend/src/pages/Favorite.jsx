@@ -2,7 +2,7 @@ import CustomNav from "../CategoryComponents/CustomNav";
 import BottomBar from "../components/BottomBar";
 import FavoriteFC from "../components/FavoriteFC";
 import { Heartclick } from "../atomic/atomic";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 const Favorite = () => {
   return (
     <>

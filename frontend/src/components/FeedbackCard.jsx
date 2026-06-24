@@ -11,7 +11,7 @@ const FeedbackCard = ({ id, author, rating, like, unlike, comment }) => {
     setLikes(newLikes);
     setThumdown(true);
     try {
-      await fetch(`/api/reviews/like/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/reviews/like/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         // Optional: Send a payload telling the backend what actions were performed
@@ -32,7 +32,7 @@ const FeedbackCard = ({ id, author, rating, like, unlike, comment }) => {
     setUnLikes(newUnLikes);
     setThumup(true);
     try {
-      await fetch(`/api/reviews/unlike/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/reviews/unlike/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         // Optional: Send a payload telling the backend what actions were performed

@@ -2,7 +2,7 @@ import React from "react";
 import BottomBar from "../components/BottomBar";
 import CustomNav from "../CategoryComponents/CustomNav";
 import CategoryCards from "../CategoryComponents/CategoryCards";
-import { Link,useParams } from "react-router-dom";
+// import { Link,useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 const Categories = () => {
   // const {id} = useParams();

@@ -18,7 +18,7 @@ const Cart = () => {
           <h4>1000</h4>
         </div>
         <hr className=""/>
-        <Link className="bg-orange-500 py-2 mt-3 mb-1 text-center rounded-4xl text-lg font-bold text-white">
+        <Link to="/" className="bg-orange-500 py-2 mt-3 mb-1 text-center rounded-4xl text-lg font-bold text-white">
           Proceed To CheckOut
         </Link>
       </div>
