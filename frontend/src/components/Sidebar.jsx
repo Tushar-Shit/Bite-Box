@@ -57,11 +57,7 @@ function Sidebar({ onClick, showSide }) {
       });
       window.location.reload();
       onClick();
-      // navigate("/", {
-      //   state: {
-      //     message: data.message,
-      //   },
-      // });
+      
     } catch (err) {
       console.error(err);
     }
@@ -88,7 +84,7 @@ function Sidebar({ onClick, showSide }) {
         </div>
         <div className="h-[88%] w-full bg-orange-100 ">
           {user.username && (
-            <div className="h-fit w-full bg-white flex gap-3 items-center px-3 py-4 rounded-tr-full">
+            <div className="h-fit w-full bg-white flex gap-3 items-center px-3 py-4 rounded-tr-full shadow-[inset_-7px_9px_15px_0px_#9ca3af]">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHCBu2asBmYHBPRvht-u5d_alNH19z7VhL-w&s"
                 alt=""
@@ -100,6 +96,7 @@ function Sidebar({ onClick, showSide }) {
                 <p className="text-[14px] text-gray-500">{user.email}</p>
                 <Link
                   to="/userinfo"
+                  state={`${user.email}`}
                   className="bg-orange-600 p-1 rounded-md text-white text-sm absolute"
                 >
                   See Details

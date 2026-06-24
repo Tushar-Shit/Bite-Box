@@ -1,5 +1,7 @@
 import { SquarePen } from "lucide-react";
 import CustomNav from "../CategoryComponents/CustomNav";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 // support component
 const KeyValue = ({ keyName, value }) => {
   return (
@@ -11,7 +13,41 @@ const KeyValue = ({ keyName, value }) => {
     </div>
   );
 };
+
 const UserProfile = () => {
+  const location = useLocation();
+  const email = location.state || {};
+
+  const [user, setUser] = useState({});
+  const [joinDate, setJoinDate] = useState("");
+  useEffect(() => {
+    const getdata = async () => {
+      const res = await fetch(`/api/user?e=${email}`);
+      const { userData } = await res.json();
+      setUser(userData);
+      const dateObj = new Date(userData.createdAt);
+
+      const day = dateObj.getDate();
+      const month = dateObj.toLocaleDateString("en-US", { month: "long" }); // Correct syntax
+      const year = dateObj.getFullYear();
+
+      const suffix = (d) => {
+        if (d > 3 && d < 21) return "th";
+        switch (d % 10) {
+          case 1:
+            return "st";
+          case 2:
+            return "nd";
+          case 3:
+            return "rd";
+          default:
+            return "th";
+        }
+      };
+      setJoinDate(`${day}${suffix(day)} ${month} ${year}`);
+    };
+    getdata();
+  }, []);
   return (
     <div>
       <CustomNav text="Your Profile" />
@@ -24,14 +60,14 @@ const UserProfile = () => {
           />
         </div>
         <div className="flex flex-col justify-center items-center">
-          <p className="text-xl font-bold">Tushar Shit</p>
-          <p className="text-md font-normal text-zinc-500">Example@gmail.com</p>
-          <p className="text-sm text-zinc-400">Join on 12th June 2026</p>
+          <p className="text-xl font-bold">{user.username}</p>
+          <p className="text-md font-normal text-zinc-500">{user.email}</p>
+          <p className="text-sm text-zinc-400">Join on {joinDate}</p>
         </div>
       </div>
       <div className=" w-[90%] mt-5 p-5 justify-self-center flex flex-col gap-3 bg-zinc-200 rounded-lg">
-        <KeyValue keyName="FullName" value="Tushar Shit" />
-        <KeyValue keyName="Email" value="Example@gmail.com" />
+        <KeyValue keyName="FullName" value={user.username} />
+        <KeyValue keyName="Email" value={user.email} />
         <KeyValue keyName="Age" value="20" />
         <KeyValue keyName="Mobile No." value="1234567890" />
         <KeyValue keyName="Address 1" value="Park Street, Kolkata" />

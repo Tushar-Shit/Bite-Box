@@ -25,9 +25,13 @@ const images = {
     "data:image/jpeg;base64,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",
 };
 const Home = () => {
+  let sixTrending = [];
+  let fivePopular = [];
+  let tenRecomended = [];
   const [image, setImage] = useState({ heroImage: "" });
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
+  const [chefChoice, setChefChoice] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState({
@@ -38,11 +42,12 @@ const Home = () => {
     async function getData() {
       try {
         const res = await fetch("/api/");
-        const { data, trendingFood, popularFood } = await res.json();
+        const { data, trendingFood, popularFood, chefChoiceFood } =
+          await res.json();
         setImage(data.heroImage);
         setTrending(trendingFood);
         setPopular(popularFood);
-
+        setChefChoice(chefChoiceFood);
         const response = await fetch("/api/profile", {
           credentials: "include",
         });
@@ -70,6 +75,13 @@ const Home = () => {
       });
     }
   }, []);
+
+  if (trending && popular) {
+    sixTrending = trending.slice(0, 6);
+    fivePopular = popular.slice(0, 5);
+    // console.log(sixTrending.length);
+  }
+
   return (
     <>
       {message && <MessageBar message={message} />}
@@ -113,13 +125,14 @@ const Home = () => {
       <section className="mb-2 px-4">
         <Subheading title="Trending Now" className="ml-4" />
         <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
-          {trending.map((item) => (
+          {sixTrending.map((item) => (
             <SquareFc
               key={item._id}
               image={item.image}
               name={item.name}
               quantity={item.quantity}
               price={item.price}
+              unit={item.unit}
               category={item.Category}
               id={item._id}
             />
@@ -136,13 +149,14 @@ const Home = () => {
         <Subheadsee subHeading="Popular Meals" path="/type/Popular" />
         <div className="px-5">
           {/* <HorizontalFc para={para} item="Chiken Biriyani" image={image} /> */}
-          {popular.map((item) => (
+          {fivePopular.map((item) => (
             <HorizontalFc
               key={item._id}
               image={item.image}
               name={item.name}
               description={item.description}
               price={item.price}
+              unit={item.unit}
               id={item._id}
             />
           ))}
@@ -153,7 +167,7 @@ const Home = () => {
       <section className="mb-18 px-4">
         <Subheading title="Recomended for you" className="ml-4" />
         <div className=" flex justify-evenly flex-wrap items-center gap-5 py-3 scrollbar-none">
-          {trending.map((item) => (
+          {chefChoice.map((item) => (
             <SquareFc
               key={item._id}
               image={item.image}
@@ -161,10 +175,11 @@ const Home = () => {
               quantity={item.quantity}
               price={item.price}
               category={item.Category}
+              unit={item.unit}
               id={item._id}
             />
           ))}
-          <SeeMore path="/recommended" />
+          <SeeMore path="/recommended" text="See More" />
         </div>
       </section>
 

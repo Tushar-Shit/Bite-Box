@@ -2,7 +2,7 @@ import { ShoppingBag, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
-const HorizontalFC = ({ name,price, image, description, id }) => {
+const HorizontalFC = ({ name,price, image, description,unit,id }) => {
   
   
  
@@ -35,6 +35,7 @@ const HorizontalFC = ({ name,price, image, description, id }) => {
           <div className="flex gap-2">
             <span>
               <b>₹{price}</b>
+              <span>{unit}</span>
             </span>
             <span>🔥 4.3</span>
           </div>

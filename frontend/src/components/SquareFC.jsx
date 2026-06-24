@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
-const SquareFC = ({ image, name, quantity, price,category,id}) => {
+const SquareFC = ({ image, name, quantity, price,category,unit,id}) => {
 // console.log(category+"  "+id);
   return (
     <Link to={`/meal/${id}`}
@@ -22,18 +22,18 @@ const SquareFC = ({ image, name, quantity, price,category,id}) => {
         <Heartclick />
       </div>
 
-      <div>
+      <div className="h-[60%]">
         <img
           src={image}
           alt={name}
-          className=" w-full max-h-37 object-contain rounded-t-md"
+          className=" h-full w-full object-cover rounded-t-md"
         />
       </div>
       <div className="flex flex-col p-2 pl-3 text-md">
         <p className="font-bold truncate">{name}</p>
-        <p className="">{quantity} /plate/piece</p>
+        <p className="">{quantity} {unit}</p>
         <div className="flex justify-between">
-          <p className="font-bold ">{price}</p>
+          <p className="font-bold ">₹{price}</p>
           <span className="mr-3">🔥 4.3</span>
         </div>
       </div>

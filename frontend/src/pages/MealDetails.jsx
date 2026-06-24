@@ -116,7 +116,7 @@ const MealDetails = () => {
         {/* Price & rating */}
         <div className="flex gap-1 items-baseline">
           <span className="text-xl font-semibold">₹{food.price}</span>
-          <span className="text-zinc-500 text-sm">/Unit</span>
+          <span className="text-zinc-500 text-sm">/{food.unit}</span>
           <span className="ml-2 text-amber-500 font-bold">★ {foodRate}</span>
         </div>
       </div>

@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 7000;
+const port = process.env.PORT || 7000;
 require('dotenv').config();
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -24,8 +24,8 @@ mongoose.connect(process.env.DB_URL)
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: ["http://localhost:5173","bite-box-weld.vercel.app"]
+    ,credentials: true,
   })
 );
 app.use(express.json());
@@ -40,12 +40,14 @@ app.get("/", async (req, res) => {
   };
   const trendingFood = await FoodItem.find({ tag: "Trending" });
   const popularFood = await FoodItem.find({ tag: "Popular" });
+  const chefChoiceFood = await FoodItem.find({ tag: "Chef's Choice" });
   // console.log(trendingFood);
 
   const everything = {
     data,
     trendingFood,
     popularFood,
+    chefChoiceFood
   }
   res.json(everything);
 });
@@ -181,7 +183,7 @@ app.post("/login", async (req, res) => {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
-    const messageName = existingUser.username.split(" ");
+  const messageName = existingUser.username.split(" ");
   res.json({
     message: `Welcome Back ${messageName[0]}!`
   });
@@ -193,6 +195,14 @@ app.post("/logout", async (req, res) => {
 
   res.json({
     message: "Logged out successfully"
+  });
+})
+
+app.get("/user", async (req, res) => {
+  const {e} = req.query;
+  const userData=await User.findOne({email:e});
+  res.json({
+    userData
   });
 })
 app.listen(port, () => {

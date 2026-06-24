@@ -47,6 +47,8 @@ const ItemList = () => {
             key={item._id} // MongoDB unique ID required for React loops
             id={item._id}
             name={item.name}
+            quantity={item.quantity}
+            unit={item.unit}
             price={item.price}
             image={item.image}
             path={`/categories/${items}/${item._id}`}
