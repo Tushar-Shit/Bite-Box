@@ -41,7 +41,7 @@ const Home = () => {
   useEffect(() => {
     async function getData() {
       try {
-        const res = await fetch("/api/");
+        const res = await fetch(import.meta.env.VITE_API_URL);
         const { data, trendingFood, popularFood, chefChoiceFood } =
           await res.json();
         setImage(data.heroImage);
