@@ -48,7 +48,7 @@ const Home = () => {
         setTrending(trendingFood);
         setPopular(popularFood);
         setChefChoice(chefChoiceFood);
-        const response = await fetch("/api/profile", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
           credentials: "include",
         });
         const userData = await response.json();
