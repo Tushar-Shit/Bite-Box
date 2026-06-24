@@ -28,7 +28,7 @@ const Home = () => {
   let sixTrending = [];
   let fivePopular = [];
   let tenRecomended = [];
-  const [image, setImage] = useState({ heroImage: "" });
+  const [image, setImage] = useState(" ");
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
   const [chefChoice, setChefChoice] = useState([]);
@@ -44,7 +44,7 @@ const Home = () => {
         const res = await fetch(`${import.meta.env.VITE_API_URL}`);
         const { data, trendingFood, popularFood, chefChoiceFood } =
           await res.json();
-        setImage(data.heroImage);
+        setImage(data);     
         setTrending(trendingFood);
         setPopular(popularFood);
         setChefChoice(chefChoiceFood);
@@ -59,7 +59,6 @@ const Home = () => {
     }
     getData();
   }, []);
-
   const [showSide, setShowSide] = useState(false);
   const showSideBar = () => {
     setShowSide(!showSide);

@@ -26,7 +26,7 @@ app.use(
   cors({
     origin: ["http://localhost:5173",
       "https://bite-box-weld.vercel.app"]
-    ,credentials: true,
+    , credentials: true,
   })
 );
 app.use(express.json());
@@ -34,11 +34,8 @@ app.use(cookieParser());
 
 
 app.get("/", async (req, res) => {
-  const data = {
-    heroImage:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s",
-    text: "Sink your teeth into the juiciest, flavor-packed bite your cravings have been waiting for.",
-  };
+  const data =
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s"
   const trendingFood = await FoodItem.find({ tag: "Trending" });
   const popularFood = await FoodItem.find({ tag: "Popular" });
   const chefChoiceFood = await FoodItem.find({ tag: "Chef's Choice" });
@@ -145,8 +142,8 @@ app.post("/signup", async (req, res) => {
     );
     res.cookie("token", token, {
       httpOnly: true,
-      secure:true,
-      sameSite:"none",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
     const messageName = newUser.username.split(" ");
@@ -184,8 +181,8 @@ app.post("/login", async (req, res) => {
   );
   res.cookie("token", token, {
     httpOnly: true,
-    secure:true,
-    sameSite:"none",
+    secure: true,
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
   const messageName = existingUser.username.split(" ");
@@ -204,8 +201,8 @@ app.post("/logout", async (req, res) => {
 })
 
 app.get("/user", async (req, res) => {
-  const {e} = req.query;
-  const userData=await User.findOne({email:e});
+  const { e } = req.query;
+  const userData = await User.findOne({ email: e });
   res.json({
     userData
   });
