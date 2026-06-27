@@ -29,7 +29,7 @@ function Sidebar({ onClick, showSide }) {
   useEffect(() => {
     const profile = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
           credentials: "include",
         });
 
@@ -46,7 +46,7 @@ function Sidebar({ onClick, showSide }) {
 
   const logout = async () => {
     try {
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });

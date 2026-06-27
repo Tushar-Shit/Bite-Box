@@ -29,3 +29,4 @@ const Cart = () => {
 };
 
 export default Cart;
+//everything is structured till 27.6.26

@@ -11,17 +11,10 @@ const MealDetails = () => {
   // Catching food data and reviews data
   const [food, setFood] = useState({});
   const [allReviews, setAllReviews] = useState([]);
-  const { items, id } = useParams();
-  // console.log(items, id);
+  const { id } = useParams();
   useEffect(() => {
     async function getData() {
       try {
-        if (items && id) {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/categories/${items}/${id}`);
-          const { foodItem, reviews } = await res.json();
-          setFood(foodItem);
-          setAllReviews(reviews);
-        }
         const res = await fetch(`${import.meta.env.VITE_API_URL}/meal/${id}`);
         const { foodItem, reviews } = await res.json();
         setFood(foodItem);
@@ -51,7 +44,6 @@ const MealDetails = () => {
   // Quantity and price calculation
   const [quantity, setQuantity] = useState(1);
   const [finalPrice, setFinalPrice] = useState(0);
-
   useEffect(() => {
     if (food.price) {
       // Synchronize the price when data initially loads or resets
@@ -62,7 +54,6 @@ const MealDetails = () => {
   const quantityIncrease = () => {
     setQuantity((prev) => prev + 1);
   };
-
   const quantityDecrease = () => {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
@@ -73,10 +64,42 @@ const MealDetails = () => {
   // Safeguard against missing or undefined description strings
   const words = food.description ? food.description.split(" ") : [];
   const isLongDescription = words.length > 6; // Set to 15 words limit as requested
-
   const truncatedDescription = isLongDescription
     ? words.slice(0, 6).join(" ")
     : food.description;
+
+  const [hello, setHello] = useState(false);
+  useEffect(() => {
+    setHello(!hello);
+  }, []);
+  const handle = async (e) => {
+    e.preventDefault(); // Prevent Link navigation
+    e.stopPropagation(); // Stop event bubbling
+
+    if (!id) return;
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            foodId: id,
+          }),
+        },
+      );
+
+      const { message } = await response.json();
+      console.log(message);
+      setHello((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="Meal-Page h-full relative ">
@@ -84,18 +107,25 @@ const MealDetails = () => {
       <CustomNav text="Meal Details" />
 
       {/* Main food image */}
-      <div className="w-[83vw] h-[30vh] rounded-lg m-auto my-5">
+      <div className="w-[83vw] h-[30vh] rounded-lg m-auto my-5 relative">
         <img
           src={food.image}
           alt=""
           className="w-full h-full object-cover rounded-lg"
         />
+        <div className="absolute top-0 right-0 rounded-full bg-white p-0.5">
+          <Heartclick onClick={handle} isFav={hello} />
+        </div>
       </div>
 
-      {/* Title & quantity */}
+      {/* the buying informations (title, quantity, price) */}
       <div className="h-fit px-6 mb-3">
-        <div className="flex justify-between items-center ">
-          <span className="text-2xl font-bold">{food.name}</span>
+        <span className="text-2xl font-bold">{food.name}</span>
+        <div className="flex justify-between items-center">
+          <span className="text-xl font-semibold">
+            {food.quantity} {food.unit}
+          </span>
+          {/* quantity component */}
           <div className="flex justify-evenly gap-2 items-center bg-zinc-300 rounded-2xl p-1">
             <button
               onClick={quantityDecrease}
@@ -116,7 +146,6 @@ const MealDetails = () => {
         {/* Price & rating */}
         <div className="flex gap-1 items-baseline">
           <span className="text-xl font-semibold">₹{food.price}</span>
-          <span className="text-zinc-500 text-sm">/{food.unit}</span>
           <span className="ml-2 text-amber-500 font-bold">★ {foodRate}</span>
         </div>
       </div>

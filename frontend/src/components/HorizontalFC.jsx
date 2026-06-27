@@ -1,7 +1,7 @@
 import { ShoppingBag, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 const HorizontalFC = ({
   name,
   quantity,
@@ -10,35 +10,40 @@ const HorizontalFC = ({
   description,
   unit,
   id,
+  isFav,
 }) => {
-  const [state, setState] = useState(false);
-  const fill = () => {
-    state ? setState(false) : setState(true);
-  };
+  const [hello, setHello] = useState(isFav);
+  useEffect(() => {
+    setHello(isFav);
+  }, [isFav]);
+  const handle = async (e) => {
+    e.preventDefault(); // Prevent Link navigation
+    e.stopPropagation(); // Stop event bubbling
 
-  async function handle(e) {
-    e.preventDefault();
-    e.stopPropagation();
     if (!id) return;
-    // try {
-    //   const response = await fetch(
-    //     `${import.meta.env.VITE_API_URL}/user/addfav`,
-    //     {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({
-    //         foodId: id,
-    //       }),
-    //     },
-    //   );
-    //   const {message} = await response.json();
-    //   console.log(message);
-    // } catch (e) {
-    //   console.log(e);
-    // }
-  }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            foodId: id,
+          }),
+        },
+      );
+
+      const { message } = await response.json();
+      console.log(message);
+      setHello((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Link
@@ -59,7 +64,7 @@ const HorizontalFC = ({
           <span className="text-md font ">
             <b>{name}</b>
           </span>
-          <Heartclick onClick={handle} state={state} fill={fill} />
+          <Heartclick onClick={handle} isFav={hello} />
         </div>
 
         {/* short description  */}

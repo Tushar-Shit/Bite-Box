@@ -22,8 +22,8 @@ const userSchema = new mongoose.Schema(
     },
     favourites: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "FoodItems",
-    }],
+      ref: "foodItem",
+    },],
   },
 
   {
@@ -31,4 +31,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+
+const Users = mongoose.model("user", userSchema);
+module.exports = Users;

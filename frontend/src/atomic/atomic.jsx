@@ -30,8 +30,9 @@ const SeeMore = ({ text, onClick }) => {
 };
 
 //heart icon
-const Heartclick = ({ onClick, state, fill }) => {
-  return state ? (
+const Heartclick = ({onClick, isFav}) => {
+// console.log("isFav value from heart component", isFav);
+  return isFav ? (
     <Heart
       fill="red"
       size={24}
@@ -39,7 +40,8 @@ const Heartclick = ({ onClick, state, fill }) => {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (fill) fill();
+        // fill();
+        onClick(e);
       }}
     />
   ) : (
@@ -49,8 +51,8 @@ const Heartclick = ({ onClick, state, fill }) => {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (fill) fill();
-        if (onClick) onClick(e);
+        // fill();
+        onClick(e);
       }}
     />
   );

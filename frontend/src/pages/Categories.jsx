@@ -2,19 +2,16 @@ import React from "react";
 import BottomBar from "../components/BottomBar";
 import CustomNav from "../CategoryComponents/CustomNav";
 import CategoryCards from "../CategoryComponents/CategoryCards";
-// import { Link,useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 const Categories = () => {
-  // const {id} = useParams();
-  // console.log();
-  
+  //extract all categories from DB
   const [allData, setAllData] = useState([]);
   useEffect(() => {
     async function getData() {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/categories`);
         const data = await res.json();
-        // console.log(data);
         setAllData(data);
       } catch (err) {
         console.error(err);
@@ -43,3 +40,4 @@ const Categories = () => {
 };
 
 export default Categories;
+//everything is structured till 27.6.26

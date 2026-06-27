@@ -4,33 +4,41 @@ import CustomNav from "../CategoryComponents/CustomNav";
 import HorizontalFC from "../components/HorizontalFC";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-// import FoodItems from "../../../backend/models/foodItem";
-const para =
-  "Chicken Biryani is an aromatic, flavorful South Asian dish. It features tender, spiced, marinated chicsdrfeg sfrgvd gxhsys";
-const data = {
-  heroImage:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSzvMyociTNf4UqFHzh5Iu5503ne7cfJkLbg&s",
-  text: "Sink your teeth into the juiciest, flavor-packed bite your cravings have been waiting for.",
-};
+// import { set } from "mongoose";
 
 const ItemList = () => {
-  const [fooddata, setFoodData] = useState([]);
+  //if user comes from categories page
   const { items } = useParams();
+  //if user expand treding, popular, recomandation....
   const { anything } = useParams();
 
+  //fetch all food data within a category or tag
+  const [fooddata, setFoodData] = useState([]);
+  const [favFoods, setFavFoods] = useState([]);
   useEffect(() => {
     async function getData() {
       try {
+        //fetch standard categories
         if (items) {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/categories/${items}`);
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/categories/${items}`,
+          );
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }
+        //fetch tag categories
         if (anything) {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/type/${encodeURIComponent(anything)}`);
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/tag/${encodeURIComponent(anything)}`,
+          );
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/user/favourite`, {
+          credentials: "include",
+        });
+        const { favourites } = await res.json();
+        setFavFoods(favourites);
       } catch (err) {
         console.error(err);
       }
@@ -40,19 +48,19 @@ const ItemList = () => {
 
   return (
     <>
-      <CustomNav text={items?`All ${items} list`:`All ${anything} list`} />
+      <CustomNav text={items ? `All ${items} list` : `All ${anything} list`} />
       <div className="p-4 flex flex-col mb-18">
         {fooddata.map((item) => (
           <HorizontalFC
             key={item._id} // MongoDB unique ID required for React loops
-            id={item._id}
-            name={item.name}
-            quantity={item.quantity}
-            unit={item.unit}
-            price={item.price}
             image={item.image}
-            path={`/categories/${items}/${item._id}`}
+            name={item.name}
             description={item.description}
+            quantity={item.quantity}
+            price={item.price}
+            unit={item.unit}
+            id={item._id}
+            isFav={favFoods.some((food) => food._id === item._id)}
           />
         ))}
       </div>
@@ -62,3 +70,4 @@ const ItemList = () => {
 };
 
 export default ItemList;
+//everything is structured till 27.6.26

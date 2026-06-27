@@ -26,7 +26,7 @@ const App = () => {
         <Route path="/favorite" element={<Favorite />} />
         <Route path="/categories/:items" element={<ItemList />} />
         <Route path="/meal/:id" element={<MealDetails />} />
-        <Route path="/type/:anything" element={<ItemList />} />
+        <Route path="/tag/:anything" element={<ItemList />} />
         <Route path="/cart" element={<Cart/>} />
         <Route path="/categories/:items/:id" element={<MealDetails />} />
       </Routes>
