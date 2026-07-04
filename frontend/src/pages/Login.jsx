@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
 function Login() {
   const navigate = useNavigate();
@@ -19,18 +20,20 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
         },
-        credentials: "include",
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -50,6 +53,10 @@ function Login() {
 
   return (
     <>
+      <Helmet>
+        <title>BiteBox | Login</title>
+      </Helmet>
+
       <CustomNav text="Login" path="/" />
       <div className="h-[90vh] flex items-center justify-center bg-gray-100">
         <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">

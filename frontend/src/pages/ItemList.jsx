@@ -3,6 +3,7 @@ import BottomBar from "../components/BottomBar";
 import CustomNav from "../CategoryComponents/CustomNav";
 import HorizontalFC from "../components/HorizontalFC";
 import { useParams } from "react-router-dom";
+import {Helmet} from "react-helmet-async";
 import { useEffect, useState } from "react";
 // import { set } from "mongoose";
 
@@ -34,9 +35,12 @@ const ItemList = () => {
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/user/favourite`, {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          {
+            credentials: "include",
+          },
+        );
         const { favourites } = await res.json();
         setFavFoods(favourites);
       } catch (err) {
@@ -48,6 +52,9 @@ const ItemList = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{items ? `${items} | Category` : `${anything} | Category`}</title>
+      </Helmet>
       <CustomNav text={items ? `All ${items} list` : `All ${anything} list`} />
       <div className="p-4 flex flex-col mb-18">
         {fooddata.map((item) => (

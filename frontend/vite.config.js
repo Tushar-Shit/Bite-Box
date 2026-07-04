@@ -7,9 +7,10 @@ export default defineConfig({
   tailwindcss(),
   ],
   server: {
+    host:true,
     proxy: {
       '/api': {
-        target: 'http://localhost:7000',
+        target: 'http://10.23.245.131:7000',
         changeOrigin: true,
         secure: false,
          rewrite: (path) => path.replace(/^\/api/, ''),
@@ -17,4 +18,3 @@ export default defineConfig({
     }
   }
 })
-

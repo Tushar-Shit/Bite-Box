@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
 function Signup() {
   const navigate = useNavigate();
@@ -26,18 +27,21 @@ function Signup() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
-        method: "POST",
-        credentials:"include",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/signup`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+          }),
         },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -58,6 +62,9 @@ function Signup() {
 
   return (
     <>
+      <Helmet>
+        <title>BiteBox | Signup</title>
+      </Helmet>
       <CustomNav text="Signup" path="/" />
 
       <div className="h-[86vh] flex items-center justify-center bg-gray-100">

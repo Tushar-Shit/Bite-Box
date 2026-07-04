@@ -1,4 +1,5 @@
 import { SquarePen } from "lucide-react";
+import {Helmet} from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -49,7 +50,11 @@ const UserProfile = () => {
     getdata();
   }, []);
   return (
+    
     <div>
+      <Helmet>
+        <title>BiteBox | Your Profile</title>
+      </Helmet>
       <CustomNav text="Your Profile" />
       <div>
         <div className="mt-5 flex items-center justify-center">

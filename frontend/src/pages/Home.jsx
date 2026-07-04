@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import { Helmet } from "react-helmet-async";
 import HeroImage from "../components/HeroImage";
 import Subheadsee from "../atomic/Subheading";
 import Category from "../components/Categories";
@@ -64,9 +65,12 @@ const Home = () => {
         setUser(userData);
 
         //extract fav foods for icon state
-        const data = await fetch(`${import.meta.env.VITE_API_URL}/user/favourite`, {
-          credentials: "include",
-        });
+        const data = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          {
+            credentials: "include",
+          },
+        );
         const { favourites } = await data.json();
         setFavFoods(favourites);
       } catch (err) {
@@ -102,6 +106,10 @@ const Home = () => {
 
   return (
     <>
+      <Helmet>
+        <title>BiteBox | The Home of Deliciousness</title>
+      </Helmet>
+
       {/* satisfaction message component */}
       {message && <MessageBar message={message} />}
 

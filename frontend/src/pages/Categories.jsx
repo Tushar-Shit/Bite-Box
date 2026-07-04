@@ -1,4 +1,4 @@
-import React from "react";
+import {Helmet} from "react-helmet-async";
 import BottomBar from "../components/BottomBar";
 import CustomNav from "../CategoryComponents/CustomNav";
 import CategoryCards from "../CategoryComponents/CategoryCards";
@@ -21,6 +21,9 @@ const Categories = () => {
   }, []);
   return (
     <>
+    <Helmet>
+      <title>BiteBox | Categories</title>
+    </Helmet>
       <CustomNav text="Categories" path="/" />
 
       <div className="flex flex-wrap justify-center gap-5 mt-5 mb-23">
