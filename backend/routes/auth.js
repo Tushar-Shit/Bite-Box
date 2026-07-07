@@ -6,9 +6,9 @@ const Reviews = require("../models/reviews");
 const Users = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const isProduction = process.env.PROJECT_MODE === "production";
 
-
-
+// console.log(process.env.PROJECT_MODE);
 
 router.post("/signup", async (req, res) => {
   // console.log("tygfhbcvfggtredsxzaw");
@@ -40,9 +40,9 @@ router.post("/signup", async (req, res) => {
     );
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     const messageName = newUser.username.split(" ");
     res.status(201).json({
@@ -78,9 +78,9 @@ router.post("/login", async (req, res) => {
   );
   res.cookie("token", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 7 * 24 * 60 * 60 * 1000
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   const messageName = existingUser.username.split(" ");
   res.json({
@@ -92,17 +92,13 @@ router.post("/logout", async (req, res) => {
   console.log("enter here");
   res.clearCookie("token", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
 
   res.json({
     message: "Logged out successfully"
   });
 })
-
-
-
-
 
 module.exports = router;

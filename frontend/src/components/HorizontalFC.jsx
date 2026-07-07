@@ -1,4 +1,4 @@
-import { ShoppingBag, Search, UserRound, Component } from "lucide-react";
+import { ShoppingCart, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -12,14 +12,27 @@ const HorizontalFC = ({
   id,
   isFav,
 }) => {
-  const [hello, setHello] = useState(isFav);
+  //extract cart items
+  const [inCart, setInCart] = useState(false);
   useEffect(() => {
-    setHello(isFav);
+    async function getCart() {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        credentials: "include",
+      });
+      const item = await data.json();
+      if (item.some((i) => i.foodId._id === id)) setInCart(!inCart);
+    }
+    getCart();
+  }, []);
+
+  //handling favourite item(add, remove)
+  const [fav, setFav] = useState(isFav);
+  useEffect(() => {
+    setFav(isFav);
   }, [isFav]);
   const handle = async (e) => {
     e.preventDefault(); // Prevent Link navigation
     e.stopPropagation(); // Stop event bubbling
-
     if (!id) return;
 
     try {
@@ -38,10 +51,41 @@ const HorizontalFC = ({
       );
 
       const { message } = await response.json();
-      console.log(message);
-      setHello((prev) => !prev);
+      setFav((prev) => !prev);
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  //handling cart item (add, remove)
+  const addCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          FId: id,
+          FQuantity: quantity,
+          FPrice: price,
+          command: "add/dlt", //command need for add and delete to separate updation
+        }),
+      });
+      const { message } = await res.json();
+      if (
+        message.trim() === "Already in Cart" ||
+        message.trim() === "Added to Cart"
+      )
+        setInCart(!inCart);
+      // if (message.trim() === "Cart is Full") setInCart(!inCart);
+      else setInCart(!inCart);
+      console.log(message);
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -64,7 +108,7 @@ const HorizontalFC = ({
           <span className="text-md font ">
             <b>{name}</b>
           </span>
-          <Heartclick onClick={handle} isFav={hello} />
+          <Heartclick onClick={handle} isFav={fav} />
         </div>
 
         {/* short description  */}
@@ -80,8 +124,15 @@ const HorizontalFC = ({
             </span>
             <span>🔥 4.3</span>
           </div>
-          <button className="bg-zinc-100 p-1 rounded-full absolute -right-1 -bottom-1">
-            <ShoppingBag strokeWidth={1.5} />
+          <button
+            className="bg-zinc-100 p-1 rounded-full absolute -right-1 -bottom-1"
+            onClick={addCart}
+          >
+            {inCart ? (
+              <ShoppingCart fill="black" />
+            ) : (
+              <ShoppingCart strokeWidth={1.3} />
+            )}
           </button>
         </div>
       </div>

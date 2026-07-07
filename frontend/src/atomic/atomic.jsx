@@ -31,7 +31,8 @@ const SeeMore = ({ text, onClick }) => {
 
 //heart icon
 const Heartclick = ({onClick, isFav}) => {
-// console.log("isFav value from heart component", isFav);
+  // console.log(isFav);
+  
   return isFav ? (
     <Heart
       fill="red"

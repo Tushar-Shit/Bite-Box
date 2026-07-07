@@ -68,14 +68,39 @@ const MealDetails = () => {
     ? words.slice(0, 6).join(" ")
     : food.description;
 
-  const [hello, setHello] = useState(false);
+  //checking is it in favourite and cart or not
+  const [state, setState] = useState(false);
+  const [inCart, setInCart] = useState(false);
   useEffect(() => {
-    setHello(!hello);
-  }, []);
+    async function getfav() {
+      if (!id) return;
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          {
+            credentials: "include",
+          },
+        );
+        const { favourites } = await response.json();
+        const inival = favourites.some((item) => item._id === id);
+        setState(inival);
+
+        const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+          credentials: "include",
+        });
+        const item = await data.json();
+        if (item.some((i) => i.foodId._id === id)) setInCart(!inCart);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    getfav();
+  }, [id]);
+
+  //handle favourite items (add, remove)
   const handle = async (e) => {
     e.preventDefault(); // Prevent Link navigation
     e.stopPropagation(); // Stop event bubbling
-
     if (!id) return;
 
     try {
@@ -95,9 +120,40 @@ const MealDetails = () => {
 
       const { message } = await response.json();
       console.log(message);
-      setHello((prev) => !prev);
+      setState((prev) => !prev);
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  //handle cart item (add, remove)
+  const addCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          FId: food._id,
+          FQuantity: food.quantity,
+          FPrice: food.price,
+          command: "add/dlt", //command need for add and delete to separate updation
+        }),
+      });
+      const { message } = await res.json();
+      if (
+        message.trim() === "Already in Cart" ||
+        message.trim() === "Added to Cart"
+      )
+        setInCart(!inCart);
+      else setInCart(!inCart);
+      console.log(message);
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -114,7 +170,7 @@ const MealDetails = () => {
           className="w-full h-full object-cover rounded-lg"
         />
         <div className="absolute top-0 right-0 rounded-full bg-white p-0.5">
-          <Heartclick onClick={handle} isFav={hello} />
+          <Heartclick onClick={handle} isFav={state} />
         </div>
       </div>
 
@@ -195,7 +251,7 @@ const MealDetails = () => {
 
       {/* Bottom nav (add to cart & buy) */}
       <div className="fixed bottom-0 bg-zinc-100 left-0 w-full z-50">
-        <BottomActionBar price={finalPrice} />
+        <BottomActionBar onClick={addCart} price={finalPrice} state={inCart} />
       </div>
     </div>
   );

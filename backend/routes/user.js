@@ -52,6 +52,7 @@ router.get("/profile", async (req, res) => {
 });
 
 router.post("/addfav", async (req, res) => {
+    // console.log("into addfav block");
     //extract food item id
     const { foodId } = req.body;
     //extract the token stored in cookie
