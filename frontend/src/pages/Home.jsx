@@ -4,6 +4,7 @@ import HeroImage from "../components/HeroImage";
 import Subheadsee from "../atomic/Subheading";
 import Category from "../components/Categories";
 import HorizontalFc from "../components/HorizontalFC";
+import HorizontalRounded from "../components/HorizontalRounded";
 import SquareFc from "../components/SquareFC";
 import BottomBar from "../components/BottomBar";
 import Sidebar from "../components/Sidebar";
@@ -29,13 +30,17 @@ const images = {
 //starting of home component
 const Home = () => {
   //fixed number of types
-  let sixTrending = [];
-  let fivePopular = [];
-  let tenRecomended = [];
+  let tenTrending = [];
+  let fourPopular = [];
+  let fourRecomended = [];
+  let eightBestSeller = [];
+  let fiveChefChoice = [];
 
   //variables for type of foods and user
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
+  const [recommended, setRecommended] = useState([]);
+  const [bestSeller, setBestSeller] = useState([]);
   const [chefChoice, setChefChoice] = useState([]);
   const [favFoods, setFavFoods] = useState([]);
   const [user, setUser] = useState({
@@ -49,11 +54,18 @@ const Home = () => {
       try {
         //fetch all food data
         const res = await fetch(`${import.meta.env.VITE_API_URL}`);
-        const { trendingFood, popularFood, chefChoiceFood } = await res.json();
+        const {
+          trendingFood,
+          popularFood,
+          recommendedFood,
+          bestSellerFood,
+          chefChoiceFood,
+        } = await res.json();
         setTrending(trendingFood);
         setPopular(popularFood);
+        setRecommended(recommendedFood);
+        setBestSeller(bestSellerFood);
         setChefChoice(chefChoiceFood);
-
         //fetch user data
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/user/profile`,
@@ -81,9 +93,12 @@ const Home = () => {
   }, []);
 
   //set type of foods with exact number
-  if (trending && popular) {
-    sixTrending = trending.slice(0, 6);
-    fivePopular = popular.slice(0, 5);
+  if (trending && popular && recommended && bestSeller && chefChoice) {
+    tenTrending = trending.slice(0, 10);
+    fourPopular = popular.slice(0, 4);
+    fourRecomended = recommended.slice(0, 4);
+    eightBestSeller = bestSeller.slice(0,8);
+    fiveChefChoice = chefChoice.slice(0, 4);
   }
 
   const [showSide, setShowSide] = useState(false); //sidebar logic
@@ -105,7 +120,7 @@ const Home = () => {
   }, []);
 
   return (
-    <>
+    <div>
       <Helmet>
         <title>BiteBox | The Home of Deliciousness</title>
       </Helmet>
@@ -154,7 +169,7 @@ const Home = () => {
       <section className="mb-2 px-4">
         <Subheading title="Trending Now" className="ml-4" />
         <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
-          {sixTrending.map((item) => (
+          {tenTrending.map((item) => (
             <SquareFc
               key={item._id}
               image={item.image}
@@ -167,7 +182,7 @@ const Home = () => {
               isFav={favFoods.some((food) => food._id === item._id)}
             />
           ))}
-          <Link to={`/tag/Trending`}>
+          <Link to={`/tag/trending`}>
             <SeeMore text="See More" />
           </Link>
         </div>
@@ -175,9 +190,9 @@ const Home = () => {
 
       {/* Popular meals section  */}
       <section className="mb-5">
-        <Subheadsee subHeading="Popular Meals" path="/tag/Popular" />
+        <Subheadsee subHeading="Popular Meals" path="/tag/popular" />
         <div className="px-5">
-          {fivePopular.map((item) => (
+          {fourPopular.map((item) => (
             <HorizontalFc
               key={item._id}
               image={item.image}
@@ -193,11 +208,44 @@ const Home = () => {
         </div>
       </section>
 
-      {/* recomended for you*/}
-      <section className="mb-18 px-4">
-        <Subheading title="Recomended for you" className="ml-4" />
-        <div className=" flex justify-evenly flex-wrap items-center gap-5 py-3 scrollbar-none">
-          {chefChoice.map((item) => (
+      {/* best seller */}
+      <section className="mb-2 px-4">
+        <Subheading title="Best Seller" className="ml-4" />
+        <div className=" flex items-center overflow-x-auto gap-3 py-3 scrollbar-none">
+          {eightBestSeller.map((item) => (
+            <HorizontalRounded
+            //   key={item._id}
+            //   image={item.image}
+            //   name={item.name}
+            //   quantity={item.quantity}
+            //   price={item.price}
+            //   unit={item.unit}
+            //   category={item.Category}
+            //   id={item._id}
+            //   isFav={favFoods.some((food) => food._id === item._id)}
+            // />
+
+
+            key={item._id}
+            id={item._id}
+            image={item.image}
+            name={item.name}
+            quantity={item.quantity}
+            unit={item.unit}
+            price={item.price}
+           />
+          ))}
+          <Link to={`/tag/bestseller`}>
+            <SeeMore text="See More" />
+          </Link>
+        </div>
+      </section>
+
+      {/* recommended for you*/}
+      <section className="">
+        <Subheadsee subHeading="Recommended for you" path="/tag/recommended" />
+        <div className="px-4 flex justify-evenly flex-wrap items-center gap-5 scrollbar-none">
+          {fourRecomended.map((item) => (
             <SquareFc
               key={item._id}
               image={item.image}
@@ -210,13 +258,31 @@ const Home = () => {
               isFav={favFoods.some((food) => food._id === item._id)}
             />
           ))}
-          <SeeMore path="/recommended" text="See More" />
         </div>
       </section>
 
-      {/* bottom bar  */}
-      <BottomBar />
-    </>
+      {/* chef choice */}
+      <section className="pb-2">
+        <Subheadsee subHeading="Chef's Choice" path="/tag/chefchoice" />
+        <div className="px-5 ">
+          {fiveChefChoice.map((item) => (
+            <HorizontalFc
+              key={item._id}
+              image={item.image}
+              name={item.name}
+              description={item.description}
+              quantity={item.quantity}
+              price={item.price}
+              unit={item.unit}
+              id={item._id}
+              isFav={favFoods.some((food) => food._id === item._id)}
+            />
+          ))}
+        </div>
+      </section>
+      {/* bottom bar  */}     
+        <BottomBar />
+    </div>
   );
 };
 

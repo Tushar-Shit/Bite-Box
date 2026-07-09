@@ -7,7 +7,7 @@ const foodData = [
         description: "Tender chicken pieces cooked in a rich buttery tomato gravy with aromatic spices.",
         image: "https://p7.hiclipart.com/preview/11/813/203/vindaloo-butter-chicken-tandoori-chicken-korma-pakistani-cuisine-butter-chicken-thumbnail.jpg",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chicken Biryani",
@@ -17,7 +17,7 @@ const foodData = [
         description: "Fragrant basmati rice layered with spicy chicken and slow-cooked to perfection.",
         image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeVZzWuFo5q2YT3Q1POSBZ66CJIDujwSK-dA&s",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Chicken Korma",
@@ -27,7 +27,7 @@ const foodData = [
         description: "Creamy chicken curry prepared with yogurt, nuts, and mild aromatic spices.",
         image: "https://img.magnific.com/free-psd/delicious-spicy-lamb-curry-metal-bowl_632498-26023.jpg?semt=ais_hybrid&w=740&q=80",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chicken Tikka",
@@ -37,7 +37,7 @@ const foodData = [
         description: "Juicy chicken cubes marinated in spices and grilled until smoky and tender.",
         image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9uZe3vAQm6NVZE9s5rk95Cw-5vlDbeAhkkg&s",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chicken Curry",
@@ -47,7 +47,7 @@ const foodData = [
         description: "Traditional chicken curry cooked with onions, tomatoes, and Indian spices.",
         image: "https://png.pngtree.com/png-vector/20241110/ourlarge/pngtree-authentic-chicken-curry-with-spices-png-image_14348917.png",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Chicken Fried Rice",
@@ -57,7 +57,7 @@ const foodData = [
         description: "Stir-fried rice tossed with chicken, vegetables, and flavorful seasonings.",
         image: "https://img.pikbest.com/png-images/20250111/indonesian-egg-fried-rice-png-illustration-_11369669.png!sw800",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chicken Manchurian",
@@ -77,7 +77,7 @@ const foodData = [
         description: "Crunchy chicken wings marinated with spices and deep-fried until golden.",
         image: "https://png.pngtree.com/png-vector/20260409/ourlarge/pngtree-delicious-chicken-lollipop-appetizer-with-chili-and-lime-png-image_19078447.webp",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chicken Shawarma",
@@ -87,7 +87,7 @@ const foodData = [
         description: "Succulent chicken wrapped in flatbread with fresh vegetables and sauces.",
         image: "https://png.pngtree.com/png-vector/20240731/ourmid/pngtree-chicken-shawarma-with-myonies-png-image_13317805.png",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chicken Roast",
@@ -97,7 +97,7 @@ const foodData = [
         description: "Slow-roasted chicken seasoned with herbs and spices for a smoky flavor.",
         image: "https://png.pngtree.com/png-clipart/20250116/original/pngtree-golden-brown-roast-chicken-for-special-dinners-png-image_19904525.png",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Chicken Pakora",
@@ -107,7 +107,7 @@ const foodData = [
         description: "Boneless chicken coated in spiced gram flour batter and deep-fried crispy.",
         image: "https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTEwL3Jhd3BpeGVsb2ZmaWNlNF9waG90b19vZl9wYWtvcmFzX29uX2FfZGlzaF9pbmRpYW5fZm9vZF9tZW51X2lzb19mYjdkNGFlNi1lNDhiLTRiZjAtOTJmMy0xZmY2ZDBlNWM4MWYucG5n.png",
         category: "6a24563e4455c6acad6ab21a",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Mutton Rogan Josh",
@@ -117,7 +117,7 @@ const foodData = [
         description: "Slow-cooked mutton in a rich Kashmiri gravy infused with aromatic spices.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab219",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Mutton Kosha",
@@ -127,7 +127,7 @@ const foodData = [
         description: "Traditional Bengali-style mutton curry cooked with onions and spices.",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
         category: "6a24563e4455c6acad6ab219",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Mutton Biryani",
@@ -137,7 +137,7 @@ const foodData = [
         description: "Fragrant basmati rice layered with succulent mutton and spices.",
         image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
         category: "6a24563e4455c6acad6ab219",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Mutton Korma",
@@ -147,7 +147,7 @@ const foodData = [
         description: "Tender mutton simmered in a creamy nut-based gravy.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab219",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Mutton Keema",
@@ -157,7 +157,7 @@ const foodData = [
         description: "Minced mutton cooked with peas and traditional Indian spices.",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
         category: "6a24563e4455c6acad6ab219",
-        tag: "Recommended For You",
+        tag: "recommended",
     },
     {
         name: "Tomato Soup",
@@ -167,7 +167,7 @@ const foodData = [
         description: "Creamy tomato soup seasoned with herbs and black pepper.",
         image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
         category: "6a24563e4455c6acad6ab21c",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Sweet Corn Soup",
@@ -177,7 +177,7 @@ const foodData = [
         description: "Sweet corn kernels cooked in a flavorful vegetable broth.",
         image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
         category: "6a24563e4455c6acad6ab21c",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chicken Manchow Soup",
@@ -187,7 +187,7 @@ const foodData = [
         description: "Spicy chicken soup topped with crispy fried noodles.",
         image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
         category: "6a24563e4455c6acad6ab21c",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Hot And Sour Soup",
@@ -197,7 +197,7 @@ const foodData = [
         description: "A spicy and tangy Indo-Chinese soup loaded with vegetables.",
         image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
         category: "6a24563e4455c6acad6ab21c",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Cream Of Chicken Soup",
@@ -207,7 +207,7 @@ const foodData = [
         description: "Rich creamy chicken soup with a smooth velvety texture.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab21c",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "French Fries",
@@ -217,7 +217,7 @@ const foodData = [
         description: "Golden crispy potato fries sprinkled with seasoning.",
         image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
         category: "6a24563e4455c6acad6ab21d",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Chicken Nuggets",
@@ -227,7 +227,7 @@ const foodData = [
         description: "Crunchy chicken nuggets served with a delicious dip.",
         image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
         category: "6a24563e4455c6acad6ab21d",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Veg Spring Roll",
@@ -237,7 +237,7 @@ const foodData = [
         description: "Crispy rolls stuffed with fresh vegetables and spices.",
         image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
         category: "6a24563e4455c6acad6ab21d",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Paneer Tikka",
@@ -247,7 +247,7 @@ const foodData = [
         description: "Grilled paneer cubes marinated in spicy yogurt mixture.",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
         category: "6a24563e4455c6acad6ab21d",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Chicken Popcorn",
@@ -267,7 +267,7 @@ const foodData = [
         description: "Rich chocolate brownie with a soft gooey center.",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
         category: "6a24563e4455c6acad6ab21e",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Vanilla Ice Cream",
@@ -277,7 +277,7 @@ const foodData = [
         description: "Classic vanilla ice cream made with fresh cream.",
         image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
         category: "6a24563e4455c6acad6ab21e",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Chocolate Lava Cake",
@@ -287,7 +287,7 @@ const foodData = [
         description: "Warm chocolate cake with a molten chocolate center.",
         image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
         category: "6a24563e4455c6acad6ab21e",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Strawberry Cheesecake",
@@ -297,7 +297,7 @@ const foodData = [
         description: "Creamy cheesecake topped with fresh strawberry glaze.",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
         category: "6a24563e4455c6acad6ab21e",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Tiramisu",
@@ -307,7 +307,7 @@ const foodData = [
         description: "Italian coffee-flavored dessert layered with mascarpone.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab21e",
-        tag: "Recommended For You",
+        tag: "recommended",
     },
     {
         name: "Rasgulla",
@@ -317,7 +317,7 @@ const foodData = [
         description: "Soft spongy cottage cheese balls soaked in sugar syrup.",
         image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
         category: "6a24563e4455c6acad6ab21f",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Gulab Jamun",
@@ -327,7 +327,7 @@ const foodData = [
         description: "Deep-fried milk dumplings soaked in flavored sugar syrup.",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
         category: "6a24563e4455c6acad6ab21f",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Rasmalai",
@@ -337,7 +337,7 @@ const foodData = [
         description: "Soft cheese patties served in sweet saffron milk.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab21f",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Jalebi",
@@ -347,7 +347,7 @@ const foodData = [
         description: "Crispy spiral sweets dipped in fragrant sugar syrup.",
         image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
         category: "6a24563e4455c6acad6ab21f",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Kaju Katli",
@@ -367,7 +367,7 @@ const foodData = [
         description: "Crispy fish fingers served with tartar sauce.",
         image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
         category: "6a24563e4455c6acad6ab21d",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Garlic Bread",
@@ -377,7 +377,7 @@ const foodData = [
         description: "Toasted bread topped with garlic butter and herbs.",
         image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
         category: "6a24563e4455c6acad6ab21d",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Mushroom Soup",
@@ -387,7 +387,7 @@ const foodData = [
         description: "Creamy mushroom soup with a rich earthy flavor.",
         image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
         category: "6a24563e4455c6acad6ab21c",
-        tag: "Recommended For You",
+        tag: "recommended",
     },
     {
         name: "Falooda",
@@ -397,7 +397,7 @@ const foodData = [
         description: "Traditional dessert drink with vermicelli and ice cream.",
         image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
         category: "6a24563e4455c6acad6ab21e",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Rabri",
@@ -407,7 +407,7 @@ const foodData = [
         description: "Thickened sweet milk dessert flavored with cardamom.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab21f",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Cold Coffee",
@@ -417,7 +417,7 @@ const foodData = [
         description: "Refreshing chilled coffee blended with milk and ice cream.",
         image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735",
         category: "6a24563e4455c6acad6ab21b",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Mango Shake",
@@ -427,7 +427,7 @@ const foodData = [
         description: "Fresh mangoes blended with chilled milk for a creamy delight.",
         image: "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4",
         category: "6a24563e4455c6acad6ab21b",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Chocolate Milkshake",
@@ -437,7 +437,7 @@ const foodData = [
         description: "Rich chocolate shake topped with whipped cream.",
         image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699",
         category: "6a24563e4455c6acad6ab21b",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Fresh Lime Soda",
@@ -457,7 +457,7 @@ const foodData = [
         description: "Freshly extracted watermelon juice served chilled.",
         image: "https://images.unsplash.com/photo-1553530666-ba11a90bb918",
         category: "6a24563e4455c6acad6ab21b",
-        tag: "Recommended For You",
+        tag: "recommended",
     },
     {
         name: "Masala Chaas",
@@ -467,7 +467,7 @@ const foodData = [
         description: "Traditional spiced buttermilk perfect for hot days.",
         image: "https://images.unsplash.com/photo-1563379091339-03246963d29c",
         category: "6a24563e4455c6acad6ab21b",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Lassi",
@@ -477,7 +477,7 @@ const foodData = [
         description: "Creamy yogurt-based drink with a sweet refreshing taste.",
         image: "https://images.unsplash.com/photo-1626200419199-391ae4be7a41",
         category: "6a24563e4455c6acad6ab21b",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Mixed Fruit Juice",
@@ -487,7 +487,7 @@ const foodData = [
         description: "Blend of seasonal fruits packed with natural goodness.",
         image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba",
         category: "6a24563e4455c6acad6ab21b",
-        tag: "Trending",
+        tag: "trending",
     },
 
     {
@@ -498,7 +498,7 @@ const foodData = [
         description: "Complete vegetarian meal with rice, roti, dal, vegetables and dessert.",
         image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe",
         category: "6a24563e4455c6acad6ab222",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Special Veg Thali",
@@ -508,7 +508,7 @@ const foodData = [
         description: "Premium vegetarian thali featuring multiple curries and sweets.",
         image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe",
         category: "6a24563e4455c6acad6ab222",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Chicken Thali",
@@ -518,7 +518,7 @@ const foodData = [
         description: "Wholesome meal with chicken curry, rice, roti and side dishes.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab222",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Mutton Thali",
@@ -528,7 +528,7 @@ const foodData = [
         description: "Traditional thali served with flavorful mutton curry and accompaniments.",
         image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
         category: "6a24563e4455c6acad6ab222",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Fish Thali",
@@ -549,7 +549,7 @@ const foodData = [
         description: "Balanced meal with chicken curry, rice and fresh salad.",
         image: "https://images.unsplash.com/photo-1544025162-d76694265947",
         category: "6a24563e4455c6acad6ab221",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Veg Meal",
@@ -559,7 +559,7 @@ const foodData = [
         description: "Nutritious vegetarian meal with rice, dal and seasonal vegetables.",
         image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
         category: "6a24563e4455c6acad6ab221",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Paneer Meal",
@@ -569,7 +569,7 @@ const foodData = [
         description: "Paneer curry served with rice, roti and fresh salad.",
         image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8",
         category: "6a24563e4455c6acad6ab221",
-        tag: "Recommended For You",
+        tag: "recommended",
     },
     {
         name: "Fish Meal",
@@ -579,7 +579,7 @@ const foodData = [
         description: "Flavorful fish curry meal accompanied by steamed rice.",
         image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2",
         category: "6a24563e4455c6acad6ab221",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Mutton Meal",
@@ -589,7 +589,7 @@ const foodData = [
         description: "Hearty meal with tender mutton curry and rice.",
         image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
         category: "6a24563e4455c6acad6ab221",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
 
     {
@@ -600,7 +600,7 @@ const foodData = [
         description: "Soft burger bun filled with crispy vegetable patty and sauces.",
         image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
         category: "6a24563e4455c6acad6ab220",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Chicken Burger",
@@ -610,7 +610,7 @@ const foodData = [
         description: "Juicy chicken patty burger loaded with fresh vegetables.",
         image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
         category: "6a24563e4455c6acad6ab220",
-        tag: "Best Seller",
+        tag: "bestseller",
     },
     {
         name: "Chicken Pizza",
@@ -620,7 +620,7 @@ const foodData = [
         description: "Cheesy pizza topped with seasoned chicken and vegetables.",
         image: "https://images.unsplash.com/photo-1513104890138-7c749659a591",
         category: "6a24563e4455c6acad6ab220",
-        tag: "Trending",
+        tag: "trending",
     },
     {
         name: "Veg Pizza",
@@ -640,7 +640,7 @@ const foodData = [
         description: "Soft tortilla stuffed with grilled chicken and fresh vegetables.",
         image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828",
         category: "6a24563e4455c6acad6ab220",
-        tag: "Recommended For You",
+        tag: "recommended",
     },
     {
         name: "Veg Sandwich",
@@ -650,7 +650,7 @@ const foodData = [
         description: "Toasted sandwich loaded with vegetables and cheese.",
         image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af",
         category: "6a24563e4455c6acad6ab220",
-        tag: "Popular",
+        tag: "popular",
     },
     {
         name: "Chicken Shawarma",
@@ -660,7 +660,7 @@ const foodData = [
         description: "Middle Eastern wrap filled with juicy chicken and garlic sauce.",
         image: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783",
         category: "6a24563e4455c6acad6ab220",
-        tag: "Chef's Choice",
+        tag: "chefchoice",
     },
     {
         name: "Loaded Nachos",
@@ -670,7 +670,7 @@ const foodData = [
         description: "Crispy nachos topped with cheese, salsa and jalapeños.",
         image: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d",
         category: "6a24563e4455c6acad6ab220",
-        tag: "Trending",
+        tag: "trending",
     },
 ];
 module.exports = foodData;

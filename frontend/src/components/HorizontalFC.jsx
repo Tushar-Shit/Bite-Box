@@ -81,7 +81,7 @@ const HorizontalFC = ({
         message.trim() === "Added to Cart"
       )
         setInCart(!inCart);
-      // if (message.trim() === "Cart is Full") setInCart(!inCart);
+      if (message.trim() === "Cart is full") setInCart(false);
       else setInCart(!inCart);
       console.log(message);
     } catch (e) {
@@ -92,7 +92,7 @@ const HorizontalFC = ({
   return (
     <Link
       to={`/meal/${id}`}
-      className="bg-zinc-200 p-3 mb-3 h-40 flex  gap-3 items-center rounded-lg"
+      className="bg-zinc-200 p-3 mb-3 h-35 flex  gap-3 items-center rounded-lg shadow-[4px_1px_7px_rgba(0,0,0,0.4)]"
     >
       {/* food image  */}
       <div className="flex-2 h-full rounded-l-lg">
@@ -105,7 +105,7 @@ const HorizontalFC = ({
       {/* food name  */}
       <div className="flex-3">
         <div className="flex justify-between mt-2">
-          <span className="text-md font ">
+          <span className="text-md">
             <b>{name}</b>
           </span>
           <Heartclick onClick={handle} isFav={fav} />

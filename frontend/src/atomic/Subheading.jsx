@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Subheadsee = ({ subHeading, path }) => {
     // console.log(data);
   return (
-    <div className="flex px-4 my-3 justify-between ">
+    <div className="flex px-4 my-3 justify-between">
       <SubTitle title={subHeading}/>
       <Link to={path} className="text-red-500 text-md">
         See more

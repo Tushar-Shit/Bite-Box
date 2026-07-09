@@ -17,7 +17,7 @@ const Subheading = ({ title }) => {
 const SeeMore = ({ text, onClick }) => {
   return (
     <button
-      onClick={onClick}
+      // onClick={onClick}
       className="w-full flex justify-center border-none bg-transparent cursor-pointer"
     >
       <b>

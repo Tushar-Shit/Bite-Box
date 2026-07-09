@@ -59,7 +59,7 @@ const SquareFC = ({
   return (
     <Link
       to={`/meal/${id}`}
-      className="shrink-0 w-[45%] h-61 shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative"
+      className="shrink-0 w-[45%] h-55 shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative"
     >
       <div className="bg-zinc-50 rounded-full p-1 w-7 h-7 absolute right-1 top-1 flex items-center">
         <Heartclick onClick={handle} isFav={hello} />

@@ -150,6 +150,7 @@ const MealDetails = () => {
         message.trim() === "Added to Cart"
       )
         setInCart(!inCart);
+      else if (message.trim() === "Cart is full") setInCart(false);
       else setInCart(!inCart);
       console.log(message);
     } catch (e) {

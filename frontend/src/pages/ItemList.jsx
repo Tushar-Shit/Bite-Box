@@ -3,7 +3,7 @@ import BottomBar from "../components/BottomBar";
 import CustomNav from "../CategoryComponents/CustomNav";
 import HorizontalFC from "../components/HorizontalFC";
 import { useParams } from "react-router-dom";
-import {Helmet} from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
 // import { set } from "mongoose";
 
@@ -53,10 +53,12 @@ const ItemList = () => {
   return (
     <>
       <Helmet>
-        <title>{items ? `${items} | Category` : `${anything} | Category`}</title>
+        <title>
+          {items ? `${items} | Category` : `${anything} | Category`}
+        </title>
       </Helmet>
-      <CustomNav text={items ? `All ${items} list` : `All ${anything} list`} />
-      <div className="p-4 flex flex-col mb-18">
+      <CustomNav text={items ? `All ${items} list` : `${anything}`} />
+      <div className="px-4 pt-4 flex flex-col">
         {fooddata.map((item) => (
           <HorizontalFC
             key={item._id} // MongoDB unique ID required for React loops

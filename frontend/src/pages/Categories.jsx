@@ -1,4 +1,4 @@
-import {Helmet} from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 import BottomBar from "../components/BottomBar";
 import CustomNav from "../CategoryComponents/CustomNav";
 import CategoryCards from "../CategoryComponents/CategoryCards";
@@ -21,12 +21,12 @@ const Categories = () => {
   }, []);
   return (
     <>
-    <Helmet>
-      <title>BiteBox | Categories</title>
-    </Helmet>
+      <Helmet>
+        <title>BiteBox | Categories</title>
+      </Helmet>
       <CustomNav text="Categories" path="/" />
 
-      <div className="flex flex-wrap justify-center gap-5 mt-5 mb-23">
+      <div className="flex flex-wrap justify-center gap-5 my-5">
         {allData.map((category) => (
           <CategoryCards
             key={category._id} // MongoDB unique ID required for React loops

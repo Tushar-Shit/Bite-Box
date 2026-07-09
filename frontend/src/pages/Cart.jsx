@@ -3,7 +3,7 @@ import CartCard from "../components/CartCard";
 import BottomBar from "../components/BottomBar";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import image from "../assets/image_18fcf3e6.png";
+import Nodata from "../components/NoData";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -29,18 +29,10 @@ const Cart = () => {
   }, [cartItems]);
 
   return (
-    <div className="h-screen w-full">
+    <div className="h-screen w-full relative">
       <CustomNav text="My Cart" />
       {!cartItems || cartItems.length === 0 ? (
-        <div className="w-full h-10/12 flex items-center justify-center relative">
-          <div className="flex flex-col items-center relative">
-            <p className="text-4xl font-bold absolute top-8 ">OOPS!</p>
-            <img src={image} alt="" className="" />
-            <p className="text-2xl font-bold absolute bottom-7">
-              No Data Found!
-            </p>
-          </div>
-        </div>
+        <Nodata text1="OOPS!" text2="No Data Found!" />
       ) : (
         <>
           <div className="my-3 px-3 flex flex-col gap-4">
@@ -58,7 +50,7 @@ const Cart = () => {
               />
             ))}
           </div>
-          <div className="w-[90%] h-fit mx-auto mb-22 py-2 px-5 bg-zinc-300 rounded-xl flex flex-col">
+          <div className="w-[90%] h-fit mx-auto p-2 mb-2 px-5 bg-zinc-300 rounded-xl flex flex-col">
             <div className="flex items-center justify-between text-xl font-bold my-3">
               <h2>Total</h2>
               <h4>{totalPrice}</h4>
@@ -73,9 +65,13 @@ const Cart = () => {
           </div>
         </>
       )}
-      <div className="h-0.5">
-        <BottomBar />
+      <div className="h-12 w-full">
+        <div className="h-12 w-full px-5 py-2 bg-zinc-300 fixed bottom-18 flex justify-between items-center">
+         <p className="font-bold text-2xl">{totalPrice}</p>
+         <p className="w-3/7 p-1 text-center rounded-md bg-amber-500">Place Order</p>
+        </div>
       </div>
+      <BottomBar />
     </div>
   );
 };

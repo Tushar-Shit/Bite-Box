@@ -3,7 +3,7 @@ import BottomBar from "../components/BottomBar";
 import HorizontalFc from "../components/HorizontalFC";
 import { Heartclick } from "../atomic/atomic";
 import { useState, useEffect } from "react";
-import image from "../assets/image_18fcf3e6.png";
+import Nodata from "../components/NoData";
 
 const Favorite = () => {
   //extract all favourite food items
@@ -26,17 +26,9 @@ const Favorite = () => {
     <div className="h-screen w-full">
       <CustomNav text="Favorite Items" />
       {!favouriteItems || favouriteItems.length === 0 ? (
-        <div className="border w-full h-10/12 flex items-center justify-center relative">
-          <div className="flex flex-col items-center relative">
-            <p className="text-4xl font-bold absolute top-8 ">OOPS!</p>
-            <img src={image} alt="" className="" />
-            <p className="text-2xl font-bold absolute bottom-7">
-              No Data Found!
-            </p>
-          </div>
-        </div>
+        <Nodata text1="No Item!" text2="Hurry Up Catch Favourites!" />
       ) : (
-        <div className="container h-[80vh] overflow-y-auto flex flex-col p-2">
+        <div className="container overflow-y-auto flex flex-col pt-4">
           {favouriteItems.map((item) => (
             <HorizontalFc
               key={item._id}
