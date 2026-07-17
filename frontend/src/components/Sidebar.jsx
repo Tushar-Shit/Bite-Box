@@ -8,6 +8,7 @@ import {
   MapPin,
   Heart,
   UserPlus,
+  NotebookPen,
 } from "lucide-react";
 
 function SidebarSupport({ title }) {
@@ -124,8 +125,8 @@ function Sidebar({ onClick, showSide }) {
             to="/favorite"
             className="flex items-center gap-2 px-10 border-b"
           >
-            <Heart className="w-[10%]" />
-            <SidebarSupport title="Favorites" />
+            <NotebookPen className="w-[10%]" />
+            <SidebarSupport title="Order History" />
           </Link>
 
           {!user.username ? (

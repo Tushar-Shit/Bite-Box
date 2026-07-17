@@ -51,6 +51,7 @@ const HorizontalFC = ({
       );
 
       const { message } = await response.json();
+      console.log(message);
       setFav((prev) => !prev);
     } catch (err) {
       console.log(err);

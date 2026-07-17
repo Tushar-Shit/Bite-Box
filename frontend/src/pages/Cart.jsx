@@ -3,9 +3,11 @@ import CartCard from "../components/CartCard";
 import BottomBar from "../components/BottomBar";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import Loader from "../components/Loader";
 import Nodata from "../components/NoData";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [loader, setLoader] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
   useEffect(() => {
     // Fetch cart items from the backend when the component mounts
@@ -16,7 +18,10 @@ const Cart = () => {
           credentials: "include",
         });
         const cartData = await res.json();
-        setCartItems(cartData);
+        if (cartData) {
+          setCartItems(cartData);
+          setLoader(false);
+        }
         const total = cartData.reduce((acc, item) => {
           return acc + item.price;
         }, 0);
@@ -31,6 +36,10 @@ const Cart = () => {
   return (
     <div className="h-screen w-full relative">
       <CustomNav text="My Cart" />
+
+      {/* loder until data is fetched */}
+      {loader && <Loader />}
+
       {!cartItems || cartItems.length === 0 ? (
         <Nodata text1="OOPS!" text2="No Data Found!" />
       ) : (
@@ -63,14 +72,17 @@ const Cart = () => {
               Proceed To CheckOut
             </Link>
           </div>
+          <div className="h-12 w-full">
+            <div className="h-12 w-full px-5 py-2 bg-zinc-300 fixed bottom-18 flex justify-between items-center">
+              <p className="font-bold text-2xl">{totalPrice}</p>
+              <p className="w-3/7 p-1 text-center rounded-md bg-amber-500">
+                Place Order
+              </p>
+            </div>
+          </div>
         </>
       )}
-      <div className="h-12 w-full">
-        <div className="h-12 w-full px-5 py-2 bg-zinc-300 fixed bottom-18 flex justify-between items-center">
-         <p className="font-bold text-2xl">{totalPrice}</p>
-         <p className="w-3/7 p-1 text-center rounded-md bg-amber-500">Place Order</p>
-        </div>
-      </div>
+
       <BottomBar />
     </div>
   );

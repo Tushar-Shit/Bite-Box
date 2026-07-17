@@ -31,9 +31,9 @@ const HorizontalRounded = ({
   return (
     <Link
       to={`/meal/${id}`}
-      className={`w-auto h-35 flex justify-between items-center gap-2 p-2 rounded-full ${colorClass.bg} border`}
+      className={`w-auto h-35 flex justify-between items-center gap-2 p-2 rounded-full ${colorClass.bg}`}
     >
-      <div className="w-30 h-full rounded-full border ">
+      <div className="w-30 h-full rounded-full">
         <img
           src={image}
           alt=""

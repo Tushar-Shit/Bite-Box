@@ -4,8 +4,10 @@ import HorizontalFc from "../components/HorizontalFC";
 import { Heartclick } from "../atomic/atomic";
 import { useState, useEffect } from "react";
 import Nodata from "../components/NoData";
+import Loader from "../components/Loader";
 
 const Favorite = () => {
+  const [loader, setLoader] = useState(true);
   //extract all favourite food items
   const [favouriteItems, setFavouriteItems] = useState([]);
   useEffect(() => {
@@ -17,7 +19,10 @@ const Favorite = () => {
         },
       );
       const { favourites } = await response.json();
-      setFavouriteItems(favourites);
+      if (favourites) {
+        setFavouriteItems(favourites);
+        setLoader(false);
+      }
     };
     favdata();
   }, [favouriteItems]);
@@ -25,6 +30,7 @@ const Favorite = () => {
   return (
     <div className="h-screen w-full">
       <CustomNav text="Favorite Items" />
+      {loader && <Loader />}
       {!favouriteItems || favouriteItems.length === 0 ? (
         <Nodata text1="No Item!" text2="Hurry Up Catch Favourites!" />
       ) : (

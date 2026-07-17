@@ -1,3 +1,4 @@
+import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import { Helmet } from "react-helmet-async";
 import HeroImage from "../components/HeroImage";
@@ -29,6 +30,9 @@ const images = {
 
 //starting of home component
 const Home = () => {
+  //loader state
+  const [loader, setLoader] = useState(true);
+
   //fixed number of types
   let tenTrending = [];
   let fourPopular = [];
@@ -61,11 +65,20 @@ const Home = () => {
           bestSellerFood,
           chefChoiceFood,
         } = await res.json();
-        setTrending(trendingFood);
-        setPopular(popularFood);
-        setRecommended(recommendedFood);
-        setBestSeller(bestSellerFood);
-        setChefChoice(chefChoiceFood);
+        if (
+          trendingFood &&
+          popularFood &&
+          recommendedFood &&
+          bestSellerFood &&
+          chefChoiceFood
+        ) {
+          setLoader(false);
+          setTrending(trendingFood);
+          setPopular(popularFood);
+          setRecommended(recommendedFood);
+          setBestSeller(bestSellerFood);
+          setChefChoice(chefChoiceFood);
+        }
         //fetch user data
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/user/profile`,
@@ -97,7 +110,7 @@ const Home = () => {
     tenTrending = trending.slice(0, 10);
     fourPopular = popular.slice(0, 4);
     fourRecomended = recommended.slice(0, 4);
-    eightBestSeller = bestSeller.slice(0,8);
+    eightBestSeller = bestSeller.slice(0, 8);
     fiveChefChoice = chefChoice.slice(0, 4);
   }
 
@@ -119,6 +132,20 @@ const Home = () => {
     }
   }, []);
 
+//   const [msg, setMsg] = useState(null);
+//   const [message, setMessage] = useState("");
+
+// useEffect(() => {
+//   if (!message) return;
+
+//   const timer = setTimeout(() => {
+//     setMessage("");
+//   }, 3000); // 3 seconds
+
+//   return () => clearTimeout(timer);
+// }, [message]);
+
+//   }
   return (
     <div>
       <Helmet>
@@ -130,7 +157,7 @@ const Home = () => {
 
       {/* home page navbar, sidebar function and user data */}
       <Navbar onClick={showSideBar} user={user} />
-
+      {loader && <Loader />}
       {/* sidebar component */}
       {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
 
@@ -214,26 +241,14 @@ const Home = () => {
         <div className=" flex items-center overflow-x-auto gap-3 py-3 scrollbar-none">
           {eightBestSeller.map((item) => (
             <HorizontalRounded
-            //   key={item._id}
-            //   image={item.image}
-            //   name={item.name}
-            //   quantity={item.quantity}
-            //   price={item.price}
-            //   unit={item.unit}
-            //   category={item.Category}
-            //   id={item._id}
-            //   isFav={favFoods.some((food) => food._id === item._id)}
-            // />
-
-
-            key={item._id}
-            id={item._id}
-            image={item.image}
-            name={item.name}
-            quantity={item.quantity}
-            unit={item.unit}
-            price={item.price}
-           />
+              key={item._id}
+              id={item._id}
+              image={item.image}
+              name={item.name}
+              quantity={item.quantity}
+              unit={item.unit}
+              price={item.price}
+            />
           ))}
           <Link to={`/tag/bestseller`}>
             <SeeMore text="See More" />
@@ -280,11 +295,10 @@ const Home = () => {
           ))}
         </div>
       </section>
-      {/* bottom bar  */}     
-        <BottomBar />
+      {/* bottom bar  */}
+      <BottomBar />
     </div>
   );
 };
 
 export default Home;
-//everything is structured till 27.6.26

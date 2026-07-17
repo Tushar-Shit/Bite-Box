@@ -8,7 +8,36 @@ import {
   Search,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 const BottomBar = () => {
+  const [cartCount, setCartCount] = useState(null);
+  const [favCount, setFavCount] = useState(null);
+
+  useEffect(() => {
+    async function data() {
+      const Cartdata = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/cart`,
+        {
+          credentials: "include",
+        },
+      );
+      const Cartitems = await Cartdata.json();
+      console.log(Cartitems.length);
+      // if (Cartitems.length == 0) setCartCount(null);
+      setCartCount(Cartitems.length);
+
+      const Favdata = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        {
+          credentials: "include",
+        },
+      );
+      const { favourites } = await Favdata.json();
+      setFavCount(favourites.length);
+    }
+    data();
+  }, [cartCount, favCount]);
+
   return (
     <div className="h-18">
       <div className="bg-zinc-100 w-full flex justify-evenly items-center fixed bottom-0 p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500">
@@ -24,13 +53,21 @@ const BottomBar = () => {
           <Blocks strokeWidth={1.5} />
           Category
         </Link>
-        <Link to="/orders" className="flex flex-col items-center">
-          <NotebookPen strokeWidth={1.5} />
-          Orders
+        <Link to="/favorite" className="flex flex-col items-center relative">
+          <Heart strokeWidth={1.5} size={26} />
+          <span> Favourite</span>
+          <span className="absolute right-1.5 -top-1 rounded-full px-1 w-fit h-fit text-sm bg-red-600 text-white">
+            {favCount}
+          </span>
         </Link>
-        <Link to="/cart" className="flex flex-col items-center">
+        <Link to="/cart" className="flex flex-col items-center relative">
           <ShoppingBag strokeWidth={1.5} />
-          Cart
+          <span>Cart</span>
+          {cartCount > 0 ? (
+            <span className={`absolute -right-1.5 -top-1.5 rounded-full px-1 w-fit h-fit text-sm  bg-red-600 text-white`}>
+              {cartCount}
+            </span>
+          ) : null}
         </Link>
       </div>
     </div>

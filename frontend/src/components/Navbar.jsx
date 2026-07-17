@@ -10,6 +10,7 @@ import {
   UserRound,
   Utensils,
   Component,
+  Menu,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -30,7 +31,10 @@ const Navbar = ({ onClick, user }) => {
   }
   return (
     <div className="flex justify-between items-center px-4 w-0.5/5 bg-red-500  h-auto py-5">
+      <div className="flex gap-1 items-center">
+      <Menu  />
       <p className="text-lg font-bold">BiteBox</p>
+      </div>
       {user.username ? (
         <>
           <div className="gap-2 cursor-pointer">

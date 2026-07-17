@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import UserProfile from "./pages/UserProfile";
 import React from "react";
 import HelpingPage from "./pages/HelpingPage";
-
+import Order from "./pages/Order";
 const App = () => {
   return (
     <div>
@@ -21,7 +21,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/userinfo" element={<UserProfile/>}/>
         <Route path="/help" element={<HelpingPage/>}/>
-        
+        <Route path="/orders" element={<Order/>}/>
+       
         <Route path="/categories" element={<Categories />} />
         <Route path="/favorite" element={<Favorite />} />
         <Route path="/categories/:items" element={<ItemList />} />
