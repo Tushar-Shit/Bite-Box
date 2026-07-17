@@ -31,10 +31,16 @@ mongoose.connect(process.env.DB_URL)
 app.use(
   cors({
     origin: ["http://10.23.245.131:5173",
+      "http://192.168.31.96:5173",
       "https://bite-box-weld.vercel.app"]
     , credentials: true,
   })
 );
+// app.use(
+//   cors({
+//     origin: "http://0.0.0.0:0",
+//   })
+// );
 app.use(express.json());
 app.use(cookieParser());
 
@@ -72,6 +78,7 @@ app.get("/tag/:anything", async (req, res) => {
   res.json({ fooditems });
 });
 
+//meal details page's data
 app.get("/meal/:id", async (req, res) => {
   const { id } = req.params;
   const foodItem = await FoodItem.findById(id);
