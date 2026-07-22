@@ -7,69 +7,24 @@ const Users = require("../models/user");
 const Cart = require("../models/cart");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const authentication = require("../middleware/authentication");
 
 
-// router.get("/", async (req, res) => {
-//     const { e } = req.query;
-//     const userData = await Users.findOne({ email: e });
-//     res.json({
-//         userData
-//     });
-// })
+router.get("/profile", authentication, async (req, res) => {
+    const user = await Users.findById(
+        req.user
+    );
 
-router.get("/profile", async (req, res) => {
-    try {
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({
-                message: "Not logged in",
-            });
-        }
+    res.json({
+        username: user.username,
+        email: user.email,
+    });
 
-        const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
-
-        const user = await Users.findById(
-            decoded.userId
-        );
-
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found",
-            });
-        }
-
-        res.json({
-            username: user.username,
-            email: user.email,
-        });
-    } catch (err) {
-        res.status(401).json({
-            message: "Invalid token",
-        });
-    }
 });
 
-router.post("/addfav", async (req, res) => {
-    // console.log("into addfav block");
-    //extract food item id
+router.post("/addfav", authentication, async (req, res) => {
     const { foodId } = req.body;
-    //extract the token stored in cookie
-    const token = req.cookies.token;
-    //return if foodId or Token not comes
-    if (!foodId || !token) return res.status(404).json({
-        message: "Incorrect Data",
-    });;
-    //decode token to get the user id
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
-    //find the user in DB
-    const user = await Users.findById(userId);
-    if (!user) return res.status(404).json({
-        message: "User not found",
-    });;
+    const userId = req.user;
     const exists = await Users.exists({
         _id: userId,
         favourites: foodId,
@@ -88,49 +43,38 @@ router.post("/addfav", async (req, res) => {
     }
 });
 
-router.get("/favourite", async (req, res) => {
-    const token = req.cookies.token;
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
-    const user = await Users.findById(userId).populate("favourites");
+router.get("/favourite", authentication, async (req, res) => {
+    const user = await Users.findById(req.user).populate("favourites");
     res.json({ favourites: user.favourites })
 });
 
 //provide cart data
 
-router.get("/cart", async (req, res) => {
-    const token = req.cookies.token;
-    //return if foodId or Token not comes
-    if (!token) return res.status(404).json({
-        message: "Incorrect Data",
-    });;
-    //decode token to get the user id
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const currentUserId = decoded.userId;
+router.get("/cart", authentication, async (req, res) => {
+    const currentUserId = req.user;
     const data = await Cart.findOne({ userId: currentUserId }).populate("items.foodId");
-    // console.log(data.items);
+    if (data.items.length <= 0) {
+        return res.status(404).json({
+            quick: "No Data Found!",
+            message: "Your cart is empty...",
+            code: "ND"
+        });
+    }
     res.json(data.items);
 });
 
 
 //handle full cart updations
-router.post("/cart", async (req, res) => {
+router.post("/cart",authentication, async (req, res) => {
     const MAX_ITEMS = 15;
     const { FId, FQuantity, FPrice, command } = req.body;
-    const token = req.cookies.token;
-    // console.log(FId,FQuantity, FPrice, command, token);
 
-    //return if foodId or Token not comes
-    if (!FId || !token) return res.status(404).json({
+    //return if foodId not comes
+    if (!FId) return res.status(404).json({
         message: "Incorrect Data",
-    });;
-    //decode token to get the user id
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const currentUserId = decoded.userId;
+    });
 
-
-    const existingCart = await Cart.findOne({ userId: currentUserId });
-    // console.log(existingCart)
+    const existingCart = await Cart.findOne({ userId: req.user });
     if (existingCart) {
         //extract the exact food item among all cart items
         const item = existingCart.items.find(
@@ -163,7 +107,7 @@ router.post("/cart", async (req, res) => {
             if (existingCart.items.length >= MAX_ITEMS) {
                 return res.status(400).json({
                     message: "Cart is full",
-                   
+
                 });
             }
             existingCart.items.push({

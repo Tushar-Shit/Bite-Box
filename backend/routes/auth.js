@@ -8,10 +8,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const isProduction = process.env.PROJECT_MODE === "production";
 
-// console.log(process.env.PROJECT_MODE);
-
 router.post("/signup", async (req, res) => {
-  // console.log("tygfhbcvfggtredsxzaw");
   try {
     const { username, email, password } = req.body;
     const existingUser = await Users.findOne({ email });
@@ -89,7 +86,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", async (req, res) => {
-  console.log("enter here");
+  console.log("enter logout route");
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

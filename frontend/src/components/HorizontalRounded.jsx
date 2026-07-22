@@ -21,7 +21,6 @@ const HorizontalRounded = ({
     { bg: "bg-yellow-300", text: "black" },
     { bg: "bg-orange-400", text: "black" },
     { bg: "bg-green-500", text: "black" },
-    { bg: "bg-blue-600", text: "black" },
   ];
 
   useEffect(() => {
@@ -41,7 +40,7 @@ const HorizontalRounded = ({
         />
       </div>
 
-      <div className={`w-40 pr-2  text-${colorClass.text}`}>
+      <div className={`w-45 pr-2  text-${colorClass.text}`}>
         <p className="text-lg font-bold">{name}</p>
         <p>
           {quantity} {unit}

@@ -1,10 +1,5 @@
 import { motion } from "framer-motion";
 
-import burger from "../assets/burger.jpg";
-import chicken from "../assets/chicken.jpg";
-import biryani from "../assets/biriyani.jpg";
-import popcorn from "../assets/popcorn.jpg";
-
 const foods = [
   {
     id: 2,

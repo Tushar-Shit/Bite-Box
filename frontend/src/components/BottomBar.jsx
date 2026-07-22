@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-const BottomBar = () => {
+const BottomBar = ({ update }) => {
   const [cartCount, setCartCount] = useState(null);
   const [favCount, setFavCount] = useState(null);
 
@@ -22,9 +22,11 @@ const BottomBar = () => {
         },
       );
       const Cartitems = await Cartdata.json();
-      console.log(Cartitems.length);
-      // if (Cartitems.length == 0) setCartCount(null);
-      setCartCount(Cartitems.length);
+      if (Cartitems.code === "ND" || Cartitems.length <= 0) {
+        console.log(Cartitems.message);
+        setCartCount(null);
+      }
+      else setCartCount(Cartitems.length);
 
       const Favdata = await fetch(
         `${import.meta.env.VITE_API_URL}/user/favourite`,
@@ -33,10 +35,11 @@ const BottomBar = () => {
         },
       );
       const { favourites } = await Favdata.json();
+      if (!favourites) return;
       setFavCount(favourites.length);
     }
     data();
-  }, [cartCount, favCount]);
+  }, [update]);
 
   return (
     <div className="h-18">
@@ -56,15 +59,19 @@ const BottomBar = () => {
         <Link to="/favorite" className="flex flex-col items-center relative">
           <Heart strokeWidth={1.5} size={26} />
           <span> Favourite</span>
-          <span className="absolute right-1.5 -top-1 rounded-full px-1 w-fit h-fit text-sm bg-red-600 text-white">
-            {favCount}
-          </span>
+          {favCount > 0 ? (
+            <span className="absolute left-10 -top-1 rounded-full px-1 w-fit h-fit text-sm bg-red-600 text-white">
+              {favCount}
+            </span>
+          ) : null}
         </Link>
         <Link to="/cart" className="flex flex-col items-center relative">
           <ShoppingBag strokeWidth={1.5} />
           <span>Cart</span>
           {cartCount > 0 ? (
-            <span className={`absolute -right-1.5 -top-1.5 rounded-full px-1 w-fit h-fit text-sm  bg-red-600 text-white`}>
+            <span
+              className={`absolute -right-1.5 -top-1.5 rounded-full px-1 w-fit h-fit text-sm  bg-red-600 text-white`}
+            >
               {cartCount}
             </span>
           ) : null}

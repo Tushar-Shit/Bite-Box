@@ -9,10 +9,17 @@ const CartCard = ({
   unit,
   defaultPrice,
   foodUnit,
+  onClick,
+  satisfymessage,
 }) => {
-  //master function fro delete, increase, decrease
+  //master function for delete, increase, decrease
   const masterFunc = async (commandVal) => {
     if (!id) return;
+    // const user = JSON.parse(sessionStorage.getItem("user"));
+    // if (user === false) {
+
+    //   return;
+    // }
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         method: "POST",
@@ -28,7 +35,9 @@ const CartCard = ({
         }),
       });
       const { message } = await res.json();
-      console.log(message);
+      satisfymessage(message);
+      // console.log(message);
+      onClick();
     } catch (e) {
       console.log(e);
     }
@@ -70,9 +79,7 @@ const CartCard = ({
             >
               <Minus size={18} />
             </button>
-            <div className="font-semibold mx-1 w-4 text-center">
-              {foodUnit}
-            </div>
+            <div className="font-semibold mx-1 w-4 text-center">{foodUnit}</div>
             <button
               onClick={() => {
                 masterFunc("increase");

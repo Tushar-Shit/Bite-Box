@@ -5,7 +5,7 @@ import HorizontalFC from "../components/HorizontalFC";
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
-// import { set } from "mongoose";
+import { ShortMsg } from "../components/MessageBar";
 
 const ItemList = () => {
   //if user comes from categories page
@@ -27,6 +27,7 @@ const ItemList = () => {
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }
+
         //fetch tag categories
         if (anything) {
           const res = await fetch(
@@ -35,6 +36,14 @@ const ItemList = () => {
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        if (user === false) {
+          const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
+          if (sessionFav) setFavFoods(sessionFav);
+          else setFavFoods([]);
+          return;
+        }
+
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/user/favourite`,
           {
@@ -50,6 +59,24 @@ const ItemList = () => {
     getData();
   }, []);
 
+  //update bottam bar when heart/cart tigger
+  const [msg, setMsg] = useState(null);
+  const [update, setUpdate] = useState(false);
+  useEffect(() => {
+    if (!msg) return;
+
+    const timer = setTimeout(() => {
+      setMsg(null);
+      setUpdate(false);
+    }, 2000); // 3 seconds
+
+    return () => clearTimeout(timer);
+  }, [msg]);
+
+  function satisfymessage(text) {
+    setMsg(text);
+    setUpdate(true);
+  }
   return (
     <>
       <Helmet>
@@ -58,6 +85,7 @@ const ItemList = () => {
         </title>
       </Helmet>
       <CustomNav text={items ? `All ${items} list` : `${anything}`} />
+      {msg && <ShortMsg message={msg} />}
       <div className="px-4 pt-4 flex flex-col">
         {fooddata.map((item) => (
           <HorizontalFC
@@ -70,13 +98,13 @@ const ItemList = () => {
             unit={item.unit}
             id={item._id}
             isFav={favFoods.some((food) => food._id === item._id)}
+            satisfymessage={satisfymessage}
           />
         ))}
       </div>
-      <BottomBar />
+      <BottomBar update={update} />
     </>
   );
 };
 
 export default ItemList;
-//everything is structured till 27.6.26

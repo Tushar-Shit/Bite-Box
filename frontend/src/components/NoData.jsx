@@ -5,7 +5,7 @@ const NoData = ({text1, text2}) => {
       <div className="flex flex-col items-center relative">
         <p className="text-4xl font-bold absolute top-8 text-red-700">{text1}</p>
         <img src={image} alt="" className="" />
-        <p className="text-2xl font-bold absolute bottom-7 text-red-500">{text2}</p>
+        <p className="text-xl font-bold absolute bottom-7 text-red-500">{text2}</p>
       </div>
     </div>
   );

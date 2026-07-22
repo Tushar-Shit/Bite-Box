@@ -1,9 +1,8 @@
-import React from "react";
 import SubTitle from "./atomic"
 import { Link } from "react-router-dom";
 
+//tag headings and see more button component
 const Subheadsee = ({ subHeading, path }) => {
-    // console.log(data);
   return (
     <div className="flex px-4 my-3 justify-between">
       <SubTitle title={subHeading}/>

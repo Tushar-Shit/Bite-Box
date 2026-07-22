@@ -11,30 +11,84 @@ const HorizontalFC = ({
   unit,
   id,
   isFav,
+  satisfymessage,
 }) => {
-  //extract cart items
+  // sessionStorage.clear();
+  const [fav, setFav] = useState(isFav);
+  useEffect(() => {
+    setFav(isFav);
+  }, [isFav]);
+
   const [inCart, setInCart] = useState(false);
   useEffect(() => {
+    let user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      //Heart UI from session
+      const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
+      if (sessionFav) {
+        const existFav = sessionFav.find((item) => item._id === id);
+        if (existFav) setFav(true);
+      }
+
+      //Cart UI from session
+      const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
+      // console.log(sessionCart);
+      if (sessionCart) {
+        const existCart = sessionCart.find((item) => item._id === id);
+        if (existCart) setInCart(true);
+      }
+      return;
+    }
+
+    //extract cart items
     async function getCart() {
       const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         credentials: "include",
       });
       const item = await data.json();
+      if (!item || item.code === "ND" || item.code === "NL") return;
       if (item.some((i) => i.foodId._id === id)) setInCart(!inCart);
     }
     getCart();
   }, []);
 
-  //handling favourite item(add, remove)
-  const [fav, setFav] = useState(isFav);
-  useEffect(() => {
-    setFav(isFav);
-  }, [isFav]);
+  //favourite handle function add & remove
   const handle = async (e) => {
     e.preventDefault(); // Prevent Link navigation
     e.stopPropagation(); // Stop event bubbling
     if (!id) return;
 
+    //if user not logged in
+    let user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+      const index = preFav.findIndex((item) => item._id === id);
+      if (index === -1) {
+        preFav.push({
+          _id: id,
+          image:image,
+          name: name,
+          description: description,
+          price: price,
+          unit: unit,
+          quantity: quantity,
+        });
+        satisfymessage("item added");
+        setFav((prev) => {
+          return !prev;
+        });
+      } else {
+        preFav.splice(index, 1);
+        satisfymessage("item removed");
+        setFav((prev) => {
+          return !prev;
+        });
+      }
+      sessionStorage.setItem("fav", JSON.stringify(preFav));
+      return;
+    }
+
+    //works only when user is logged in.
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/user/addfav`,
@@ -51,8 +105,12 @@ const HorizontalFC = ({
       );
 
       const { message } = await response.json();
-      console.log(message);
-      setFav((prev) => !prev);
+      if (message) {
+        setFav((prev) => {
+          return !prev;
+        });
+        satisfymessage(message);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -62,6 +120,29 @@ const HorizontalFC = ({
   const addCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      const index = preCart.findIndex((item) => item._id === id);
+      if (index === -1) {
+        preCart.push({
+          _id: id,
+          image:image,
+          name: name,
+          price:price,
+          unit: unit,
+          quantity: quantity,
+        });
+        setInCart(true);
+        satisfymessage("item added");
+      } else {
+        preCart.splice(index, 1);
+        setInCart(false);
+        satisfymessage("item removed");
+      }
+      sessionStorage.setItem("cart", JSON.stringify(preCart));
+      return;
+    }
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         method: "POST",
@@ -77,14 +158,16 @@ const HorizontalFC = ({
         }),
       });
       const { message } = await res.json();
-      if (
-        message.trim() === "Already in Cart" ||
-        message.trim() === "Added to Cart"
-      )
+      if (message.trim() === "Already in Cart") {
+        console.log(message);
+        satisfymessage(message);
         setInCart(!inCart);
-      if (message.trim() === "Cart is full") setInCart(false);
-      else setInCart(!inCart);
-      console.log(message);
+      }
+      if (message.trim() === "Cart is full") {
+        satisfymessage(message);
+        setInCart(false);
+      } else setInCart(!inCart);
+      satisfymessage(message);
     } catch (e) {
       console.log(e);
     }

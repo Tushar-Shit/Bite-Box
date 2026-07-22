@@ -22,6 +22,7 @@ const SquareFC = ({
   unit,
   id,
   isFav,
+  satisfymessage,
 }) => {
   const [hello, setHello] = useState(isFav);
   useEffect(() => {
@@ -49,7 +50,7 @@ const SquareFC = ({
       );
 
       const { message } = await response.json();
-      console.log(message);
+     satisfymessage(message);
       setHello((prev) => !prev);
     } catch (err) {
       console.log(err);

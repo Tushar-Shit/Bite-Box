@@ -73,7 +73,7 @@ app.use("/user", userRoute);
 //route for popular, trending, recomendations
 app.get("/tag/:anything", async (req, res) => {
   const { anything } = req.params;
-  console.log(anything);
+  // console.log(anything);
   const fooditems = await FoodItem.find({ tag: anything });
   res.json({ fooditems });
 });

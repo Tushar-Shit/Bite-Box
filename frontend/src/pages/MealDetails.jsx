@@ -72,8 +72,25 @@ const MealDetails = () => {
   const [state, setState] = useState(false);
   const [inCart, setInCart] = useState(false);
   useEffect(() => {
+    if (!id) return;
+
+    //if user not logged in
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
+      if (sessionFav) {
+        setState(sessionFav.some((item) => item._id === id));
+      }
+
+      const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
+      if (sessionCart && sessionCart.some((item) => item._id === id)) {
+        setInCart(!inCart);
+      }
+      return;
+    }
+
+    //works only when user logged in
     async function getfav() {
-      if (!id) return;
       try {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/user/favourite`,
@@ -103,6 +120,36 @@ const MealDetails = () => {
     e.stopPropagation(); // Stop event bubbling
     if (!id) return;
 
+    //if user not logged in
+    let user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+      const index = preFav.findIndex((item) => item._id === id);
+      if (index === -1) {
+        preFav.push({
+          _id: food.id,
+          image: food.image,
+          name: food.name,
+          description: food.description,
+          price: food.price,
+          unit: food.unit,
+          quantity: food.quantity,
+        });
+        // satisfymessage("item added");
+        // setFav((prev) => {
+        //   return !prev;
+        // });
+      } else {
+        preFav.splice(index, 1);
+        // satisfymessage("item removed");
+        // setFav((prev) => {
+        //   return !prev;
+        // });
+      }
+      sessionStorage.setItem("fav", JSON.stringify(preFav));
+      return;
+    }
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/user/addfav`,
@@ -130,6 +177,32 @@ const MealDetails = () => {
   const addCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    //if user not logged in
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      const index = preCart.findIndex((item) => item._id === id);
+      if (index === -1) {
+        preCart.push({
+          _id: id,
+          image:food.image,
+          name: food.name,
+          price:food.price,
+          unit: food.unit,
+          quantity: food.quantity,
+        });
+        setInCart(!inCart);
+        // satisfymessage("item added");
+      } else {
+        preCart.splice(index, 1);
+        setInCart(false);
+        // satisfymessage("item removed");
+      }
+      sessionStorage.setItem("cart", JSON.stringify(preCart));
+      return;
+    }
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         method: "POST",

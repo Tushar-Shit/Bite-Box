@@ -1,9 +1,10 @@
-import React from "react";
-import {Link} from "react-router-dom";
-const Categories = ({image, text}) => {
-  // console.log(data);
+import { Link } from "react-router-dom";
+const Categories = ({ image, text }) => {
   return (
-    <Link to={`/categories/${text}`} className="w-[21%] bg-zinc-50 rounded-md flex flex-col items-center justify-center shadow-[0_0_4px_rgba(0,0,0,0.5)] ">
+    <Link
+      to={`/categories/${text}`}
+      className="w-[21%] bg-zinc-50 rounded-md flex flex-col items-center justify-center shadow-[0_0_4px_rgba(0,0,0,0.5)] "
+    >
       <div className="h-[90%]">
         <img
           src={image}

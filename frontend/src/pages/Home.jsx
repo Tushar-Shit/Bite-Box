@@ -1,19 +1,24 @@
-import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
-import { Helmet } from "react-helmet-async";
-import HeroImage from "../components/HeroImage";
-import Subheadsee from "../atomic/Subheading";
-import Category from "../components/Categories";
-import HorizontalFc from "../components/HorizontalFC";
-import HorizontalRounded from "../components/HorizontalRounded";
-import SquareFc from "../components/SquareFC";
 import BottomBar from "../components/BottomBar";
 import Sidebar from "../components/Sidebar";
 import MessageBar from "../components/MessageBar";
+
+// different types of cards
+import Category from "../components/Categories";
+import SquareFc from "../components/SquareFC";
+import HorizontalFc from "../components/HorizontalFC";
+import HorizontalRounded from "../components/HorizontalRounded";
+
+//supporting UI components
+import Loader from "../components/Loader";
+import Subheadsee from "../atomic/Subheading";
 import Subheading from "../atomic/atomic";
+import { ShortMsg } from "../components/MessageBar";
 import { SeeMore, Heartclick } from "../atomic/atomic";
-import { Utensils } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+
+//Hooks, navigation, other essential components
+import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 //images for showing categories
@@ -33,24 +38,23 @@ const Home = () => {
   //loader state
   const [loader, setLoader] = useState(true);
 
-  //fixed number of types
-  let tenTrending = [];
-  let fourPopular = [];
-  let fourRecomended = [];
-  let eightBestSeller = [];
-  let fiveChefChoice = [];
-
-  //variables for type of foods and user
+  //variables for type/category/tag of foods and user
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
-  const [recommended, setRecommended] = useState([]);
   const [bestSeller, setBestSeller] = useState([]);
+  const [recommended, setRecommended] = useState([]);
   const [chefChoice, setChefChoice] = useState([]);
+
   const [favFoods, setFavFoods] = useState([]);
   const [user, setUser] = useState({
     username: "",
     email: "",
   });
+  let isLoggedIn = false;
+
+  //handle guest users
+  const [guestFav, setGuestFav] = useState([]);
+  const [guestCart, setGuestCart] = useState([]);
 
   //fetching all food data and user data
   useEffect(() => {
@@ -65,6 +69,7 @@ const Home = () => {
           bestSellerFood,
           chefChoiceFood,
         } = await res.json();
+
         if (
           trendingFood &&
           popularFood &&
@@ -73,13 +78,14 @@ const Home = () => {
           chefChoiceFood
         ) {
           setLoader(false);
-          setTrending(trendingFood);
-          setPopular(popularFood);
-          setRecommended(recommendedFood);
-          setBestSeller(bestSellerFood);
-          setChefChoice(chefChoiceFood);
+          setTrending(trendingFood.slice(0, 10));
+          setPopular(popularFood.slice(0, 4));
+          setRecommended(recommendedFood.slice(0, 4));
+          setBestSeller(bestSellerFood.slice(0, 8));
+          setChefChoice(chefChoiceFood.slice(0, 4));
         }
-        //fetch user data
+
+        //checking user is logged in or not
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/user/profile`,
           {
@@ -87,9 +93,19 @@ const Home = () => {
           },
         );
         const userData = await response.json();
-        setUser(userData);
+        if (userData.code === "NL" || userData.code === "NU") {
+          isLoggedIn = false;
+          sessionStorage.setItem("user", false);
+          console.log(userData.message);
+          return;
+        } else {
+          isLoggedIn = true;
+          sessionStorage.setItem("user", true);
+          console.log(isLoggedIn);
+          setUser(userData);
+        }
 
-        //extract fav foods for icon state
+        //extract fav foods for icon state, only when user logged in
         const data = await fetch(
           `${import.meta.env.VITE_API_URL}/user/favourite`,
           {
@@ -104,15 +120,6 @@ const Home = () => {
     }
     getData();
   }, []);
-
-  //set type of foods with exact number
-  if (trending && popular && recommended && bestSeller && chefChoice) {
-    tenTrending = trending.slice(0, 10);
-    fourPopular = popular.slice(0, 4);
-    fourRecomended = recommended.slice(0, 4);
-    eightBestSeller = bestSeller.slice(0, 8);
-    fiveChefChoice = chefChoice.slice(0, 4);
-  }
 
   const [showSide, setShowSide] = useState(false); //sidebar logic
   const showSideBar = () => {
@@ -132,20 +139,25 @@ const Home = () => {
     }
   }, []);
 
-//   const [msg, setMsg] = useState(null);
-//   const [message, setMessage] = useState("");
+  const [msg, setMsg] = useState(null);
+  const [update, setUpdate] = useState(false);
+  useEffect(() => {
+    if (!msg) return;
 
-// useEffect(() => {
-//   if (!message) return;
+    const timer = setTimeout(() => {
+      setMsg(null);
+      setUpdate(false);
+    }, 2000); // 3 seconds
 
-//   const timer = setTimeout(() => {
-//     setMessage("");
-//   }, 3000); // 3 seconds
+    return () => clearTimeout(timer);
+  }, [msg]);
+// let bing=sessionStorage.getItem("user");
+// console.log(bing);
 
-//   return () => clearTimeout(timer);
-// }, [message]);
-
-//   }
+  function satisfymessage(text) {
+    setMsg(text);
+    setUpdate(true);
+  }
   return (
     <div>
       <Helmet>
@@ -154,7 +166,7 @@ const Home = () => {
 
       {/* satisfaction message component */}
       {message && <MessageBar message={message} />}
-
+      {msg && <ShortMsg message={msg} />}
       {/* home page navbar, sidebar function and user data */}
       <Navbar onClick={showSideBar} user={user} />
       {loader && <Loader />}
@@ -162,7 +174,8 @@ const Home = () => {
       {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
 
       <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
-        Are you Hungry <Utensils strokeWidth={1} className="w-5" />
+        Are you Hungry
+        {/* <Utensils strokeWidth={1} className="w-5" /> */}
       </h1>
       <h1 className="ml-3 my-0 font-extrabold text-xl">
         What meal do you Want?
@@ -196,7 +209,7 @@ const Home = () => {
       <section className="mb-2 px-4">
         <Subheading title="Trending Now" className="ml-4" />
         <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
-          {tenTrending.map((item) => (
+          {trending.map((item) => (
             <SquareFc
               key={item._id}
               image={item.image}
@@ -207,6 +220,7 @@ const Home = () => {
               category={item.Category}
               id={item._id}
               isFav={favFoods.some((food) => food._id === item._id)}
+              satisfymessage={satisfymessage}
             />
           ))}
           <Link to={`/tag/trending`}>
@@ -219,7 +233,7 @@ const Home = () => {
       <section className="mb-5">
         <Subheadsee subHeading="Popular Meals" path="/tag/popular" />
         <div className="px-5">
-          {fourPopular.map((item) => (
+          {popular.map((item) => (
             <HorizontalFc
               key={item._id}
               image={item.image}
@@ -230,6 +244,7 @@ const Home = () => {
               unit={item.unit}
               id={item._id}
               isFav={favFoods.some((food) => food._id === item._id)}
+              satisfymessage={satisfymessage}
             />
           ))}
         </div>
@@ -239,7 +254,7 @@ const Home = () => {
       <section className="mb-2 px-4">
         <Subheading title="Best Seller" className="ml-4" />
         <div className=" flex items-center overflow-x-auto gap-3 py-3 scrollbar-none">
-          {eightBestSeller.map((item) => (
+          {bestSeller.map((item) => (
             <HorizontalRounded
               key={item._id}
               id={item._id}
@@ -260,7 +275,7 @@ const Home = () => {
       <section className="">
         <Subheadsee subHeading="Recommended for you" path="/tag/recommended" />
         <div className="px-4 flex justify-evenly flex-wrap items-center gap-5 scrollbar-none">
-          {fourRecomended.map((item) => (
+          {recommended.map((item) => (
             <SquareFc
               key={item._id}
               image={item.image}
@@ -280,7 +295,7 @@ const Home = () => {
       <section className="pb-2">
         <Subheadsee subHeading="Chef's Choice" path="/tag/chefchoice" />
         <div className="px-5 ">
-          {fiveChefChoice.map((item) => (
+          {chefChoice.map((item) => (
             <HorizontalFc
               key={item._id}
               image={item.image}
@@ -291,12 +306,13 @@ const Home = () => {
               unit={item.unit}
               id={item._id}
               isFav={favFoods.some((food) => food._id === item._id)}
+              satisfymessage={satisfymessage}
             />
           ))}
         </div>
       </section>
       {/* bottom bar  */}
-      <BottomBar />
+      <BottomBar update={update} />
     </div>
   );
 };
