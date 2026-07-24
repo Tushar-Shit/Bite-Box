@@ -22,7 +22,6 @@ router.patch("/unlike/:id", async (req, res) => {
     const { totalLike } = req.body;
     try {
         await Reviews.findByIdAndUpdate(id, { $set: { unlike: totalLike } })
-        console.log("received");
     }
     catch (err) {
         console.log(err);

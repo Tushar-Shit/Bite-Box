@@ -56,8 +56,8 @@ function Sidebar({ onClick, showSide }) {
         username: "",
         email: "",
       });
-      window.location.reload();
       onClick();
+      window.location.reload();
       
     } catch (err) {
       console.error(err);

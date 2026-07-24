@@ -6,12 +6,14 @@ import { ChevronRight, Minus, Plus, ThumbsDown, ThumbsUp } from "lucide-react";
 import { SeeMore } from "../atomic/atomic";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { ShortMsg } from "../components/MessageBar";
 
 const MealDetails = () => {
-  // Catching food data and reviews data
+  const { id } = useParams();
+
+  // Catching food and reviews data
   const [food, setFood] = useState({});
   const [allReviews, setAllReviews] = useState([]);
-  const { id } = useParams();
   useEffect(() => {
     async function getData() {
       try {
@@ -60,7 +62,6 @@ const MealDetails = () => {
 
   // Description "Read More" logic
   const [fullDescription, setFullDescription] = useState(false);
-
   // Safeguard against missing or undefined description strings
   const words = food.description ? food.description.split(" ") : [];
   const isLongDescription = words.length > 6; // Set to 15 words limit as requested
@@ -68,7 +69,7 @@ const MealDetails = () => {
     ? words.slice(0, 6).join(" ")
     : food.description;
 
-  //checking is it in favourite and cart or not
+  //checking is it in favourite and cart for icon's initial state
   const [state, setState] = useState(false);
   const [inCart, setInCart] = useState(false);
   useEffect(() => {
@@ -105,14 +106,28 @@ const MealDetails = () => {
         const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
           credentials: "include",
         });
-        const item = await data.json();
-        if (item.some((i) => i.foodId._id === id)) setInCart(!inCart);
+        const items = await data.json();
+        console.log(items);
+        const exist = items.some((i) => i.foodId._id === id);
+        if (exist) setInCart(!inCart);
       } catch (err) {
         console.log(err);
       }
     }
     getfav();
   }, [id]);
+
+  const [msg, setMsg] = useState(null);
+  useEffect(() => {
+    if (!msg) return;
+
+    const timer = setTimeout(() => {
+      setMsg(null);
+      // setUpdate(false);
+    }, 2000); // 3 seconds
+
+    return () => clearTimeout(timer);
+  }, [msg]);
 
   //handle favourite items (add, remove)
   const handle = async (e) => {
@@ -127,7 +142,7 @@ const MealDetails = () => {
       const index = preFav.findIndex((item) => item._id === id);
       if (index === -1) {
         preFav.push({
-          _id: food.id,
+          _id: id,
           image: food.image,
           name: food.name,
           description: food.description,
@@ -135,16 +150,12 @@ const MealDetails = () => {
           unit: food.unit,
           quantity: food.quantity,
         });
-        // satisfymessage("item added");
-        // setFav((prev) => {
-        //   return !prev;
-        // });
+        setMsg("item added");
+        setState((prev) => !prev);
       } else {
         preFav.splice(index, 1);
-        // satisfymessage("item removed");
-        // setFav((prev) => {
-        //   return !prev;
-        // });
+        setMsg("item removed");
+        setState((prev) => !prev);
       }
       sessionStorage.setItem("fav", JSON.stringify(preFav));
       return;
@@ -166,7 +177,7 @@ const MealDetails = () => {
       );
 
       const { message } = await response.json();
-      console.log(message);
+      setMsg(message);
       setState((prev) => !prev);
     } catch (err) {
       console.log(err);
@@ -186,18 +197,18 @@ const MealDetails = () => {
       if (index === -1) {
         preCart.push({
           _id: id,
-          image:food.image,
+          image: food.image,
           name: food.name,
-          price:food.price,
+          price: food.price,
           unit: food.unit,
           quantity: food.quantity,
         });
         setInCart(!inCart);
-        // satisfymessage("item added");
+        setMsg("item added");
       } else {
         preCart.splice(index, 1);
         setInCart(false);
-        // satisfymessage("item removed");
+        setMsg("item removed");
       }
       sessionStorage.setItem("cart", JSON.stringify(preCart));
       return;
@@ -211,9 +222,7 @@ const MealDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          FId: food._id,
-          FQuantity: food.quantity,
-          FPrice: food.price,
+          data: [{ id: id, quantity: food.quantity }],
           command: "add/dlt", //command need for add and delete to separate updation
         }),
       });
@@ -223,9 +232,8 @@ const MealDetails = () => {
         message.trim() === "Added to Cart"
       )
         setInCart(!inCart);
-      else if (message.trim() === "Cart is full") setInCart(false);
       else setInCart(!inCart);
-      console.log(message);
+      setMsg(message);
     } catch (e) {
       console.log(e);
     }
@@ -235,6 +243,7 @@ const MealDetails = () => {
     <div className="Meal-Page h-full relative ">
       {/* Top navbar */}
       <CustomNav text="Meal Details" />
+      {msg && <ShortMsg message={msg} />}
 
       {/* Main food image */}
       <div className="w-[83vw] h-[30vh] rounded-lg m-auto my-5 relative">
@@ -243,7 +252,7 @@ const MealDetails = () => {
           alt=""
           className="w-full h-full object-cover rounded-lg"
         />
-        <div className="absolute top-0 right-0 rounded-full bg-white p-0.5">
+        <div className="absolute top-0 right-0 rounded-full bg-white p-0.5 cursor-pointer">
           <Heartclick onClick={handle} isFav={state} />
         </div>
       </div>

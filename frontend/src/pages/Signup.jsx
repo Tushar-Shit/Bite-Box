@@ -54,6 +54,7 @@ function Signup() {
       navigate("/", {
         state: { message: data.message },
       });
+      window.location.reload(); //forcefully reload the page after login
     } catch (error) {
       console.error(error);
       alert("Something went wrong");

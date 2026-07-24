@@ -81,12 +81,12 @@ router.post("/login", async (req, res) => {
   });
   const messageName = existingUser.username.split(" ");
   res.json({
-    message: `Welcome Back ${messageName[0]}!`
+    message: `Welcome Back ${messageName[0]}!`,
+    // code:"in",
   });
 });
 
 router.post("/logout", async (req, res) => {
-  console.log("enter logout route");
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

@@ -2,7 +2,7 @@ import { ShoppingCart, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-const HorizontalFC = ({
+const FavouriteFc = ({
   name,
   servingQuantity,
   quantity,
@@ -13,6 +13,7 @@ const HorizontalFC = ({
   id,
   isFav,
   satisfymessage,
+  reload,
 }) => {
   // sessionStorage.clear();
   const [fav, setFav] = useState(isFav);
@@ -78,12 +79,14 @@ const HorizontalFC = ({
         setFav((prev) => {
           return !prev;
         });
+        reload();
       } else {
         preFav.splice(index, 1);
         satisfymessage("item removed");
         setFav((prev) => {
           return !prev;
         });
+        reload();
       }
       sessionStorage.setItem("fav", JSON.stringify(preFav));
       return;
@@ -111,6 +114,7 @@ const HorizontalFC = ({
           return !prev;
         });
         satisfymessage(message);
+        reload();
       }
     } catch (err) {
       console.log(err);
@@ -223,4 +227,4 @@ const HorizontalFC = ({
   );
 };
 
-export default HorizontalFC;
+export default FavouriteFc;

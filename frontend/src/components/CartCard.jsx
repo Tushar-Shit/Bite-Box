@@ -5,21 +5,51 @@ const CartCard = ({
   id,
   image,
   name,
-  defaultQuantity,
+  servingQuantity,
+  quantity,
   unit,
   defaultPrice,
   foodUnit,
-  onClick,
+  reload,
   satisfymessage,
 }) => {
+  const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
+  console.log(sessionCart);
+  // console.log("inside cart card")
   //master function for delete, increase, decrease
   const masterFunc = async (commandVal) => {
     if (!id) return;
-    // const user = JSON.parse(sessionStorage.getItem("user"));
-    // if (user === false) {
 
-    //   return;
-    // }
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      let sessionCart = JSON.parse(sessionStorage.getItem("cart"))||[];
+      // console.log(sessionCart);
+
+      if (commandVal === "increase") {
+        const existItem = sessionCart.find((item) => item._id === id);
+        if (existItem) {
+          existItem.quantity++;
+        } else {
+          sessionCart.push({
+            _id: id,
+            quantity: 1,
+          });
+        }
+      } else if (commandVal === "decrease") {
+        const existItem = sessionCart.find((item) => item._id === id);
+        if (existItem && existItem.quantity >1) {
+          existItem.quantity -= 1;
+        }
+      } else if (commandVal === "add/dlt") {
+        sessionCart = sessionCart.filter((item) => item._id !== id);
+      } else {
+        console.log("no command exist");
+      }
+      sessionStorage.setItem("cart", JSON.stringify(sessionCart));
+    // reload();
+      return;
+    }
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         method: "POST",
@@ -28,16 +58,13 @@ const CartCard = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          FId: id,
-          FQuantity: defaultQuantity,
-          FPrice: defaultPrice,
+          data: [{ id: id, quantity: quantity }],
           command: commandVal, //add/dlt, increase, decrease
         }),
       });
       const { message } = await res.json();
+      reload();
       satisfymessage(message);
-      // console.log(message);
-      onClick();
     } catch (e) {
       console.log(e);
     }
@@ -51,7 +78,7 @@ const CartCard = ({
       <div className=" w-3/5 h-full flex flex-col justify-center px-2">
         <div className="text-lg font-bold">{name}</div>
         <div className="text-sm">
-          {defaultQuantity} {unit}
+          {servingQuantity} {unit}
         </div>
         <div className="flex gap-3 items-center">
           <div className="text-md font-semibold">₹{defaultPrice}</div>

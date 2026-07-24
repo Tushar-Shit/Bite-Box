@@ -5,6 +5,7 @@ const HorizontalRounded = ({
   id,
   image,
   name,
+  servingQuantity,
   quantity,
   unit,
   price,
@@ -43,7 +44,7 @@ const HorizontalRounded = ({
       <div className={`w-45 pr-2  text-${colorClass.text}`}>
         <p className="text-lg font-bold">{name}</p>
         <p>
-          {quantity} {unit}
+          {servingQuantity} {unit}
         </p>
         <p className="font-bold">₹{price}</p>
         <p className="flex gap-0.5">

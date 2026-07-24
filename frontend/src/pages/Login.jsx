@@ -37,6 +37,54 @@ function Login() {
 
       const data = await response.json();
 
+      //merge session data and DB data
+      if (data.message.startsWith("Welcome")) {
+        const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+        const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+
+        // const favResponse = await fetch(
+        //   `${import.meta.env.VITE_API_URL}/user/addfav`,
+        //   {
+        //     method: "POST",
+        //     credentials: "include",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       foodId: sessionFav,
+        //     }),
+        //   },
+        // );
+        // const { message } = await favResponse.json();
+        // if (message === "Add to Favourite") {
+        //   sessionStorage.removeItem("fav");
+        // }
+        // console.log(message);
+
+        const cartDetails = sessionCart.map((item) => ({
+          id: item._id,
+          quantity: item.quantity,
+        }));
+        console.log(cartDetails);
+        const cartResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/cart`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              data: cartDetails,
+              command: "SCA", //Session Cart Add
+            }),
+          },
+        );
+        const { message } = await cartResponse.json();
+        // if (message === "Added to Cart") {
+          sessionStorage.removeItem("fav");
+        // }
+      }
       setFormData({
         email: "",
         password: "",
@@ -45,6 +93,8 @@ function Login() {
       navigate("/", {
         state: { message: data.message },
       });
+
+      // window.location.reload(); //forcefully reload the page after login
     } catch (error) {
       console.error(error);
       alert("Something went wrong");

@@ -6,7 +6,6 @@ const Reviews = require("../models/reviews");
 
 //request for category list
 router.get("/", async (req, res) => {
-    console.log("enter category block");
     const categoriesData = await Category.find({});
     res.json(categoriesData);
 })

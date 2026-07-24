@@ -13,7 +13,19 @@ const BottomBar = ({ update }) => {
   const [cartCount, setCartCount] = useState(null);
   const [favCount, setFavCount] = useState(null);
 
+  //update the bar and icons
   useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user === false) {
+      let favcount = JSON.parse(sessionStorage.getItem("fav")) || [];
+      let cartcount = JSON.parse(sessionStorage.getItem("cart")) || [];
+      setFavCount(favcount.length);
+      setCartCount(cartcount.length);
+      favcount = null;
+      cartcount = null;
+      return;
+    }
+
     async function data() {
       const Cartdata = await fetch(
         `${import.meta.env.VITE_API_URL}/user/cart`,
@@ -25,8 +37,7 @@ const BottomBar = ({ update }) => {
       if (Cartitems.code === "ND" || Cartitems.length <= 0) {
         console.log(Cartitems.message);
         setCartCount(null);
-      }
-      else setCartCount(Cartitems.length);
+      } else setCartCount(Cartitems.length);
 
       const Favdata = await fetch(
         `${import.meta.env.VITE_API_URL}/user/favourite`,
@@ -88,7 +99,7 @@ const BottomActionBar = ({ onClick, price, state }) => {
     <div className="flex justify-around py-4 items-center rounded-t-lg bg-zinc-300">
       {state ? (
         <div
-          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50"
+          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50 cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -99,7 +110,7 @@ const BottomActionBar = ({ onClick, price, state }) => {
         </div>
       ) : (
         <div
-          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50"
+          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50 cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -109,7 +120,7 @@ const BottomActionBar = ({ onClick, price, state }) => {
           <ShoppingCart /> Add to Cart
         </div>
       )}
-      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500">
+      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer">
         Buy at <span>₹{price}</span>
       </div>
     </div>

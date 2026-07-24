@@ -101,7 +101,7 @@ const Home = () => {
         } else {
           isLoggedIn = true;
           sessionStorage.setItem("user", true);
-          console.log(isLoggedIn);
+          // console.log(isLoggedIn);
           setUser(userData);
         }
 
@@ -119,7 +119,7 @@ const Home = () => {
       }
     }
     getData();
-  }, []);
+  }, [isLoggedIn]);
 
   const [showSide, setShowSide] = useState(false); //sidebar logic
   const showSideBar = () => {
@@ -130,6 +130,7 @@ const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [message, setMessage] = useState(location.state?.message || "");
+
   useEffect(() => {
     if (location.state?.message) {
       navigate(location.pathname, {
@@ -146,17 +147,17 @@ const Home = () => {
 
     const timer = setTimeout(() => {
       setMsg(null);
-      setUpdate(false);
+      setUpdate(!update);
     }, 2000); // 3 seconds
 
     return () => clearTimeout(timer);
   }, [msg]);
-// let bing=sessionStorage.getItem("user");
-// console.log(bing);
+  // let bing=sessionStorage.getItem("user");
+  // console.log(bing);
 
   function satisfymessage(text) {
     setMsg(text);
-    setUpdate(true);
+    setUpdate(!update);
   }
   return (
     <div>
@@ -214,6 +215,7 @@ const Home = () => {
               key={item._id}
               image={item.image}
               name={item.name}
+              servingQuantity={item.servingQuantity}
               quantity={item.quantity}
               price={item.price}
               unit={item.unit}
@@ -221,6 +223,7 @@ const Home = () => {
               id={item._id}
               isFav={favFoods.some((food) => food._id === item._id)}
               satisfymessage={satisfymessage}
+              description={item.description}
             />
           ))}
           <Link to={`/tag/trending`}>
@@ -239,6 +242,7 @@ const Home = () => {
               image={item.image}
               name={item.name}
               description={item.description}
+              servingQuantity={item.servingQuantity}
               quantity={item.quantity}
               price={item.price}
               unit={item.unit}
@@ -260,6 +264,7 @@ const Home = () => {
               id={item._id}
               image={item.image}
               name={item.name}
+              servingQuantity={item.servingQuantity}
               quantity={item.quantity}
               unit={item.unit}
               price={item.price}
@@ -280,12 +285,15 @@ const Home = () => {
               key={item._id}
               image={item.image}
               name={item.name}
+              servingQuantity={item.servingQuantity}
               quantity={item.quantity}
               price={item.price}
               category={item.Category}
               unit={item.unit}
               id={item._id}
               isFav={favFoods.some((food) => food._id === item._id)}
+              satisfymessage={satisfymessage}
+              description={item.description}
             />
           ))}
         </div>
@@ -301,6 +309,7 @@ const Home = () => {
               image={item.image}
               name={item.name}
               description={item.description}
+              servingQuantity={item.servingQuantity}
               quantity={item.quantity}
               price={item.price}
               unit={item.unit}
