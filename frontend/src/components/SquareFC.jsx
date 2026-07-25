@@ -84,7 +84,7 @@ const SquareFC = ({
   return (
     <Link
       to={`/meal/${id}`}
-      className="shrink-0 w-[45%] h-55 shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative"
+      className="shrink-0 w-[45%] max-w-47 h-55 shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative"
     >
       <div className="bg-zinc-50 rounded-full p-1 w-7 h-7 absolute right-1 top-1 flex items-center">
         <Heartclick onClick={handle} isFav={fav} />
@@ -99,9 +99,10 @@ const SquareFC = ({
       </div>
       <div className="flex flex-col p-2 pl-3 text-md">
         <p className="font-bold truncate">{name}</p>
-        <p className="">
-          {servingQuantity} {unit}
-        </p>
+        <div className="w-full flex items-center justify-between pr-2">
+          <p>{servingQuantity} {unit}</p>
+          <p className="text-green-700 text-sm font-bold"><span className="text-md">&#183;</span><span>Available</span></p>
+        </div>
         <div className="flex justify-between">
           <p className="font-bold ">₹{price}</p>
           <span className="mr-3">🔥 4.3</span>

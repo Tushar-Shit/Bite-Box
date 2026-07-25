@@ -10,7 +10,7 @@ const MessageBar = ({ message }) => {
     ${show && "hidden"}`}
     >
       <p>{message}</p>
-      <p className="text-3xl" onClick={handleShow}>
+      <p className="text-3xl cursor-pointer select-none" onClick={handleShow}>
         &times;
       </p>
     </div>

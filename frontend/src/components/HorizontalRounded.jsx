@@ -42,11 +42,12 @@ const HorizontalRounded = ({
       </div>
 
       <div className={`w-45 pr-2  text-${colorClass.text}`}>
-        <p className="text-lg font-bold">{name}</p>
-        <p>
-          {servingQuantity} {unit}
-        </p>
-        <p className="font-bold">₹{price}</p>
+        <p className="text-lg font-bold truncate">{name}</p>
+        <p className="">{servingQuantity} {unit}</p>
+        <div className="min-w-33 max-w-35 flex items-center justify-between font-bold">
+          <p>₹{price}</p>
+          <p><span className="text-lg items-center">&#183;</span><span>Available</span></p>
+        </div>
         <p className="flex gap-0.5">
           <Star size={20} fill={colorClass.text} color={colorClass.text} strokeWidth={0.5} />
           <Star size={20} fill={colorClass.text} color={colorClass.text} strokeWidth={0.5} />

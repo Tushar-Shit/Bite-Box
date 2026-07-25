@@ -25,13 +25,13 @@ const Categories = () => {
     getData();
   }, []);
   return (
-    <>
+    <div className="h-screen w-full">
       <Helmet>
         <title>BiteBox | Categories</title>
       </Helmet>
       <CustomNav text="Categories" path="/" />
-      {loaderState && <Loader/>}
-      <div className="flex flex-wrap justify-center gap-5 my-5">
+      {loaderState && <Loader />}
+      <div className="flex flex-wrap justify-center gap-5 my-5 xl:py-15 lg:items-center">
         {allData.map((category) => (
           <CategoryCards
             key={category._id} // MongoDB unique ID required for React loops
@@ -41,11 +41,9 @@ const Categories = () => {
           />
         ))}
       </div>
-
       <BottomBar />
-    </>
+    </div>
   );
 };
 
 export default Categories;
-//everything is structured till 27.6.26

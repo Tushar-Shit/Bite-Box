@@ -16,6 +16,8 @@ function Login() {
     });
   };
 
+
+//login function
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -37,35 +39,34 @@ function Login() {
 
       const data = await response.json();
 
-      //merge session data and DB data
+      //merge session data and DB data after successfull login
       if (data.message.startsWith("Welcome")) {
         const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
         const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
 
-        // const favResponse = await fetch(
-        //   `${import.meta.env.VITE_API_URL}/user/addfav`,
-        //   {
-        //     method: "POST",
-        //     credentials: "include",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       foodId: sessionFav,
-        //     }),
-        //   },
-        // );
-        // const { message } = await favResponse.json();
-        // if (message === "Add to Favourite") {
-        //   sessionStorage.removeItem("fav");
-        // }
-        // console.log(message);
+        const favResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/addfav`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              foodId: sessionFav,
+            }),
+          },
+        );
+        const { message } = await favResponse.json();
+        if (message === "Add to Favourite") {
+          sessionStorage.removeItem("fav");
+        }
 
         const cartDetails = sessionCart.map((item) => ({
           id: item._id,
           quantity: item.quantity,
         }));
-        console.log(cartDetails);
+        // console.log(cartDetails);
         const cartResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/user/cart`,
           {
@@ -80,15 +81,16 @@ function Login() {
             }),
           },
         );
-        const { message } = await cartResponse.json();
-        // if (message === "Added to Cart") {
-          sessionStorage.removeItem("fav");
-        // }
+        const data = await cartResponse.json();
+        if (data.message === "Added to Cart") {
+          sessionStorage.removeItem("cart");
+        }
       }
       setFormData({
         email: "",
         password: "",
       });
+      sessionStorage.setItem("user", JSON.stringify(true));
 
       navigate("/", {
         state: { message: data.message },

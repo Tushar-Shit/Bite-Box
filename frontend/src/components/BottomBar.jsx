@@ -54,40 +54,41 @@ const BottomBar = ({ update }) => {
 
   return (
     <div className="h-18">
-      <div className="bg-zinc-100 w-full flex justify-evenly items-center fixed bottom-0 p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500">
-        <Link to="/" className="flex flex-col items-center">
-          <House strokeWidth={1.5} />
-          <span>Home</span>
-        </Link>
-        <Link to="/search" className="flex flex-col items-center">
-          <Search strokeWidth={1.5} />
-          Search
-        </Link>
-        <Link to="/categories" className="flex flex-col items-center">
-          <Blocks strokeWidth={1.5} />
-          Category
-        </Link>
-        <Link to="/favorite" className="flex flex-col items-center relative">
-          <Heart strokeWidth={1.5} size={26} />
-          <span> Favourite</span>
-          {favCount > 0 ? (
-            <span className="absolute left-10 -top-1 rounded-full px-1 w-fit h-fit text-sm bg-red-600 text-white">
-              {favCount}
-            </span>
-          ) : null}
-        </Link>
-        <Link to="/cart" className="flex flex-col items-center relative">
-          <ShoppingBag strokeWidth={1.5} />
-          <span>Cart</span>
-          {cartCount > 0 ? (
-            <span
-              className={`absolute -right-1.5 -top-1.5 rounded-full px-1 w-fit h-fit text-sm  bg-red-600 text-white`}
-            >
-              {cartCount}
-            </span>
-          ) : null}
-        </Link>
-      </div>
+    <div className="shrink-0 bg-zinc-100 w-full flex justify-evenly items-center p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500 fixed bottom-0">
+      
+      <Link to="/" className="flex flex-col items-center">
+        <House strokeWidth={1.5} />
+        <span>Home</span>
+      </Link>
+      <Link to="/search" className="flex flex-col items-center">
+        <Search strokeWidth={1.5} />
+        Search
+      </Link>
+      <Link to="/categories" className="flex flex-col items-center">
+        <Blocks strokeWidth={1.5} />
+        Category
+      </Link>
+      <Link to="/favorite" className="flex flex-col items-center relative">
+        <Heart strokeWidth={1.5} size={26} />
+        <span> Favourite</span>
+        {favCount > 0 ? (
+          <span className="absolute left-10 -top-1 rounded-full px-1 w-fit h-fit text-sm bg-red-600 text-white">
+            {favCount}
+          </span>
+        ) : null}
+      </Link>
+      <Link to="/cart" className="flex flex-col items-center relative">
+        <ShoppingBag strokeWidth={1.5} />
+        <span>Cart</span>
+        {cartCount > 0 ? (
+          <span
+            className={`absolute -right-1.5 -top-1.5 rounded-full px-1 w-fit h-fit text-sm  bg-red-600 text-white`}
+          >
+            {cartCount}
+          </span>
+        ) : null}
+      </Link>
+    </div>
     </div>
   );
 };
@@ -120,7 +121,7 @@ const BottomActionBar = ({ onClick, price, state }) => {
           <ShoppingCart /> Add to Cart
         </div>
       )}
-      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer">
+      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer select-none">
         Buy at <span>₹{price}</span>
       </div>
     </div>

@@ -10,19 +10,63 @@ import { ShortMsg } from "../components/MessageBar";
 
 const MealDetails = () => {
   const { id } = useParams();
+  //keep the user status
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const [loggedIn, setLoggedIn] = useState(user);
 
-  // Catching food and reviews data
+  //fav, cart, food, reviews informations
+  const [fav, setFav] = useState(false);
+  const [inCart, setInCart] = useState(false);
   const [food, setFood] = useState({});
   const [allReviews, setAllReviews] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+
   useEffect(() => {
     async function getData() {
       try {
+        //extract food & reviews data
         const res = await fetch(`${import.meta.env.VITE_API_URL}/meal/${id}`);
         const { foodItem, reviews } = await res.json();
         setFood(foodItem);
         setAllReviews(reviews);
+
+        //fav & cart icon State || user not logged in
+        if (loggedIn === false) {
+          const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+          if (sessionFav) {
+            setFav(sessionFav.some((item) => item._id === id));
+          }
+          const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+          if (sessionCart && sessionCart.some((item) => item._id === id)) {
+            const item = sessionCart.find((item) => item._id === id);
+            setQuantity(item.quantity);
+            setInCart(!inCart);
+          }
+          return;
+        }
+
+        //fav icon State || user logged in
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          {
+            credentials: "include",
+          },
+        );
+        const { favourites } = await response.json();
+        const inival = favourites.some((item) => item._id === id);
+        setFav(inival);
+        //cart icon State || user logged in
+        const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+          credentials: "include",
+        });
+        const items = await data.json();
+        const exist = items.find((i) => i.foodId._id === id);
+        if (exist) {
+          setQuantity(exist.quantity);
+          setInCart(!inCart);
+        }
       } catch (err) {
-        console.error(err);
+        console.log(err);
       }
     }
     getData();
@@ -44,7 +88,6 @@ const MealDetails = () => {
       : 0;
 
   // Quantity and price calculation
-  const [quantity, setQuantity] = useState(1);
   const [finalPrice, setFinalPrice] = useState(0);
   useEffect(() => {
     if (food.price) {
@@ -53,12 +96,51 @@ const MealDetails = () => {
     }
   }, [food, quantity]); // Re-calculates accurately whenever food data or quantity updates
 
-  const quantityIncrease = () => {
-    setQuantity((prev) => prev + 1);
-  };
-  const quantityDecrease = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  };
+  // ========== updation of the food (guest user nad real user) ==========
+  async function updateQuantity(command) {
+    //calculate the new quantity
+    const newQuantity =
+      command === "increase" ? quantity + 1 : Math.max(1, quantity - 1);
+
+    //set UI, session cart(if) || when user not logged in
+    if (loggedIn === false) {
+      const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      const thisItem = sessionCart.find((item) => item._id === id);
+      setQuantity(newQuantity); //update the UI first
+      if (thisItem) {
+        thisItem.quantity = newQuantity;
+        sessionStorage.setItem("cart", JSON.stringify(sessionCart));
+      }
+      return;
+    }
+    //set UI, DB cart || when user logged in
+    try {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        credentials: "include",
+      });
+      const cartItems = await data.json();
+      const itemExist = cartItems.find((i) => i.foodId._id === id);
+      setQuantity(newQuantity); //update the UI first
+      if (itemExist) {
+        itemExist.quantity = newQuantity;
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: [{ id: id, quantity: itemExist.quantity }],
+            command: "SCA", //store as it is in DB
+          }),
+        });
+        const { message } = await res.json();
+        console.log(message);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   // Description "Read More" logic
   const [fullDescription, setFullDescription] = useState(false);
@@ -68,54 +150,6 @@ const MealDetails = () => {
   const truncatedDescription = isLongDescription
     ? words.slice(0, 6).join(" ")
     : food.description;
-
-  //checking is it in favourite and cart for icon's initial state
-  const [state, setState] = useState(false);
-  const [inCart, setInCart] = useState(false);
-  useEffect(() => {
-    if (!id) return;
-
-    //if user not logged in
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
-      const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
-      if (sessionFav) {
-        setState(sessionFav.some((item) => item._id === id));
-      }
-
-      const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
-      if (sessionCart && sessionCart.some((item) => item._id === id)) {
-        setInCart(!inCart);
-      }
-      return;
-    }
-
-    //works only when user logged in
-    async function getfav() {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/favourite`,
-          {
-            credentials: "include",
-          },
-        );
-        const { favourites } = await response.json();
-        const inival = favourites.some((item) => item._id === id);
-        setState(inival);
-
-        const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
-          credentials: "include",
-        });
-        const items = await data.json();
-        console.log(items);
-        const exist = items.some((i) => i.foodId._id === id);
-        if (exist) setInCart(!inCart);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    getfav();
-  }, [id]);
 
   const [msg, setMsg] = useState(null);
   useEffect(() => {
@@ -136,8 +170,7 @@ const MealDetails = () => {
     if (!id) return;
 
     //if user not logged in
-    let user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    if (loggedIn === false) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const index = preFav.findIndex((item) => item._id === id);
       if (index === -1) {
@@ -151,11 +184,11 @@ const MealDetails = () => {
           quantity: food.quantity,
         });
         setMsg("item added");
-        setState((prev) => !prev);
+        setFav((prev) => !prev);
       } else {
         preFav.splice(index, 1);
         setMsg("item removed");
-        setState((prev) => !prev);
+        setFav((prev) => !prev);
       }
       sessionStorage.setItem("fav", JSON.stringify(preFav));
       return;
@@ -178,7 +211,7 @@ const MealDetails = () => {
 
       const { message } = await response.json();
       setMsg(message);
-      setState((prev) => !prev);
+      setFav((prev) => !prev);
     } catch (err) {
       console.log(err);
     }
@@ -190,8 +223,7 @@ const MealDetails = () => {
     e.stopPropagation();
 
     //if user not logged in
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    if (loggedIn === false) {
       let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
       const index = preCart.findIndex((item) => item._id === id);
       if (index === -1) {
@@ -201,7 +233,7 @@ const MealDetails = () => {
           name: food.name,
           price: food.price,
           unit: food.unit,
-          quantity: food.quantity,
+          quantity: quantity,
         });
         setInCart(!inCart);
         setMsg("item added");
@@ -222,7 +254,7 @@ const MealDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: food.quantity }],
+          data: [{ id: id, quantity: quantity }],
           command: "add/dlt", //command need for add and delete to separate updation
         }),
       });
@@ -253,7 +285,7 @@ const MealDetails = () => {
           className="w-full h-full object-cover rounded-lg"
         />
         <div className="absolute top-0 right-0 rounded-full bg-white p-0.5 cursor-pointer">
-          <Heartclick onClick={handle} isFav={state} />
+          <Heartclick onClick={handle} isFav={fav} />
         </div>
       </div>
 
@@ -267,14 +299,14 @@ const MealDetails = () => {
           {/* quantity component */}
           <div className="flex justify-evenly gap-2 items-center bg-zinc-300 rounded-2xl p-1">
             <button
-              onClick={quantityDecrease}
+              onClick={() => updateQuantity("decrease")}
               className="bg-white text-black rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
             >
               <Minus size={18} />
             </button>
             <div className="font-semibold mx-1 w-4 text-center">{quantity}</div>
             <button
-              onClick={quantityIncrease}
+              onClick={() => updateQuantity("increase")}
               className="bg-orange-500 text-white rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
             >
               <Plus size={18} />

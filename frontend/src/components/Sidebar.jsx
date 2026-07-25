@@ -30,9 +30,12 @@ function Sidebar({ onClick, showSide }) {
   useEffect(() => {
     const profile = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/profile`,
+          {
+            credentials: "include",
+          },
+        );
 
         const data = await response.json();
 
@@ -56,9 +59,9 @@ function Sidebar({ onClick, showSide }) {
         username: "",
         email: "",
       });
+      sessionStorage.setItem("user", JSON.stringify(false));
       onClick();
       window.location.reload();
-      
     } catch (err) {
       console.error(err);
     }
@@ -106,12 +109,20 @@ function Sidebar({ onClick, showSide }) {
             </div>
           )}
 
-          <Link to="/help" state={"ce"} className="flex items-center gap-2 px-10 border-b">
+          <Link
+            to="/help"
+            state={"ce"}
+            className="flex items-center gap-2 px-10 border-b"
+          >
             <Mail className="w-[10%]" />
             <SidebarSupport title="Change Email" />
           </Link>
 
-          <Link to="/help" state={"cp"} className="flex items-center gap-2 px-10 border-b">
+          <Link
+            to="/help"
+            state={"cp"}
+            className="flex items-center gap-2 px-10 border-b"
+          >
             <KeyRound className="w-[10%]" />
             <SidebarSupport title="Change Password" />
           </Link>
@@ -122,7 +133,7 @@ function Sidebar({ onClick, showSide }) {
           </div> */}
 
           <Link
-            to="/favorite"
+            to="/orders"
             className="flex items-center gap-2 px-10 border-b"
           >
             <NotebookPen className="w-[10%]" />

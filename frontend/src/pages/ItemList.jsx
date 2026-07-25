@@ -77,6 +77,7 @@ const ItemList = () => {
     setMsg(text);
     setUpdate(true);
   }
+  console.log("item.jsx")
   return (
     <>
       <Helmet>
@@ -86,7 +87,7 @@ const ItemList = () => {
       </Helmet>
       <CustomNav text={items ? `All ${items} list` : `${anything}`} />
       {msg && <ShortMsg message={msg} />}
-      <div className="px-4 pt-4 flex flex-col">
+      <div className="px-4 pt-4 sm:flex sm:flex-wrap sm:gap-4">
         {fooddata.map((item) => (
           <HorizontalFC
             key={item._id} // MongoDB unique ID required for React loops
@@ -99,6 +100,8 @@ const ItemList = () => {
             id={item._id}
             isFav={favFoods.some((food) => food._id === item._id)}
             satisfymessage={satisfymessage}
+            //design purpose
+            view={"list"}
           />
         ))}
       </div>

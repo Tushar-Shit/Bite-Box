@@ -30,24 +30,23 @@ const Navbar = ({ onClick, user }) => {
     visibleName = user.username.split(" ");
   }
   return (
-    <div className="flex justify-between items-center px-4 w-0.5/5 bg-red-500  h-auto py-5">
-      <div className="flex gap-1 items-center">
+    <div className="flex justify-between items-center px-4 w-full h-16 bg-red-500 py-3">
+      <div className="flex gap-2 items-center">
       <Menu  />
       <p className="text-lg font-bold">BiteBox</p>
       </div>
       {user.username ? (
         <>
-          <div className="gap-2 cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer" onClick={onClick}>
             <UserRound
-              strokeWidth={1.5}
-              onClick={onClick}
-              className="border rounded-full w-7 h-7 cursor-pointer m-auto"
+              strokeWidth={1.5}              
+              className="border rounded-full w-7 h-7"
             />
-            <p className="text-sm">{visibleName[0]}</p>
+            <p className="text-sm font-medium">{visibleName[0]}</p>
           </div>
         </>
       ) : (
-        <div className="flex gap-2 text-white font-semibold">
+        <div className="flex gap-3 text-white font-semibold text-md">
           <span>
             <Link to="/signup">SignUp</Link>
           </span>

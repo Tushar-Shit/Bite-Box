@@ -11,25 +11,32 @@ import UserProfile from "./pages/UserProfile";
 import React from "react";
 import HelpingPage from "./pages/HelpingPage";
 import Order from "./pages/Order";
+import Testingpage from "./pages/testingpage";
 const App = () => {
   return (
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/userinfo" element={<UserProfile/>}/>
-        <Route path="/help" element={<HelpingPage/>}/>
-        <Route path="/orders" element={<Order/>}/>
-       
+        <Route path="/userinfo" element={<UserProfile />} />
+        <Route path="/orders" element={<Order />} />
+
         <Route path="/categories" element={<Categories />} />
-        <Route path="/favorite" element={<Favorite />} />
         <Route path="/categories/:items" element={<ItemList />} />
-        <Route path="/meal/:id" element={<MealDetails />} />
         <Route path="/tag/:anything" element={<ItemList />} />
-        <Route path="/cart" element={<Cart/>} />
-        <Route path="/categories/:items/:id" element={<MealDetails />} />
+
+        <Route path="/favorite" element={<Favorite />} />
+        <Route path="/meal/:id" element={<MealDetails />} />
+        <Route path="/cart" element={<Cart />} />
+
+        {/* email & password change */}
+        <Route path="/help" element={<HelpingPage/>}/>
+
+        
+        {/* for test and development purpose */}
+        <Route path="/test" element={<Testingpage />} />
+        {/* <Route path="/categories/:items/:id" element={<MealDetails />} /> */}
       </Routes>
     </div>
   );

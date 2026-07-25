@@ -7,8 +7,8 @@ import { Link } from "react-router-dom";
 const Subheading = ({ title }) => {
   // console.log(props);
   return (
-    <span className="text-green-700 text-[1.25rem]">
-      <b>{title}</b>
+    <span className="text-green-700 text-[1.25rem] font-bold">
+    {title}
     </span>
   );
 };
@@ -17,14 +17,12 @@ const Subheading = ({ title }) => {
 const SeeMore = ({ text, onClick }) => {
   return (
     <button
-      // onClick={onClick}
-      className="w-full flex justify-center border-none bg-transparent cursor-pointer"
+      className="w-full flex justify-center border-none bg-transparent cursor-pointer font-bold"
     >
-      <b>
-        <div className="flex w-40 bg-zinc-200 text-red-500 p-1 px-2 items-center justify-center rounded-lg text-lg">
-          {text} <ChevronRight size={16} />
+        <div className="w-26 h-18 rounded-full flex items-center justify-center bg-zinc-300">
+          <span className="pl-2">{text}</span>
+          <span className="text-red-500"><ChevronRight size={22} fill="red" /></span>
         </div>
-      </b>
     </button>
   );
 };

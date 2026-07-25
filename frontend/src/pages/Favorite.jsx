@@ -79,13 +79,14 @@ const Favorite = () => {
       {favouriteItems.length <= 0 ? (
         <Nodata text1="No Item!" text2="Hurry Up Catch Favourites!" />
       ) : (
-        <div className="container overflow-y-auto flex flex-col pt-4">
+        <div className="px-4 pt-4 sm:flex sm:flex-wrap sm:gap-4">
           {favouriteItems.map((item) => (
             <FavouriteFc
               key={item._id}
               image={item.image}
               name={item.name}
               description={item.description}
+              servingQuantity={item.servingQuantity}
               quantity={item.quantity}
               price={item.price}
               unit={item.unit}
@@ -93,6 +94,8 @@ const Favorite = () => {
               isFav={favouriteItems.some((food) => food._id === item._id)}
               satisfymessage={satisfymessage}
               reload={reload}
+              //design purpose
+              view={"list"}
             />
           ))}
         </div>

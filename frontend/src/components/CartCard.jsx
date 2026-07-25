@@ -13,40 +13,27 @@ const CartCard = ({
   reload,
   satisfymessage,
 }) => {
-  const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
-  console.log(sessionCart);
-  // console.log("inside cart card")
-  //master function for delete, increase, decrease
+  //master function for delete, increase, decrease in both session, DB
   const masterFunc = async (commandVal) => {
     if (!id) return;
 
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (user === false) {
-      let sessionCart = JSON.parse(sessionStorage.getItem("cart"))||[];
-      // console.log(sessionCart);
+      let sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      const existItem = sessionCart.find((item) => item._id === id);
+      if (existItem) {
+        commandVal === "increase" &&
+          (existItem.quantity++, satisfymessage("item increased"));
 
-      if (commandVal === "increase") {
-        const existItem = sessionCart.find((item) => item._id === id);
-        if (existItem) {
-          existItem.quantity++;
-        } else {
-          sessionCart.push({
-            _id: id,
-            quantity: 1,
-          });
-        }
-      } else if (commandVal === "decrease") {
-        const existItem = sessionCart.find((item) => item._id === id);
-        if (existItem && existItem.quantity >1) {
-          existItem.quantity -= 1;
-        }
-      } else if (commandVal === "add/dlt") {
-        sessionCart = sessionCart.filter((item) => item._id !== id);
-      } else {
-        console.log("no command exist");
+        commandVal === "decrease" &&
+          (existItem.quantity--, satisfymessage("item decreased"));
+          
+        commandVal === "add/dlt" &&
+          ((sessionCart = sessionCart.filter((item) => item._id !== id)),
+          satisfymessage("Item Removed"));
       }
       sessionStorage.setItem("cart", JSON.stringify(sessionCart));
-    // reload();
+      reload();
       return;
     }
 
@@ -76,12 +63,24 @@ const CartCard = ({
         <img src={image} alt="" className="object-cover h-full w-full" />
       </div>
       <div className=" w-3/5 h-full flex flex-col justify-center px-2">
-        <div className="text-lg font-bold">{name}</div>
-        <div className="text-sm">
-          {servingQuantity} {unit}
+        <div className="w-9/10 text-lg font-bold truncate">{name}</div>
+        <div
+          id="serve-quantity-availability"
+          className="min-w-35 w-3/6 flex items-center justify-between"
+        >
+          <p id="serve-unit">
+            <span id="food-serve-quantity">{servingQuantity}</span>{" "}
+            <span id="food-unit">{unit}</span>
+          </p>
+          <span
+            id="food-availbility"
+            className="text-sm font-bold text-red-700"
+          >
+            <span className="text-lg mr-0.5">&#183;</span>Unavailable
+          </span>
         </div>
         <div className="flex gap-3 items-center">
-          <div className="text-md font-semibold">₹{defaultPrice}</div>
+          <div className="text-md font-bold">₹{defaultPrice}</div>
           <div className="flex gap-0.5">
             <Star size={12} fill="black" />
             <Star size={12} fill="black" />
@@ -90,12 +89,8 @@ const CartCard = ({
             <Star size={12} />
           </div>
         </div>
-        <div className="text-[12px] font-bold text-red-700">
-          {defaultPrice * foodUnit}
-        </div>
-        {/* <div className="text-[12px] font-bold text-red-700">Out of Stock</div> */}
 
-        <div className="mt-0.5 flex justify-around items-center ">
+        <div className="mt-1 flex justify-around items-center ">
           <div className="flex justify-evenly gap-2 items-center bg-zinc-100 rounded-2xl p-1">
             <button
               onClick={() => {
@@ -117,7 +112,7 @@ const CartCard = ({
             </button>
           </div>
           <div
-            className="flex items-center text-sm font-medium bg-zinc-800 text-white p-1 px-2 rounded-lg cursor-pointer"
+            className="flex items-center text-sm font-medium bg-zinc-800 text-white p-1 px-2 rounded-lg cursor-pointer select-none"
             onClick={() => masterFunc("add/dlt")}
           >
             <Trash2 size={15} />

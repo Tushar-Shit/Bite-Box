@@ -80,7 +80,7 @@ const Home = () => {
           setLoader(false);
           setTrending(trendingFood.slice(0, 10));
           setPopular(popularFood.slice(0, 4));
-          setRecommended(recommendedFood.slice(0, 4));
+          setRecommended(recommendedFood.slice(0, 6));
           setBestSeller(bestSellerFood.slice(0, 8));
           setChefChoice(chefChoiceFood.slice(0, 4));
         }
@@ -160,166 +160,178 @@ const Home = () => {
     setUpdate(!update);
   }
   return (
-    <div>
+    <div className="h-screen flex flex-col ">
       <Helmet>
         <title>BiteBox | The Home of Deliciousness</title>
       </Helmet>
-
-      {/* satisfaction message component */}
-      {message && <MessageBar message={message} />}
-      {msg && <ShortMsg message={msg} />}
-      {/* home page navbar, sidebar function and user data */}
       <Navbar onClick={showSideBar} user={user} />
-      {loader && <Loader />}
-      {/* sidebar component */}
-      {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
+      <main className="flex-1 overflow-y-auto scrollbar-none">
+        {/* satisfaction message component */}
+        {message && <MessageBar message={message} />}
+        {msg && <ShortMsg message={msg} />}
+        {/* home page navbar, sidebar function and user data */}
+        {loader && <Loader />}
+        {/* sidebar component */}
+        {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
 
-      <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
-        Are you Hungry
-        {/* <Utensils strokeWidth={1} className="w-5" /> */}
-      </h1>
-      <h1 className="ml-3 my-0 font-extrabold text-xl">
-        What meal do you Want?
-      </h1>
+        <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
+          Are you Hungry
+          {/* <Utensils strokeWidth={1} className="w-5" /> */}
+        </h1>
+        <h1 className="ml-3 my-0 font-extrabold text-xl">
+          What meal do you Want?
+        </h1>
 
-      {/* hero section  */}
-      <section className="flex overflow-x-auto mt-2 gap-4 h-60 relative px-[5%] snap-x snap-mandatory scroll-smooth no-scrollbar">
-        {/* <HeroImage image={} /> */}
-        {/* Dynamic Dots Indicator */}
-        {/* <ul className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+        {/* hero section  */}
+        <section className="flex overflow-x-auto mt-2 gap-4 h-60 relative px-[5%] snap-x snap-mandatory scroll-smooth no-scrollbar">
+          {/* <HeroImage image={} /> */}
+          {/* Dynamic Dots Indicator */}
+          {/* <ul className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-10">
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
         </ul> */}
-      </section>
+        </section>
 
-      {/* catgories section  */}
-      <section className="mb-4">
-        <Subheadsee subHeading="Categories" path="/categories" />
-        <div className="flex justify-evenly">
-          <Category text="Snacks" image={images.snacks} />
-          <Category text="Sweets" image={images.sweets} />
-          <Category text="Dessert" image={images.dessert} />
-          <Category text="Drinks" image={images.drinks} />
-        </div>
-      </section>
+        {/* catgories section  */}
+        <section id="category-section" className="mb-4">
+          <Subheadsee subHeading="Categories" path="/categories" />
+          <div id="category-row" className="flex justify-evenly">
+            <Category text="Snacks" image={images.snacks} />
+            <Category text="Sweets" image={images.sweets} />
+            <Category text="Dessert" image={images.dessert} />
+            <Category text="Drinks" image={images.drinks} />
+          </div>
+        </section>
 
-      {/* trending now  */}
-      <section className="mb-2 px-4">
-        <Subheading title="Trending Now" className="ml-4" />
-        <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
-          {trending.map((item) => (
-            <SquareFc
-              key={item._id}
-              image={item.image}
-              name={item.name}
-              servingQuantity={item.servingQuantity}
-              quantity={item.quantity}
-              price={item.price}
-              unit={item.unit}
-              category={item.Category}
-              id={item._id}
-              isFav={favFoods.some((food) => food._id === item._id)}
-              satisfymessage={satisfymessage}
-              description={item.description}
-            />
-          ))}
-          <Link to={`/tag/trending`}>
-            <SeeMore text="See More" />
-          </Link>
-        </div>
-      </section>
+        {/* trending now  */}
+        <section className="mb-2 px-4">
+          <Subheading title="Trending Now" className="ml-4" />
+          <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
+            {trending.map((item) => (
+              <SquareFc
+                key={item._id}
+                image={item.image}
+                name={item.name}
+                servingQuantity={item.servingQuantity}
+                quantity={item.quantity}
+                price={item.price}
+                unit={item.unit}
+                category={item.Category}
+                id={item._id}
+                isFav={favFoods.some((food) => food._id === item._id)}
+                satisfymessage={satisfymessage}
+                description={item.description}
+              />
+            ))}
+            <Link to={`/tag/trending`}>
+              <SeeMore text="See More" />
+            </Link>
+          </div>
+        </section>
 
-      {/* Popular meals section  */}
-      <section className="mb-5">
-        <Subheadsee subHeading="Popular Meals" path="/tag/popular" />
-        <div className="px-5">
-          {popular.map((item) => (
-            <HorizontalFc
-              key={item._id}
-              image={item.image}
-              name={item.name}
-              description={item.description}
-              servingQuantity={item.servingQuantity}
-              quantity={item.quantity}
-              price={item.price}
-              unit={item.unit}
-              id={item._id}
-              isFav={favFoods.some((food) => food._id === item._id)}
-              satisfymessage={satisfymessage}
-            />
-          ))}
-        </div>
-      </section>
+        {/* Popular meals section  */}
+        <section className="mb-5">
+          <Subheadsee subHeading="Popular Meals" path="/tag/popular" />
+          <div
+            className="px-5 items-center justify-between flex-wrap sm:max-lg:flex sm:max-lg:gap-4 
+          lg:max-xl:flex lg:max-xl:gap-5 lg:max-xl:scrollbar-none lg:max-xl:flex-nowrap lg:max-xl:overflow-x-auto
+          xl:flex xl:gap-4 "
+          >
+            {popular.map((item) => (
+              <HorizontalFc
+                key={item._id}
+                image={item.image}
+                name={item.name}
+                description={item.description}
+                servingQuantity={item.servingQuantity}
+                quantity={item.quantity}
+                price={item.price}
+                unit={item.unit}
+                id={item._id}
+                isFav={favFoods.some((food) => food._id === item._id)}
+                satisfymessage={satisfymessage}
+              />
+            ))}
+          </div>
+        </section>
 
-      {/* best seller */}
-      <section className="mb-2 px-4">
-        <Subheading title="Best Seller" className="ml-4" />
-        <div className=" flex items-center overflow-x-auto gap-3 py-3 scrollbar-none">
-          {bestSeller.map((item) => (
-            <HorizontalRounded
-              key={item._id}
-              id={item._id}
-              image={item.image}
-              name={item.name}
-              servingQuantity={item.servingQuantity}
-              quantity={item.quantity}
-              unit={item.unit}
-              price={item.price}
-            />
-          ))}
-          <Link to={`/tag/bestseller`}>
-            <SeeMore text="See More" />
-          </Link>
-        </div>
-      </section>
+        {/* best seller */}
+        <section className="mb-2 px-4">
+          <Subheading title="Best Seller" className="ml-4" />
+          <div className=" flex items-center overflow-x-auto gap-3 py-3 scrollbar-none">
+            {bestSeller.map((item) => (
+              <HorizontalRounded
+                key={item._id}
+                id={item._id}
+                image={item.image}
+                name={item.name}
+                servingQuantity={item.servingQuantity}
+                quantity={item.quantity}
+                unit={item.unit}
+                price={item.price}
+              />
+            ))}
+            <Link to={`/tag/bestseller`}>
+              <SeeMore text="See More" />
+            </Link>
+          </div>
+        </section>
 
-      {/* recommended for you*/}
-      <section className="">
-        <Subheadsee subHeading="Recommended for you" path="/tag/recommended" />
-        <div className="px-4 flex justify-evenly flex-wrap items-center gap-5 scrollbar-none">
-          {recommended.map((item) => (
-            <SquareFc
-              key={item._id}
-              image={item.image}
-              name={item.name}
-              servingQuantity={item.servingQuantity}
-              quantity={item.quantity}
-              price={item.price}
-              category={item.Category}
-              unit={item.unit}
-              id={item._id}
-              isFav={favFoods.some((food) => food._id === item._id)}
-              satisfymessage={satisfymessage}
-              description={item.description}
-            />
-          ))}
-        </div>
-      </section>
+        {/* recommended for you*/}
+        <section className="">
+          <Subheadsee
+            subHeading="Recommended for you"
+            path="/tag/recommended"
+          />
+          <div className="px-4 flex justify-evenly flex-wrap items-center gap-5">
+            {recommended.map((item) => (
+              <SquareFc
+                key={item._id}
+                image={item.image}
+                name={item.name}
+                servingQuantity={item.servingQuantity}
+                quantity={item.quantity}
+                price={item.price}
+                category={item.Category}
+                unit={item.unit}
+                id={item._id}
+                isFav={favFoods.some((food) => food._id === item._id)}
+                satisfymessage={satisfymessage}
+                description={item.description}
+              />
+            ))}
+          </div>
+        </section>
 
-      {/* chef choice */}
-      <section className="pb-2">
-        <Subheadsee subHeading="Chef's Choice" path="/tag/chefchoice" />
-        <div className="px-5 ">
-          {chefChoice.map((item) => (
-            <HorizontalFc
-              key={item._id}
-              image={item.image}
-              name={item.name}
-              description={item.description}
-              servingQuantity={item.servingQuantity}
-              quantity={item.quantity}
-              price={item.price}
-              unit={item.unit}
-              id={item._id}
-              isFav={favFoods.some((food) => food._id === item._id)}
-              satisfymessage={satisfymessage}
-            />
-          ))}
-        </div>
-      </section>
+        {/* chef choice */}
+        <section className="pb-2">
+          <Subheadsee subHeading="Chef's Choice" path="/tag/chefchoice" />
+          <div
+            className="px-5 items-center justify-between flex-wrap sm:max-lg:flex sm:max-lg:gap-4 
+          lg:max-xl:flex lg:max-xl:gap-5 lg:max-xl:scrollbar-none lg:max-xl:flex-nowrap lg:max-xl:overflow-x-auto
+          xl:flex xl:gap-4 "
+          >
+            {chefChoice.map((item) => (
+              <HorizontalFc
+                key={item._id}
+                image={item.image}
+                name={item.name}
+                description={item.description}
+                servingQuantity={item.servingQuantity}
+                quantity={item.quantity}
+                price={item.price}
+                unit={item.unit}
+                id={item._id}
+                isFav={favFoods.some((food) => food._id === item._id)}
+                satisfymessage={satisfymessage}
+              />
+            ))}
+          </div>
+        </section>
+      </main>
       {/* bottom bar  */}
       <BottomBar update={update} />
     </div>
