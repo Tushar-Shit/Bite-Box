@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
-const Users = require("../models/user");
+import jwt from "jsonwebtoken";
+import Users from "../models/user.js";
 
-module.exports = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
 
     const token = req.cookies.token;
     if (!token) return res.status(404).json({
@@ -21,10 +21,11 @@ module.exports = async (req, res, next) => {
                 code: "NU"
             });
         }
-        // console.log(searchUser);
         req.user = decoded.userId;
         next();
     } catch (e) {
         console.log(e)
     }
 }
+
+export default authMiddleware;

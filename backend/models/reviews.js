@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const reviews = new mongoose.Schema({
     food_belong: {
         type: mongoose.Schema.Types.ObjectId,
@@ -13,4 +13,4 @@ const reviews = new mongoose.Schema({
 });
 
 const Reviews = mongoose.model("review", reviews);
-module.exports = Reviews;
+export default Reviews;

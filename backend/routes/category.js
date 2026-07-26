@@ -1,8 +1,8 @@
-const express = require('express');
+import express from "express"
+import Category from "../models/categories.js"
+import FoodItem from "../models/foodItem.js"
+import Reviews from "../models/reviews.js"
 const router = express.Router({ mergeParams: true });
-const Category = require("../models/categories");
-const FoodItem = require("../models/foodItem");
-const Reviews = require("../models/reviews");
 
 //request for category list
 router.get("/", async (req, res) => {
@@ -18,4 +18,4 @@ router.get("/:item", async (req, res) => {
     res.json({ fooditems });
 });
 
-module.exports = router;
+export default router;

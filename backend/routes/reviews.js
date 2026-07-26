@@ -1,11 +1,8 @@
-const express = require('express');
+import express from "express"
+import Category from "../models/categories.js"
+import FoodItem from "../models/foodItem.js"
+import Reviews from "../models/reviews.js"
 const router = express.Router({ mergeParams: true });
-const Category = require("../models/categories");
-const FoodItem = require("../models/foodItem");
-const Reviews = require("../models/reviews");
-
-
-
 
 router.patch("/like/:id", async (req, res) => {
     const { id } = req.params;
@@ -28,10 +25,4 @@ router.patch("/unlike/:id", async (req, res) => {
     }
 })
 
-
-
-
-
-
-
-module.exports = router;
+export default router;

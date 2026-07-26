@@ -1,31 +1,30 @@
-const express = require("express");
+import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
+import cors from "cors";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+import connectDB from "./config/db.js";
+
+//models
+import Category from "./models/categories.js";
+import FoodItem from "./models/foodItem.js";
+import Reviews from "./models/reviews.js";
+import Users from "./models/user.js";
+import Cart from "./models/cart.js";
+
+// Routes
+import categoryRoute from "./routes/category.js";
+import reviewRoute from "./routes/reviews.js";
+import authentication from "./routes/auth.js";
+import userRoute from "./routes/user.js";
+
 const app = express();
 const port = process.env.PORT || 7000;
-require('dotenv').config();
-const cors = require("cors");
-const mongoose = require("mongoose");
-const Category = require("./models/categories");
-const FoodItem = require("./models/foodItem");
-const Reviews = require("./models/reviews");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const Users = require("./models/user");
-const cart = require("./models/cart");
-const cookieParser = require("cookie-parser");
-
-
-//routes path
-const categoryRoute = require("./routes/category");
-const reviewRoute = require("./routes/reviews");
-const authentication = require("./routes/auth");
-const userRoute = require("./routes/user");
-
-
-// mongodb connection
-mongoose.connect(process.env.DB_URL)
-  .then(() => console.log(" Successfully connected to MongoDB!"))
-  .catch((err) => console.error(" MongoDB connection error:", err));
-
+//Database connection
+connectDB();
 
 // middleware functions
 app.use(
