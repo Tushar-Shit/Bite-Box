@@ -1,45 +1,40 @@
 import { ShoppingCart, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import AllCount from "../context/allCount";
 const HorizontalFC = ({
+  id,
+  image,
   name,
+  description,
   servingQuantity,
   quantity,
   price,
-  image,
-  description,
   unit,
-  id,
   isFav,
+  available,
   satisfymessage,
   //design purpose
   view,
 }) => {
-  // sessionStorage.clear();
-  const [fav, setFav] = useState(isFav);
+  const { favCount, setFavCount, cartCount, setCartCount } =
+    useContext(AllCount);
+
+  const [fav, setFav] = useState(false);
   useEffect(() => {
     setFav(isFav);
   }, [isFav]);
 
   const [inCart, setInCart] = useState(false);
   useEffect(() => {
+    //Guest user icon state
     let user = JSON.parse(sessionStorage.getItem("user"));
     if (user === false) {
-      //Heart UI from session
-      const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
-      if (sessionFav) {
-        const existFav = sessionFav.find((item) => item._id === id);
-        if (existFav) setFav(true);
-      }
-
-      //Cart UI from session
-      const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
-      // console.log(sessionCart);
-      if (sessionCart) {
-        const existCart = sessionCart.find((item) => item._id === id);
-        if (existCart) setInCart(true);
-      }
+      const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+      if (sessionFav.some((item) => item._id === id)) setFav(true);
+      const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      if (sessionCart.some((item) => item._id === id)) setInCart(true);
       return;
     }
 
@@ -50,7 +45,8 @@ const HorizontalFC = ({
       });
       const item = await data.json();
       if (!item || item.code === "ND" || item.code === "NL") return;
-      if (item.some((i) => i.foodId._id === id)) setInCart(!inCart);
+      setCartCount(item.length);
+      if (item.some((i) => i.foodId._id === id)) setInCart(true);
     }
     getCart();
   }, []);
@@ -61,7 +57,7 @@ const HorizontalFC = ({
     e.stopPropagation(); // Stop event bubbling
     if (!id) return;
 
-    //if user not logged in
+    //Guest user add or Remove favourite
     let user = JSON.parse(sessionStorage.getItem("user"));
     if (user === false) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
@@ -77,21 +73,18 @@ const HorizontalFC = ({
           quantity: quantity,
         });
         satisfymessage("item added");
-        setFav((prev) => {
-          return !prev;
-        });
+        setFav((prev) => !prev);
       } else {
         preFav.splice(index, 1);
         satisfymessage("item removed");
-        setFav((prev) => {
-          return !prev;
-        });
+        setFav((prev) => !prev);
       }
       sessionStorage.setItem("fav", JSON.stringify(preFav));
+      setFavCount(preFav.length);
       return;
     }
 
-    //works only when user is logged in.
+    //user add or remove favourite
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/user/addfav`,
@@ -106,14 +99,19 @@ const HorizontalFC = ({
           }),
         },
       );
-
-      const { message } = await response.json();
-      if (message) {
-        setFav((prev) => {
-          return !prev;
-        });
+      const { message, code } = await response.json();
+      if (code === "okay") {
+        setFav((prev) => !prev);
         satisfymessage(message);
       }
+      const favres = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        {
+          credentials: "include",
+        },
+      );
+      const { favourites } = await favres.json();
+      setFavCount(favourites.length);
     } catch (err) {
       console.log(err);
     }
@@ -135,6 +133,7 @@ const HorizontalFC = ({
           price: price,
           unit: unit,
           quantity: quantity,
+          servingQuantity:servingQuantity,
         });
         setInCart(true);
         satisfymessage("item added");
@@ -144,6 +143,7 @@ const HorizontalFC = ({
         satisfymessage("item removed");
       }
       sessionStorage.setItem("cart", JSON.stringify(preCart));
+      setCartCount(preCart.length);
       return;
     }
     try {
@@ -160,7 +160,6 @@ const HorizontalFC = ({
       });
       const { message } = await res.json();
       if (message.trim() === "Already in Cart") {
-        console.log(message);
         satisfymessage(message);
         setInCart(!inCart);
       }
@@ -169,6 +168,12 @@ const HorizontalFC = ({
         setInCart(false);
       } else setInCart(!inCart);
       satisfymessage(message);
+
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        credentials: "include",
+      });
+      const totalCart = await data.json();
+      setCartCount(totalCart.length);
     } catch (e) {
       console.log(e);
     }
@@ -207,18 +212,27 @@ const HorizontalFC = ({
         {/* serving quantity & unit  */}
         <div
           id="serve-quantity-availability"
-          className="min-w-35 w-3/6 flex items-center justify-between"
+          className="min-w-40 w-3/6 flex items-center justify-between"
         >
           <p id="serve-unit">
             <span id="food-serve-quantity">{servingQuantity}</span>{" "}
             <span id="food-unit">{unit}</span>
           </p>
-          <span
-            id="food-availbility"
-            className="text-sm font-bold text-green-700"
-          >
-            <span className="text-lg mr-0.5">&#183;</span>Available
-          </span>
+          {available ? (
+            <span
+              id="food-availbility"
+              className="text-sm font-bold text-green-700"
+            >
+              <span className="text-lg mr-0.5">&#183;</span>Available
+            </span>
+          ) : (
+            <span
+              id="food-availbility"
+              className="text-sm font-bold text-red-700"
+            >
+              <span className="text-lg mr-0.5">&#183;</span>Unavailable
+            </span>
+          )}
         </div>
         <div
           id="price-rating-cart"
@@ -231,7 +245,7 @@ const HorizontalFC = ({
             <span id="rating">🔥4.3</span>
           </div>
           <button
-            className="bg-zinc-100 p-1 rounded-full absolute -right-1 -bottom-1"
+            className="bg-zinc-100 p-1 rounded-full absolute -right-1 -bottom-1 cursor-pointer"
             onClick={addCart}
           >
             {inCart ? (

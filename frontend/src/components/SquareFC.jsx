@@ -1,64 +1,74 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
+import AllCount from "../context/allCount";
+
 const SquareFC = ({
   id,
   image,
   name,
+  description,
   servingQuantity,
   quantity,
   price,
-  category,
   unit,
   isFav,
+  available,
   satisfymessage,
-  description,
 }) => {
-  //set heart icon state
+  const { setFavCount } = useContext(AllCount);
+
   const [fav, setFav] = useState(isFav);
+
   useEffect(() => {
     setFav(isFav);
   }, [isFav]);
-  //set UI icons when user not logged in
+
+  //Guest user icon state
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (user !== false) return;
-    let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+    const preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
     const exist = preFav.some((item) => item._id === id);
     if (exist) setFav(true);
-  }, []);
+  }, [id]);
 
-  //handle favourite (add, remove)
   const handle = async (e) => {
-    e.preventDefault(); // Prevent Link navigation
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     if (!id) return;
 
-    //if user not logged in
+    // Guest user store food items
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (user === false) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const index = preFav.findIndex((item) => item._id === id);
+
       if (index === -1) {
         preFav.push({
           _id: id,
-          image: image,
-          name: name,
-          description: description,
-          price: price,
-          unit: unit,
-          quantity: quantity,
+          image,
+          name,
+          description,
+          price,
+          unit,
+          quantity,
         });
+
         satisfymessage("item added");
-        setFav((prev) => !prev);
+        setFav(true);
       } else {
         preFav.splice(index, 1);
         satisfymessage("item removed");
-        setFav((prev) => !prev);
+        setFav(false);
       }
+
       sessionStorage.setItem("fav", JSON.stringify(preFav));
+      setFavCount(preFav.length);
       return;
     }
+
+    // Logged in user store food items
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/user/addfav`,
@@ -73,9 +83,20 @@ const SquareFC = ({
           }),
         },
       );
+
       const { message } = await response.json();
       satisfymessage(message);
       setFav((prev) => !prev);
+
+      // Fetch latest favourite count
+      const favRes = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        {
+          credentials: "include",
+        },
+      );
+      const { favourites } = await favRes.json();
+      setFavCount(favourites ? favourites.length : 0);
     } catch (err) {
       console.log(err);
     }
@@ -94,17 +115,31 @@ const SquareFC = ({
         <img
           src={image}
           alt={name}
-          className=" h-full w-full object-cover rounded-t-md"
+          className="h-full w-full object-cover rounded-t-md"
         />
       </div>
+
       <div className="flex flex-col p-2 pl-3 text-md">
         <p className="font-bold truncate">{name}</p>
+
         <div className="w-full flex items-center justify-between pr-2">
-          <p>{servingQuantity} {unit}</p>
-          <p className="text-green-700 text-sm font-bold"><span className="text-md">&#183;</span><span>Available</span></p>
+          <p>
+            {servingQuantity} {unit}
+          </p>
+
+          {available ? (
+            <p className="text-green-700 text-sm font-bold">
+              <span>Available</span>
+            </p>
+          ) : (
+            <p className="text-red-700 text-sm font-bold">
+              <span>Unavailable</span>
+            </p>
+          )}
         </div>
+
         <div className="flex justify-between">
-          <p className="font-bold ">₹{price}</p>
+          <p className="font-bold">₹{price}</p>
           <span className="mr-3">🔥 4.3</span>
         </div>
       </div>

@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
 function Signup() {
+  //UI variables
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [message, setMessage]=useState("");
   const navigate = useNavigate();
+
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -20,13 +26,17 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
+    //show alert box if password not matched
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      setLoading(false);
+      setFailed(true)
+      setMessage("Password not matched.")
       return;
     }
-
     try {
+      //request for an OTP
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/auth/signup`,
         {
@@ -42,31 +52,66 @@ function Signup() {
           }),
         },
       );
-
       const data = await response.json();
-      console.log(data.message);
+      if (data.code === "failed") {
+        setFailed(true);
+        setMessage(data.message);
+        return;
+      }
+      sessionStorage.setItem("username", formData.username);
+      sessionStorage.setItem("email", formData.email);
+      sessionStorage.setItem("password", formData.password);
       setFormData({
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
       });
-      navigate("/", {
-        state: { message: data.message },
+
+      navigate("/verify-email", {
+        state: "ve",
       });
-      window.location.reload(); //forcefully reload the page after login
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
-
+  function proceed() {
+    setFailed(false);
+  }
   return (
     <>
       <Helmet>
         <title>BiteBox | Signup</title>
       </Helmet>
       <CustomNav text="Signup" path="/" />
+
+      {failed && (
+        <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
+          <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
+            {/* Header */}
+            <div className="bg-red-600 text-white px-6 py-4 text-center">
+              <h2 className="text-xl font-semibold">Verification Failed</h2>
+            </div>
+
+            {/* Body */}
+            <div className="bg-white text-black px-6 py-5">
+              <p className="text-center">{message}</p>
+
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={proceed}
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
+                >
+                  Okay
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="h-[86vh] flex items-center justify-center bg-gray-100">
         <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
@@ -129,9 +174,12 @@ function Signup() {
 
             <button
               type="submit"
-              className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-red-700"
+              disabled={loading}
+              className={`w-full text-white py-3 rounded-lg 
+              ${loading ? "bg-gray-400 cursor-not-allowed" : " bg-orange-600 hover:bg-red-700"}
+              `}
             >
-              Sign Up
+              {loading ? "Processing..." : "Signup"}
             </button>
           </form>
 

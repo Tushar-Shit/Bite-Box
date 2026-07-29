@@ -93,6 +93,7 @@ const Home = () => {
           },
         );
         const userData = await response.json();
+        //  NO LOGIN  || NO USER
         if (userData.code === "NL" || userData.code === "NU") {
           isLoggedIn = false;
           sessionStorage.setItem("user", false);
@@ -147,193 +148,200 @@ const Home = () => {
 
     const timer = setTimeout(() => {
       setMsg(null);
-      setUpdate(!update);
+      setUpdate((update) => !update);
     }, 2000); // 3 seconds
 
     return () => clearTimeout(timer);
   }, [msg]);
-  // let bing=sessionStorage.getItem("user");
-  // console.log(bing);
 
   function satisfymessage(text) {
     setMsg(text);
-    setUpdate(!update);
+    // window.location.reload()
+    setUpdate((update) => !update);
   }
   return (
     <div className="h-screen flex flex-col ">
+      {/*  page title */}
       <Helmet>
         <title>BiteBox | The Home of Deliciousness</title>
       </Helmet>
+
+      {/* navbar */}
       <Navbar onClick={showSideBar} user={user} />
-      <main className="flex-1 overflow-y-auto scrollbar-none">
-        {/* satisfaction message component */}
-        {message && <MessageBar message={message} />}
-        {msg && <ShortMsg message={msg} />}
-        {/* home page navbar, sidebar function and user data */}
-        {loader && <Loader />}
-        {/* sidebar component */}
-        {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
 
-        <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
-          Are you Hungry
-          {/* <Utensils strokeWidth={1} className="w-5" /> */}
-        </h1>
-        <h1 className="ml-3 my-0 font-extrabold text-xl">
-          What meal do you Want?
-        </h1>
+      {message && <MessageBar message={message} />}
+      {msg && <ShortMsg message={msg} />}
+      {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
 
-        {/* hero section  */}
-        <section className="flex overflow-x-auto mt-2 gap-4 h-60 relative px-[5%] snap-x snap-mandatory scroll-smooth no-scrollbar">
-          {/* <HeroImage image={} /> */}
-          {/* Dynamic Dots Indicator */}
-          {/* <ul className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+      {loader ? (
+        <Loader />
+      ) : (
+        <main className="flex-1 overflow-y-auto scrollbar-none">
+          <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
+            Are you Hungry
+            {/* <Utensils strokeWidth={1} className="w-5" /> */}
+          </h1>
+          <h1 className="ml-3 my-0 font-extrabold text-xl">
+            What meal do you Want?
+          </h1>
+
+          {/* hero section  */}
+          <section className="flex overflow-x-auto mt-2 gap-4 h-60 relative px-[5%] snap-x snap-mandatory scroll-smooth no-scrollbar">
+            {/* <HeroImage image={} /> */}
+            {/* Dynamic Dots Indicator */}
+            {/* <ul className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-10">
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
           <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
         </ul> */}
-        </section>
+          </section>
 
-        {/* catgories section  */}
-        <section id="category-section" className="mb-4">
-          <Subheadsee subHeading="Categories" path="/categories" />
-          <div id="category-row" className="flex justify-evenly">
-            <Category text="Snacks" image={images.snacks} />
-            <Category text="Sweets" image={images.sweets} />
-            <Category text="Dessert" image={images.dessert} />
-            <Category text="Drinks" image={images.drinks} />
-          </div>
-        </section>
+          {/* catgories section  */}
+          <section id="category-section" className="mb-4">
+            <Subheadsee subHeading="Categories" path="/categories" />
+            <div id="category-row" className="flex justify-evenly">
+              <Category text="Snacks" image={images.snacks} />
+              <Category text="Sweets" image={images.sweets} />
+              <Category text="Dessert" image={images.dessert} />
+              <Category text="Drinks" image={images.drinks} />
+            </div>
+          </section>
 
-        {/* trending now  */}
-        <section className="mb-2 px-4">
-          <Subheading title="Trending Now" className="ml-4" />
-          <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
-            {trending.map((item) => (
-              <SquareFc
-                key={item._id}
-                image={item.image}
-                name={item.name}
-                servingQuantity={item.servingQuantity}
-                quantity={item.quantity}
-                price={item.price}
-                unit={item.unit}
-                category={item.Category}
-                id={item._id}
-                isFav={favFoods.some((food) => food._id === item._id)}
-                satisfymessage={satisfymessage}
-                description={item.description}
-              />
-            ))}
-            <Link to={`/tag/trending`}>
-              <SeeMore text="See More" />
-            </Link>
-          </div>
-        </section>
+          {/* trending now  */}
+          <section className="mb-2 px-4">
+            <Subheading title="Trending Now" className="ml-4" />
+            <div className=" flex items-center overflow-x-auto gap-5 py-3 scrollbar-none">
+              {trending.map((item) => (
+                <SquareFc
+                  key={item._id}
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  description={item.description}
+                  servingQuantity={item.servingQuantity}
+                  quantity={item.quantity}
+                  price={item.price}
+                  unit={item.unit}
+                  category={item.Category}
+                  isFav={favFoods.some((food) => food._id === item._id)}
+                  available={true}
+                  satisfymessage={satisfymessage}
+                />
+              ))}
+              <Link to={`/tag/trending`}>
+                <SeeMore text="See More" />
+              </Link>
+            </div>
+          </section>
 
-        {/* Popular meals section  */}
-        <section className="mb-5">
-          <Subheadsee subHeading="Popular Meals" path="/tag/popular" />
-          <div
-            className="px-5 items-center justify-between flex-wrap sm:max-lg:flex sm:max-lg:gap-4 
+          {/* Popular meals section  */}
+          <section className="mb-5">
+            <Subheadsee subHeading="Popular Meals" path="/tag/popular" />
+            <div
+              className="px-5 items-center justify-between flex-wrap sm:max-lg:flex sm:max-lg:gap-4 
           lg:max-xl:flex lg:max-xl:gap-5 lg:max-xl:scrollbar-none lg:max-xl:flex-nowrap lg:max-xl:overflow-x-auto
           xl:flex xl:gap-4 "
-          >
-            {popular.map((item) => (
-              <HorizontalFc
-                key={item._id}
-                image={item.image}
-                name={item.name}
-                description={item.description}
-                servingQuantity={item.servingQuantity}
-                quantity={item.quantity}
-                price={item.price}
-                unit={item.unit}
-                id={item._id}
-                isFav={favFoods.some((food) => food._id === item._id)}
-                satisfymessage={satisfymessage}
-              />
-            ))}
-          </div>
-        </section>
+            >
+              {popular.map((item) => (
+                <HorizontalFc
+                  key={item._id}
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  description={item.description}
+                  servingQuantity={item.servingQuantity}
+                  quantity={item.quantity}
+                  price={item.price}
+                  unit={item.unit}
+                  isFav={favFoods.some((food) => food._id === item._id)}
+                  available={true}
+                  satisfymessage={satisfymessage}
+                />
+              ))}
+            </div>
+          </section>
 
-        {/* best seller */}
-        <section className="mb-2 px-4">
-          <Subheading title="Best Seller" className="ml-4" />
-          <div className=" flex items-center overflow-x-auto gap-3 py-3 scrollbar-none">
-            {bestSeller.map((item) => (
-              <HorizontalRounded
-                key={item._id}
-                id={item._id}
-                image={item.image}
-                name={item.name}
-                servingQuantity={item.servingQuantity}
-                quantity={item.quantity}
-                unit={item.unit}
-                price={item.price}
-              />
-            ))}
-            <Link to={`/tag/bestseller`}>
-              <SeeMore text="See More" />
-            </Link>
-          </div>
-        </section>
+          {/* best seller */}
+          <section className="mb-2 px-4">
+            <Subheading title="Best Seller" className="ml-4" />
+            <div className=" flex items-center overflow-x-auto gap-3 py-3 scrollbar-none">
+              {bestSeller.map((item) => (
+                <HorizontalRounded
+                  key={item._id}
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  servingQuantity={item.servingQuantity}
+                  quantity={item.quantity}
+                  price={item.price}
+                  unit={item.unit}
+                  available={false}
+                />
+              ))}
+              <Link to={`/tag/bestseller`}>
+                <SeeMore text="See More" />
+              </Link>
+            </div>
+          </section>
 
-        {/* recommended for you*/}
-        <section className="">
-          <Subheadsee
-            subHeading="Recommended for you"
-            path="/tag/recommended"
-          />
-          <div className="px-4 flex justify-evenly flex-wrap items-center gap-5">
-            {recommended.map((item) => (
-              <SquareFc
-                key={item._id}
-                image={item.image}
-                name={item.name}
-                servingQuantity={item.servingQuantity}
-                quantity={item.quantity}
-                price={item.price}
-                category={item.Category}
-                unit={item.unit}
-                id={item._id}
-                isFav={favFoods.some((food) => food._id === item._id)}
-                satisfymessage={satisfymessage}
-                description={item.description}
-              />
-            ))}
-          </div>
-        </section>
+          {/* recommended for you*/}
+          <section className="">
+            <Subheadsee
+              subHeading="Recommended for you"
+              path="/tag/recommended"
+            />
+            <div className="px-4 flex justify-evenly flex-wrap items-center gap-5">
+              {recommended.map((item) => (
+                <SquareFc
+                  key={item._id}
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  description={item.description}
+                  category={item.Category}
+                  servingQuantity={item.servingQuantity}
+                  quantity={item.quantity}
+                  price={item.price}
+                  unit={item.unit}
+                  isFav={favFoods.some((food) => food._id === item._id)}
+                  available={true}
+                  satisfymessage={satisfymessage}
+                />
+              ))}
+            </div>
+          </section>
 
-        {/* chef choice */}
-        <section className="pb-2">
-          <Subheadsee subHeading="Chef's Choice" path="/tag/chefchoice" />
-          <div
-            className="px-5 items-center justify-between flex-wrap sm:max-lg:flex sm:max-lg:gap-4 
+          {/* chef choice */}
+          <section className="">
+            <Subheadsee subHeading="Chef's Choice" path="/tag/chefchoice" />
+            <div
+              className="px-5 items-center justify-between flex-wrap sm:max-lg:flex sm:max-lg:gap-4 
           lg:max-xl:flex lg:max-xl:gap-5 lg:max-xl:scrollbar-none lg:max-xl:flex-nowrap lg:max-xl:overflow-x-auto
           xl:flex xl:gap-4 "
-          >
-            {chefChoice.map((item) => (
-              <HorizontalFc
-                key={item._id}
-                image={item.image}
-                name={item.name}
-                description={item.description}
-                servingQuantity={item.servingQuantity}
-                quantity={item.quantity}
-                price={item.price}
-                unit={item.unit}
-                id={item._id}
-                isFav={favFoods.some((food) => food._id === item._id)}
-                satisfymessage={satisfymessage}
-              />
-            ))}
-          </div>
-        </section>
-      </main>
-      {/* bottom bar  */}
-      <BottomBar update={update} />
+            >
+              {chefChoice.map((item) => (
+                <HorizontalFc
+                  key={item._id}
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  description={item.description}
+                  servingQuantity={item.servingQuantity}
+                  quantity={item.quantity}
+                  price={item.price}
+                  unit={item.unit}
+                  isFav={favFoods.some((food) => food._id === item._id)}
+                  available={true}
+                  satisfymessage={satisfymessage}
+                />
+              ))}
+            </div>
+          </section>
+        </main>
+      )}
+      <BottomBar />
     </div>
   );
 };

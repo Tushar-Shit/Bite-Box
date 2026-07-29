@@ -1,3 +1,6 @@
+import { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import AllCount from "../context/allCount";
 import {
   Heart,
   House,
@@ -7,88 +10,92 @@ import {
   ShoppingCart,
   Search,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-const BottomBar = ({ update }) => {
-  const [cartCount, setCartCount] = useState(null);
-  const [favCount, setFavCount] = useState(null);
 
-  //update the bar and icons
+const BottomBar = ({ update }) => {
+  const { favCount, setFavCount, cartCount, setCartCount } =
+    useContext(AllCount);
+
   useEffect(() => {
+    // Guest user favourite & cart count
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (user === false) {
-      let favcount = JSON.parse(sessionStorage.getItem("fav")) || [];
-      let cartcount = JSON.parse(sessionStorage.getItem("cart")) || [];
-      setFavCount(favcount.length);
-      setCartCount(cartcount.length);
-      favcount = null;
-      cartcount = null;
+      const fav = JSON.parse(sessionStorage.getItem("fav")) || [];
+      const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      setFavCount(fav.length);
+      setCartCount(cart.length);
       return;
     }
 
     async function data() {
-      const Cartdata = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/cart`,
-        {
-          credentials: "include",
-        },
-      );
-      const Cartitems = await Cartdata.json();
-      if (Cartitems.code === "ND" || Cartitems.length <= 0) {
-        console.log(Cartitems.message);
-        setCartCount(null);
-      } else setCartCount(Cartitems.length);
+      try {
+        const Cartdata = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/cart`,
+          {
+            credentials: "include",
+          },
+        );
+        const Cartitems = await Cartdata.json();
+        // (Cartitems);
+        if (Cartitems.code === "ND" || Cartitems.length <= 0) setCartCount(0);
+        else setCartCount(Cartitems.length);
 
-      const Favdata = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/favourite`,
-        {
-          credentials: "include",
-        },
-      );
-      const { favourites } = await Favdata.json();
-      if (!favourites) return;
-      setFavCount(favourites.length);
+        const Favdata = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          {
+            credentials: "include",
+          },
+        );
+        const { favourites } = await Favdata.json();
+        if (!favourites) setFavCount(0);
+        else setFavCount(favourites.length);
+      } catch (err) {
+        console.error(err);
+      }
     }
+
     data();
-  }, [update]);
+  }, []);
 
   return (
     <div className="h-18">
-    <div className="shrink-0 bg-zinc-100 w-full flex justify-evenly items-center p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500 fixed bottom-0">
-      
-      <Link to="/" className="flex flex-col items-center">
-        <House strokeWidth={1.5} />
-        <span>Home</span>
-      </Link>
-      <Link to="/search" className="flex flex-col items-center">
-        <Search strokeWidth={1.5} />
-        Search
-      </Link>
-      <Link to="/categories" className="flex flex-col items-center">
-        <Blocks strokeWidth={1.5} />
-        Category
-      </Link>
-      <Link to="/favorite" className="flex flex-col items-center relative">
-        <Heart strokeWidth={1.5} size={26} />
-        <span> Favourite</span>
-        {favCount > 0 ? (
-          <span className="absolute left-10 -top-1 rounded-full px-1 w-fit h-fit text-sm bg-red-600 text-white">
-            {favCount}
-          </span>
-        ) : null}
-      </Link>
-      <Link to="/cart" className="flex flex-col items-center relative">
-        <ShoppingBag strokeWidth={1.5} />
-        <span>Cart</span>
-        {cartCount > 0 ? (
-          <span
-            className={`absolute -right-1.5 -top-1.5 rounded-full px-1 w-fit h-fit text-sm  bg-red-600 text-white`}
-          >
+      <div className="h-18 shrink-0 bg-zinc-100 w-full flex justify-evenly items-center p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500 fixed bottom-0">
+        <Link to="/" className="flex flex-col items-center">
+          <House strokeWidth={1.5} />
+          <span>Home</span>
+        </Link>
+
+        <Link to="/search" className="flex flex-col items-center">
+          <Search strokeWidth={1.5} />
+          Search
+        </Link>
+
+        <Link to="/categories" className="flex flex-col items-center">
+          <Blocks strokeWidth={1.5} />
+          Category
+        </Link>
+
+        <Link to="/favorite" className="flex flex-col items-center relative">
+          <Heart strokeWidth={1.5} size={26} />
+          <span>Favourite</span>
+
+          {favCount > 0 && (
+            <span className="absolute left-10 -top-1 rounded-full px-1 text-sm bg-red-600 text-white">
+              {favCount}
+            </span>
+          )}
+        </Link>
+
+        <Link to="/cart" className="flex flex-col items-center relative">
+          <ShoppingBag strokeWidth={1.5} />
+          <span>Cart</span>
+
+          {cartCount > 0 && (
+          <span className="absolute -right-1.5 -top-1.5 rounded-full px-1 text-sm bg-red-600 text-white">
             {cartCount}
           </span>
-        ) : null}
-      </Link>
-    </div>
+          )}
+        </Link>
+      </div>
     </div>
   );
 };

@@ -15,7 +15,6 @@ export const profile = async (req, res) => {
 };
 
 export const addfav = async (req, res) => {
-
     const { foodId } = req.body;
     const userId = req.user;
     const exists = await Users.exists({
@@ -27,15 +26,20 @@ export const addfav = async (req, res) => {
         await Users.findByIdAndUpdate(userId, {
             $pull: { favourites: foodId },
         });
-        res.json({ message: "Remove From Favourite", });
+        res.json({ message: "Remove From Favourite",
+            code:"okay",
+         });
     } else {
         await Users.findByIdAndUpdate(userId, {
             $addToSet: { favourites: foodId },
         });
-        res.json({ message: "Add to Favourite" });
+        res.json({ message: "Add to Favourite",
+            code:"okay",
+         });
     }
 };
 
+//gives all favourite items
 export const favourite = async (req, res) => {
     const user = await Users.findById(req.user).populate("favourites");
     res.json({ favourites: user.favourites })
@@ -44,9 +48,10 @@ export const favourite = async (req, res) => {
 
 //provide cart data
 export const getCart = async (req, res) => {
+    console.log("inside getcart, usercontroller")
     const currentUserId = req.user;
     const data = await Cart.findOne({ userId: currentUserId }).populate("items.foodId");
-    if (data.items.length <= 0) {
+    if (!data || data.items.length <= 0) {
         return res.status(404).json({
             quick: "No Data Found!",
             message: "Your cart is empty...",

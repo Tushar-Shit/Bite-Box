@@ -10,14 +10,15 @@ const HorizontalRounded = ({
   unit,
   price,
   isFav,
+  available,
 }) => {
-   const [colorClass, setColorClass] = useState({
+  const [colorClass, setColorClass] = useState({
     bg: "bg-red-300",
     text: "text-white",
   });
   const colorVariants = [
     { bg: "bg-lime-400", text: "black" },
-    { bg: "bg-red-600", text: "black" },
+    { bg: "bg-red-600", text: "white" },
     { bg: "bg-black", text: "white" },
     { bg: "bg-yellow-300", text: "black" },
     { bg: "bg-orange-400", text: "black" },
@@ -43,16 +44,48 @@ const HorizontalRounded = ({
 
       <div className={`w-45 pr-2  text-${colorClass.text}`}>
         <p className="text-lg font-bold truncate">{name}</p>
-        <p className="">{servingQuantity} {unit}</p>
-        <div className="min-w-33 max-w-35 flex items-center justify-between font-bold">
+        <p className="">
+          {servingQuantity} {unit}
+        </p>
+        <div className="min-w-33 max-w-38 flex items-center justify-between font-bold">
           <p>₹{price}</p>
-          <p><span className="text-lg items-center">&#183;</span><span>Available</span></p>
+          {available ? (
+            <p>
+              <span className="text-lg items-center">&#183;</span>
+              <span>Available</span>
+            </p>
+          ) : (
+            <p>
+              <span className="text-lg items-center">&#183;</span>
+              <span>Unavailable</span>
+            </p>
+          )}
         </div>
         <p className="flex gap-0.5">
-          <Star size={20} fill={colorClass.text} color={colorClass.text} strokeWidth={0.5} />
-          <Star size={20} fill={colorClass.text} color={colorClass.text} strokeWidth={0.5} />
-          <Star size={20} fill={colorClass.text} color={colorClass.text} strokeWidth={0.5} />
-          <Star size={20} fill={colorClass.text} color={colorClass.text} strokeWidth={0.5} />
+          <Star
+            size={20}
+            fill={colorClass.text}
+            color={colorClass.text}
+            strokeWidth={0.5}
+          />
+          <Star
+            size={20}
+            fill={colorClass.text}
+            color={colorClass.text}
+            strokeWidth={0.5}
+          />
+          <Star
+            size={20}
+            fill={colorClass.text}
+            color={colorClass.text}
+            strokeWidth={0.5}
+          />
+          <Star
+            size={20}
+            fill={colorClass.text}
+            color={colorClass.text}
+            strokeWidth={0.5}
+          />
           <Star size={20} />
         </p>
       </div>

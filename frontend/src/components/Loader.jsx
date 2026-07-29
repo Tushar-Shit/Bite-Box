@@ -37,7 +37,7 @@ export default function FoodLoader({text}) {
   const duplicated = [...foods];
 
   return (
-    <div className="flex flex-col items-center justify-center h-177.5 overflow-hidden">
+    <div className="flex flex-col items-center justify-center h-160 overflow-hidden">
       <div className="relative w-full h-25 overflow-hidden">
         <motion.div className="absolute flex items-center">
           {duplicated.map((food, index) => (

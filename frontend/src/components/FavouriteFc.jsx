@@ -1,23 +1,26 @@
 import { ShoppingCart, Search, UserRound, Component } from "lucide-react";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import AllCount from "../context/allCount";
 const FavouriteFc = ({
+  id,
+  image,
   name,
+  description,
   servingQuantity,
   quantity,
   price,
-  image,
-  description,
   unit,
-  id,
   isFav,
+  available,
   satisfymessage,
-  reload,
   //design purpose
   view,
 }) => {
-  // sessionStorage.clear();
+  const { favCount, setFavCount, cartCount, setCartCount } =
+    useContext(AllCount);
+
   const [fav, setFav] = useState(isFav);
   useEffect(() => {
     setFav(isFav);
@@ -25,33 +28,31 @@ const FavouriteFc = ({
 
   const [inCart, setInCart] = useState(false);
   useEffect(() => {
+    //  Guest user icons set
     let user = JSON.parse(sessionStorage.getItem("user"));
     if (user === false) {
-      //Heart UI from session
       const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
       if (sessionFav) {
-        const existFav = sessionFav.find((item) => item._id === id);
+        const existFav = sessionFav.some((item) => item._id === id);
         if (existFav) setFav(true);
       }
 
-      //Cart UI from session
       const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
-      // console.log(sessionCart);
       if (sessionCart) {
-        const existCart = sessionCart.find((item) => item._id === id);
+        const existCart = sessionCart.some((item) => item._id === id);
         if (existCart) setInCart(true);
       }
       return;
     }
 
-    //extract cart items
+    //  User's cart icon set, fav icon already set from parent
     async function getCart() {
       const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         credentials: "include",
       });
       const item = await data.json();
       if (!item || item.code === "ND" || item.code === "NL") return;
-      if (item.some((i) => i.foodId._id === id)) setInCart(!inCart);
+      if (item.some((i) => i.foodId._id === id)) setInCart(true);
     }
     getCart();
   }, []);
@@ -76,21 +77,17 @@ const FavouriteFc = ({
           price: price,
           unit: unit,
           quantity: quantity,
+          servingQuantity: servingQuantity,
         });
         satisfymessage("item added");
-        setFav((prev) => {
-          return !prev;
-        });
-        reload();
+        setFav(true);
       } else {
         preFav.splice(index, 1);
         satisfymessage("item removed");
-        setFav((prev) => {
-          return !prev;
-        });
-        reload();
+        setFav(false);
       }
       sessionStorage.setItem("fav", JSON.stringify(preFav));
+      setFavCount(preFav.length);
       return;
     }
 
@@ -116,7 +113,14 @@ const FavouriteFc = ({
           return !prev;
         });
         satisfymessage(message);
-        reload();
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          {
+            credentials: "include",
+          },
+        );
+        const { favourites } = await response.json();
+        setFavCount(favourites.length);
       }
     } catch (err) {
       console.log(err);
@@ -148,8 +152,10 @@ const FavouriteFc = ({
         satisfymessage("item removed");
       }
       sessionStorage.setItem("cart", JSON.stringify(preCart));
+      setCartCount(preCart.length);
       return;
     }
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         method: "POST",
@@ -166,13 +172,20 @@ const FavouriteFc = ({
       if (message.trim() === "Already in Cart") {
         console.log(message);
         satisfymessage(message);
-        setInCart(!inCart);
+        setInCart(false);
       }
       if (message.trim() === "Cart is full") {
         satisfymessage(message);
         setInCart(false);
       } else setInCart(!inCart);
       satisfymessage(message);
+
+      //calculate the total number of cart items from DB
+      const cartres = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        credentials: "include",
+      });
+      const totalCart = await cartres.json();
+      setCartCount(totalCart.length);
     } catch (e) {
       console.log(e);
     }
@@ -209,21 +222,30 @@ const FavouriteFc = ({
           {description}
         </div>
         {/* serving quantity & unit */}
-        <p
+        <div
           id="serve-quantity-availability"
-          className="min-w-35 w-3/6 flex items-center justify-between"
+          className="min-w-40 w-3/6 flex items-center justify-between"
         >
           <p id="serve-unit">
             <span id="food-serve-quantity">{servingQuantity}</span>{" "}
             <span id="food-unit">{unit}</span>
           </p>
-          <span
-            id="food-availbility"
-            className="text-sm font-bold text-green-700"
-          >
-            <span className="text-lg mr-0.5">&#183;</span>Available
-          </span>
-        </p>
+          {available ? (
+            <span
+              id="food-availbility"
+              className="text-sm font-bold text-green-700"
+            >
+              <span className="text-lg mr-0.5">&#183;</span>Available
+            </span>
+          ) : (
+            <span
+              id="food-availbility"
+              className="text-sm font-bold text-red-700"
+            >
+              <span className="text-lg mr-0.5">&#183;</span>Unavailable
+            </span>
+          )}
+        </div>
         <div
           id="price-rating-cart"
           className="flex justify-between text-md mb-2 relative"

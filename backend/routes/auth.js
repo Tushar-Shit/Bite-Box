@@ -1,9 +1,12 @@
 import express from "express";
-import { signup, login, logout } from "../controllers/authController.js";
-
+import { signup, resendOTP, verifySignup, login, logout } from "../controllers/authController.js";
 const router = express.Router({ mergeParams: true });
 
 router.post("/signup", signup);
+
+router.post("/signup/resend-otp", resendOTP)
+
+router.post("/signup/verify-otp",verifySignup)
 
 router.post("/login", login);
 

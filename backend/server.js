@@ -16,10 +16,11 @@ import Users from "./models/user.js";
 import Cart from "./models/cart.js";
 
 // Routes
+import authentication from "./routes/auth.js";
 import categoryRoute from "./routes/category.js";
 import reviewRoute from "./routes/reviews.js";
-import authentication from "./routes/auth.js";
 import userRoute from "./routes/user.js";
+import updateRoute from "./routes/update.js";
 
 const app = express();
 const port = process.env.PORT || 7000;
@@ -68,6 +69,7 @@ app.use("/categories", categoryRoute);
 app.use("/reviews", reviewRoute);
 app.use("/auth", authentication);
 app.use("/user", userRoute);
+app.use("/update", updateRoute);
 
 //route for popular, trending, recomendations
 app.get("/tag/:anything", async (req, res) => {

@@ -12,12 +12,13 @@ import React from "react";
 import HelpingPage from "./pages/HelpingPage";
 import Order from "./pages/Order";
 import Testingpage from "./pages/testingpage";
-const App = () => {
+const App = () => {  
   return (
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/verify-email" element={<HelpingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/userinfo" element={<UserProfile />} />
         <Route path="/orders" element={<Order />} />

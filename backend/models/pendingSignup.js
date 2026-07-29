@@ -21,7 +21,7 @@ const tempoSchema = new mongoose.Schema(
             required: true,
         },
 
-        otp: {
+        OTP: {
             type: String,
             required: true,
             trim: true,

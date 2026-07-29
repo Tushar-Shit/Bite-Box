@@ -3,17 +3,20 @@ import BottomBar from "../components/BottomBar";
 import FavouriteFc from "../components/FavouriteFc";
 import { Heartclick } from "../atomic/atomic";
 import { ShortMsg } from "../components/MessageBar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Nodata from "../components/NoData";
 import Loader from "../components/Loader";
-
+import AllCount from "../context/allCount";
 const Favorite = () => {
-  const [refresh, setRefresh] = useState(false);
+  const { favCount, setFavCount, cartCount, setCartCount } =
+    useContext(AllCount);
+
   const [loader, setLoader] = useState(true);
   const [response, setResponse] = useState({
     quick: "Login Required",
     message: "Login to access more",
   });
+
   //extract all favourite food items
   const [favouriteItems, setFavouriteItems] = useState([]);
   useEffect(() => {
@@ -34,40 +37,35 @@ const Favorite = () => {
       );
       const { favourites } = await response.json();
       if (favourites.code === "NL") {
-        setResponse(cartData);
+        setResponse({
+          quick: favourites.quick,
+          message: favourites.message,
+        });
         return;
       }
       if (favourites) {
         setFavouriteItems(favourites);
         setLoader(false);
+        setFavCount(favourites.length);
       }
     };
     favdata();
-  }, [refresh]);
-
-  function reload() {
-    setRefresh(!refresh);
-  }
+  }, [favCount]);
 
   //update bottom bar
   const [msg, setMsg] = useState(null);
   const [update, setUpdate] = useState(false);
   useEffect(() => {
     if (!msg) return;
-
     const timer = setTimeout(() => {
       setMsg(null);
-      setUpdate(false);
     }, 2000); // 3 seconds
-
     return () => clearTimeout(timer);
   }, [msg]);
 
   function satisfymessage(text) {
     setMsg(text);
-    setUpdate(true);
   }
-  // console.log(favouriteItems);
 
   return (
     <div className="h-screen w-full">
@@ -76,13 +74,14 @@ const Favorite = () => {
 
       {loader && <Loader />}
 
-      {favouriteItems.length <= 0 ? (
+      {favouriteItems.length <= 0 && !loader? (
         <Nodata text1="No Item!" text2="Hurry Up Catch Favourites!" />
       ) : (
         <div className="px-4 pt-4 sm:flex sm:flex-wrap sm:gap-4">
           {favouriteItems.map((item) => (
             <FavouriteFc
               key={item._id}
+              id={item._id}
               image={item.image}
               name={item.name}
               description={item.description}
@@ -90,10 +89,9 @@ const Favorite = () => {
               quantity={item.quantity}
               price={item.price}
               unit={item.unit}
-              id={item._id}
               isFav={favouriteItems.some((food) => food._id === item._id)}
+              available={true}
               satisfymessage={satisfymessage}
-              reload={reload}
               //design purpose
               view={"list"}
             />
@@ -101,7 +99,7 @@ const Favorite = () => {
         </div>
       )}
 
-      <BottomBar update={update} />
+      <BottomBar />
     </div>
   );
 };

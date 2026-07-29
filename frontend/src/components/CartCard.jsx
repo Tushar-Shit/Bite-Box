@@ -1,6 +1,6 @@
 import { Minus, Plus, Trash2, Star } from "lucide-react";
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useContext } from "react";
+import AllCount from "../context/allCount";
 const CartCard = ({
   id,
   image,
@@ -10,9 +10,12 @@ const CartCard = ({
   unit,
   defaultPrice,
   foodUnit,
-  reload,
+  available,
   satisfymessage,
 }) => {
+  const { favCount, setFavCount, cartCount, setCartCount } =
+    useContext(AllCount);
+
   //master function for delete, increase, decrease in both session, DB
   const masterFunc = async (commandVal) => {
     if (!id) return;
@@ -27,13 +30,13 @@ const CartCard = ({
 
         commandVal === "decrease" &&
           (existItem.quantity--, satisfymessage("item decreased"));
-          
+
         commandVal === "add/dlt" &&
           ((sessionCart = sessionCart.filter((item) => item._id !== id)),
           satisfymessage("Item Removed"));
       }
       sessionStorage.setItem("cart", JSON.stringify(sessionCart));
-      reload();
+      setCartCount(sessionCart.length);
       return;
     }
 
@@ -50,8 +53,13 @@ const CartCard = ({
         }),
       });
       const { message } = await res.json();
-      reload();
       satisfymessage(message);
+
+      const cartRes = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        credentials: "include",
+      });
+      const totalCart = await cartRes.json();
+      setCartCount(totalCart.length);
     } catch (e) {
       console.log(e);
     }
@@ -72,12 +80,21 @@ const CartCard = ({
             <span id="food-serve-quantity">{servingQuantity}</span>{" "}
             <span id="food-unit">{unit}</span>
           </p>
-          <span
-            id="food-availbility"
-            className="text-sm font-bold text-red-700"
-          >
-            <span className="text-lg mr-0.5">&#183;</span>Unavailable
-          </span>
+          {available ? (
+            <span
+              id="food-availbility"
+              className="text-sm font-bold text-green-700"
+            >
+              <span className="text-lg mr-0.5">&#183;</span>Available
+            </span>
+          ) : (
+            <span
+              id="food-availbility"
+              className="text-sm font-bold text-red-700"
+            >
+              <span className="text-lg mr-0.5">&#183;</span>Unavailable
+            </span>
+          )}
         </div>
         <div className="flex gap-3 items-center">
           <div className="text-md font-bold">₹{defaultPrice}</div>

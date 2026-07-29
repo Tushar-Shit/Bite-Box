@@ -4,12 +4,17 @@ import FeedBackCard from "../components/FeedbackCard";
 import { Heartclick } from "../atomic/atomic";
 import { ChevronRight, Minus, Plus, ThumbsDown, ThumbsUp } from "lucide-react";
 import { SeeMore } from "../atomic/atomic";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import AllCount from "../context/allCount";
 import { useParams } from "react-router-dom";
 import { ShortMsg } from "../components/MessageBar";
 
 const MealDetails = () => {
   const { id } = useParams();
+
+  const { favCount, setFavCount, cartCount, setCartCount } =
+    useContext(AllCount);
+
   //keep the user status
   const user = JSON.parse(sessionStorage.getItem("user"));
   const [loggedIn, setLoggedIn] = useState(user);
@@ -30,22 +35,21 @@ const MealDetails = () => {
         setFood(foodItem);
         setAllReviews(reviews);
 
-        //fav & cart icon State || user not logged in
+        //  Guest user icons setup
         if (loggedIn === false) {
           const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-          if (sessionFav) {
-            setFav(sessionFav.some((item) => item._id === id));
-          }
+          if (sessionFav.some((item) => item._id === id)) setFav(true);
+
           const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-          if (sessionCart && sessionCart.some((item) => item._id === id)) {
+          if (sessionCart.some((item) => item._id === id)) {
             const item = sessionCart.find((item) => item._id === id);
             setQuantity(item.quantity);
-            setInCart(!inCart);
+            setInCart(true);
           }
           return;
         }
 
-        //fav icon State || user logged in
+        //  User icon setup ||  fav icon
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/user/favourite`,
           {
@@ -53,17 +57,19 @@ const MealDetails = () => {
           },
         );
         const { favourites } = await response.json();
-        const inival = favourites.some((item) => item._id === id);
-        setFav(inival);
-        //cart icon State || user logged in
+        setFav(favourites.some((item) => item._id === id));
+
+        //  User icon setup ||  cart icon
         const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
           credentials: "include",
         });
         const items = await data.json();
+        if (items.code === "ND") return;
         const exist = items.find((i) => i.foodId._id === id);
+        console.log(exist);
         if (exist) {
           setQuantity(exist.quantity);
-          setInCart(!inCart);
+          setInCart(true);
         }
       } catch (err) {
         console.log(err);
@@ -71,6 +77,136 @@ const MealDetails = () => {
     }
     getData();
   }, []);
+
+
+  //handle favourite items (add, remove)
+  const handle = async (e) => {
+    e.preventDefault(); // Prevent Link navigation
+    e.stopPropagation(); // Stop event bubbling
+    if (!id) return;
+
+    //if user not logged in
+    if (loggedIn === false) {
+      let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+      const index = preFav.findIndex((item) => item._id === id);
+      if (index === -1) {
+        preFav.push({
+          _id: id,
+          image: food.image,
+          name: food.name,
+          description: food.description,
+          price: food.price,
+          unit: food.unit,
+          quantity: food.quantity,
+        });
+        setMsg("item added");
+        setFav(true);
+      } else {
+        preFav.splice(index, 1);
+        setMsg("item removed");
+        setFav(false);
+      }
+      sessionStorage.setItem("fav", JSON.stringify(preFav));
+      setFavCount(preFav.length);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            foodId: id,
+          }),
+        },
+      );
+      const { message } = await response.json();
+      setMsg(message);
+      setFav((prev) => !prev);
+
+      const totalFav = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        {
+          credentials: "include",
+        },
+      );
+      const { favourites } = await totalFav.json();
+      setFavCount(favourites.length);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  //handle cart item (add, remove)
+  const addCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    //if user not logged in
+    if (loggedIn === false) {
+      let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      const index = preCart.findIndex((item) => item._id === id);
+      if (index === -1) {
+        preCart.push({
+          _id: id,
+          image: food.image,
+          name: food.name,
+          price: food.price,
+          unit: food.unit,
+          quantity: quantity,
+          servingQuantity:food.servingQuantity,
+        });
+        setInCart(true);
+        setMsg("item added");
+      } else {
+        preCart.splice(index, 1);
+        setInCart(false);
+        setMsg("item removed");
+      }
+      sessionStorage.setItem("cart", JSON.stringify(preCart));
+      setCartCount(preCart.length);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: [{ id: id, quantity: quantity }],
+          command: "add/dlt", //command need for add and delete to separate updation
+        }),
+      });
+      const { message } = await res.json();
+      if (
+        message.trim() === "Already in Cart" ||
+        message.trim() === "Added to Cart"
+      )
+        setInCart(true);
+      else setInCart(false);
+      setMsg(message);
+
+      const totalCart = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/cart`,
+        {
+          credentials: "include",
+        },
+      );
+
+      const cartlength = await totalCart.json();
+      setCartCount(cartlength.length);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   // Showing reviews logic
   const [showAll, setShowAll] = useState(false);
@@ -162,114 +298,6 @@ const MealDetails = () => {
 
     return () => clearTimeout(timer);
   }, [msg]);
-
-  //handle favourite items (add, remove)
-  const handle = async (e) => {
-    e.preventDefault(); // Prevent Link navigation
-    e.stopPropagation(); // Stop event bubbling
-    if (!id) return;
-
-    //if user not logged in
-    if (loggedIn === false) {
-      let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-      const index = preFav.findIndex((item) => item._id === id);
-      if (index === -1) {
-        preFav.push({
-          _id: id,
-          image: food.image,
-          name: food.name,
-          description: food.description,
-          price: food.price,
-          unit: food.unit,
-          quantity: food.quantity,
-        });
-        setMsg("item added");
-        setFav((prev) => !prev);
-      } else {
-        preFav.splice(index, 1);
-        setMsg("item removed");
-        setFav((prev) => !prev);
-      }
-      sessionStorage.setItem("fav", JSON.stringify(preFav));
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/addfav`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            foodId: id,
-          }),
-        },
-      );
-
-      const { message } = await response.json();
-      setMsg(message);
-      setFav((prev) => !prev);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  //handle cart item (add, remove)
-  const addCart = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    //if user not logged in
-    if (loggedIn === false) {
-      let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-      const index = preCart.findIndex((item) => item._id === id);
-      if (index === -1) {
-        preCart.push({
-          _id: id,
-          image: food.image,
-          name: food.name,
-          price: food.price,
-          unit: food.unit,
-          quantity: quantity,
-        });
-        setInCart(!inCart);
-        setMsg("item added");
-      } else {
-        preCart.splice(index, 1);
-        setInCart(false);
-        setMsg("item removed");
-      }
-      sessionStorage.setItem("cart", JSON.stringify(preCart));
-      return;
-    }
-
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: [{ id: id, quantity: quantity }],
-          command: "add/dlt", //command need for add and delete to separate updation
-        }),
-      });
-      const { message } = await res.json();
-      if (
-        message.trim() === "Already in Cart" ||
-        message.trim() === "Added to Cart"
-      )
-        setInCart(!inCart);
-      else setInCart(!inCart);
-      setMsg(message);
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   return (
     <div className="Meal-Page h-full relative ">
