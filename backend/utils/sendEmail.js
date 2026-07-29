@@ -5,6 +5,7 @@ import changeEmailOTP from "../emails/changeEmailOTP.jsx";
 
 
 export async function sendSignupOTP(email, username, otp) {
+    console.log("email send to: ", email);
     const html = await render(
         SignupOTP({
             username,
@@ -12,12 +13,20 @@ export async function sendSignupOTP(email, username, otp) {
         })
     );
 
-   return await transporter.sendMail({
-        from: `"BiteBox_Accounts" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: `${otp} - is your BiteBox verification code`,
-        html,
-    });
+    try {
+        const info = await transporter.sendMail({
+            from: `"BiteBox_Accounts" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: `${otp} - is your BiteBox verification code`,
+            html,
+        });
+
+        console.log("Mail sent:", info);
+        return info;
+    } catch (err) {
+        console.error("Mail error:", err);
+        throw err;
+    }
 }
 export async function sendemailChangeOTP(email, username, otp) {
     const html = await render(
@@ -27,7 +36,7 @@ export async function sendemailChangeOTP(email, username, otp) {
         })
     );
 
-   return await transporter.sendMail({
+    return await transporter.sendMail({
         from: `"BiteBox_Accounts" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: `${otp} - is your changing email code`,

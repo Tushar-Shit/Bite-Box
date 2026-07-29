@@ -14,7 +14,7 @@ export const signup = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         message: "This email is already registered.",
-        code:"failed",
+        code: "failed",
       });
       return;
     }
@@ -35,25 +35,33 @@ export const signup = async (req, res) => {
       OTP: otp,
       expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     })
+    let info;
 
-    //  send OTP to the user
-    const firstName = username.split(" ");
-    const info = await sendSignupOTP(
-      email,
-      firstName[0],
-      otp
-    );
+    try {
+      const firstName = username.split(" ");
 
-    if (info.accepted.length === 0) {
-      await PendingSignup.deleteOne({ email })
-      res.status(500).json({
+      console.log("EMAIL_USER:", process.env.EMAIL_USER);
+
+      info = await sendSignupOTP(
+        email,
+        firstName[0],
+        otp
+      );
+
+      console.log("Mail info:", info);
+    } catch (error) {
+      console.error("Signup mail error:", error);
+
+      await PendingSignup.deleteOne({ email });
+
+      return res.status(500).json({
         message: "Failed to send OTP email.",
         code: "failed",
       });
     }
 
     return res.status(200).json({
-      message: `OTP send to ${email}`,
+      message: `OTP sent to ${email}`,
       code: "successful",
     });
   } catch (err) {
