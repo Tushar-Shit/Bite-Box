@@ -28,27 +28,34 @@ export const signup = async (req, res) => {
 
 
     //  store informations into DB
+    // Store pending signup
     await PendingSignup.create({
-      username: username,
-      email: email,
+      username,
+      email,
       password: hashedPassword,
       OTP: otp,
       expiresAt: new Date(Date.now() + 5 * 60 * 1000),
-    })
-    let info;
+    });
 
     try {
       const firstName = username.split(" ");
 
-      console.log("EMAIL_USER:", process.env.EMAIL_USER);
-
-      info = await sendSignupOTP(
+      const info = await sendSignupOTP(
         email,
         firstName[0],
         otp
       );
 
       console.log("Mail info:", info);
+
+      if (!info.accepted?.length) {
+        await PendingSignup.deleteOne({ email });
+
+        return res.status(500).json({
+          message: "Failed to send OTP email.",
+          code: "failed",
+        });
+      }
     } catch (error) {
       console.error("Signup mail error:", error);
 
