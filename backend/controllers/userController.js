@@ -2,16 +2,23 @@ import FoodItem from "../models/foodItem.js";
 import Users from "../models/user.js";
 import Cart from "../models/cart.js";
 
+// user name and email for navbar
 export const profile = async (req, res) => {
+    console.log("trtrtrtrtetetete")
     const user = await Users.findById(
         req.user
     );
 
+    // if (!user) {
+    //     return res.json({
+    //         code: "failed",
+    //         message: "No User Found"
+    //     })
+    // }
     res.json({
         username: user.username,
         email: user.email,
     });
-
 };
 
 export const addfav = async (req, res) => {
@@ -26,16 +33,18 @@ export const addfav = async (req, res) => {
         await Users.findByIdAndUpdate(userId, {
             $pull: { favourites: foodId },
         });
-        res.json({ message: "Remove From Favourite",
-            code:"okay",
-         });
+        res.json({
+            message: "Remove From Favourite",
+            code: "okay",
+        });
     } else {
         await Users.findByIdAndUpdate(userId, {
             $addToSet: { favourites: foodId },
         });
-        res.json({ message: "Add to Favourite",
-            code:"okay",
-         });
+        res.json({
+            message: "Add to Favourite",
+            code: "okay",
+        });
     }
 };
 

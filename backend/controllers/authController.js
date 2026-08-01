@@ -1,161 +1,21 @@
+import React from "react";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { render } from "@react-email/render";
 import Users from "../models/user.js";
 import PendingSignup from "../models/pendingSignup.js";
-// import { sendSignupOTP } from "../utils/sendEmail.js";
+import SignupOTP from "../emails/singupOTP.jsx"; //email template
 import sendEmail from "../utils/sendEmail.js";
 const isProduction = process.env.PROJECT_MODE === "production";
 
-// export const signup = async (req, res) => {
-//   try {
-//     const { username, email, password } = req.body;
 
-//     //check is email exist
-//     const existingUser = await Users.findOne({ email });
-//     if (existingUser) {
-//       return res.status(400).json({
-//         message: "This email is already registered.",
-//         code: "failed",
-//       });
-//       return;
-//     }
-
-//     // generate OTP and password hashed
-//     const otp = Math.floor(100000 + Math.random() * 900000);
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     //if already in PendingSignup collection delete for smooth signup process
-//     await PendingSignup.deleteOne({ email });
-
-
-//     //  store informations into DB
-//     // Store pending signup
-//     await PendingSignup.create({
-//       username,
-//       email,
-//       password: hashedPassword,
-//       OTP: otp,
-//       expiresAt: new Date(Date.now() + 5 * 60 * 1000),
-//     });
-
-//     try {
-//       const firstName = username.split(" ");
-
-//       //   const info = await sendSignupOTP(
-//       //     email,
-//       //     firstName[0],
-//       //     otp
-//       //   );
-
-//       //   console.log("Mail info:", info);
-
-//       //   if (!info.accepted?.length) {
-//       //     await PendingSignup.deleteOne({ email });
-
-//       //     return res.status(500).json({
-//       //       message: "Failed to send OTP email.",
-//       //       code: "failed",
-//       //     });
-//       //   }
-//       // } catch (error) {
-//       //   console.error("Signup mail error:", error);
-
-//       //   await PendingSignup.deleteOne({ email });
-
-//       //   return res.status(500).json({
-//       //     message: "Failed to send OTP email.",
-//       //     code: "failed",
-//       //   });
-//       // }
-
-//       // return res.status(200).json({
-//       //   message: `OTP sent to ${email}`,
-//       //   code: "successful",
-//       // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//       await sendEmail(
-//         email,
-//         "BiteBox Email Verification",
-//         `Hello ${username},
-
-// Your verification code is:
-
-// ${otp}
-
-// It expires in 5 minutes.
-
-// Thank you,
-// BiteBox`
-//       );
-
-//       res.json({
-//         success: true,
-//         otp,
-//       });
-
-//     } catch (err) {
-//       console.log(err);
-//       res.status(500).json({
-//         success: false,
-//       });
-//     }
-//   });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// } catch (err) {
-//   res.status(500).json({
-//     message: err.message,
-//   });
-// }
-//   };
-
-
-
-
-
-
-
-
-
-
-
+//first stage of signup, taking data generate OTP
 export const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
     // Check existing user
     const existingUser = await Users.findOne({ email });
-
     if (existingUser) {
       return res.status(400).json({
         message: "This email is already registered.",
@@ -165,7 +25,6 @@ export const signup = async (req, res) => {
 
     // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -181,148 +40,139 @@ export const signup = async (req, res) => {
       expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    try {
-      await sendEmail(
-        email,
-        "BiteBox Email Verification",
-        `Hello ${username},
+    //converting the JSX template into html
+    const html = await render(
+      React.createElement(SignupOTP, {
+        firstName: username.split(" ")[0],
+        otp,
+      })
+    );
 
-Your verification code is:
+    //send the actual otp to user
+    await sendEmail(
+      email,
+      `${otp} - is your signup code for Bitebox`,
+      html
+    );
 
-${otp}
+    return res.status(200).json({
+      message: `OTP sent successfully to ${email}`,
+      code: "successful",
+    });
 
-This code expires in 5 minutes.
-
-If you didn't request this, you can safely ignore this email.
-
-Thank you,
-Team BiteBox`
-      );
-
-      return res.status(200).json({
-        message: `OTP sent successfully to ${email}`,
-        code: "successful",
-      });
-    } catch (mailError) {
-      console.log(mailError);
-
-      // Delete pending signup if mail fails
-      await PendingSignup.deleteOne({ email });
-
-      return res.status(500).json({
-        message: "Failed to send OTP email.",
-        code: "failed",
-      });
-    }
   } catch (err) {
+    await PendingSignup.deleteOne({ email });
     console.log(err);
 
     return res.status(500).json({
-      message: err.message,
+      message: "Failed to send OTP.",
       code: "failed",
     });
   }
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//resend OTP from varify OTP page while signup
 export const resendOTP = async (req, res) => {
-  //  take informations from user while resend OTP
-  const { username, email, password } = req.body;
+  try {
+    const { username, email, password } = req.body;
 
-  //  generate OTP
-  const newOTP = Math.floor(100000 + Math.random() * 900000);
-
-  //  if user exist in temporary DB update it
-  const result = await PendingSignup.updateOne(
-    { email },
-    {
-      OTP: newOTP,
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        code: "missing",
+        message: "All fields are required.",
+      });
     }
-  );
-  // if user details not in db create new one and send OTP
-  if (result.matchedCount === 0) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await PendingSignup.create({
-      username: username,
-      email: email,
-      password: hashedPassword,
-      OTP: newOTP,
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
-    })
 
-    const info = await sendSignupOTP(
-      email,
-      username,
-      newOTP
-    );
+    // Generate new OTP
+    const newOTP = Math.floor(100000 + Math.random() * 900000);
 
-    return res.json({
-      message: "not in db but OTP resend successful",
-      code: "successful"
-    })
-  }
+    // Check whether a pending signup already exists
+    let pendingUser = await PendingSignup.findOne({ email });
 
-  //  send OTP to the user
-  const info = await sendSignupOTP(
-    email,
-    username,
-    newOTP
-  );
+    // Used to know whether we created a new document
+    let createdNew = false;
 
-  if (info.accepted.length === 0) {
-    await PendingSignup.deleteOne({ email })
-    res.status(500).json({
-      message: "Failed to send OTP email.",
-      code: "failed",
+    if (pendingUser) {
+      // Update existing pending signup
+      pendingUser.OTP = newOTP;
+      pendingUser.expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+      await pendingUser.save();
+    } else {
+      // Create new pending signup
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      pendingUser = await PendingSignup.create({
+        username,
+        email,
+        password: hashedPassword,
+        OTP: newOTP,
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+      });
+
+      createdNew = true;
+    }
+
+    try {
+      const html = await render(
+        React.createElement(SignupOTP, {
+          firstName: username.split(" ")[0],
+          otp: newOTP,
+        })
+      );
+
+      await sendEmail(
+        email,
+        "BiteBox Email Verification",
+        html
+      );
+
+      return res.status(200).json({
+        code: "successful",
+        message: `OTP sent successfully to ${email}`,
+      });
+
+    } catch (mailError) {
+      console.error(mailError);
+
+      // Remove only newly created pending signup
+      if (createdNew) {
+        await PendingSignup.deleteOne({ _id: pendingUser._id });
+      }
+
+      return res.status(500).json({
+        code: "failed",
+        message: "Failed to send OTP.",
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      code: "error",
+      message: "Internal server error.",
     });
   }
-
-  return res.status(200).json({
-    message: `OTP send to ${email}`,
-    code: "successful",
-  });
-
-}
+};
 
 
+//OTP verifying and user created
 export const verifySignup = async (req, res) => {
   const { email, userOTP } = req.body;
 
-  //check is there any data exist against this email
   const tempData = await PendingSignup.findOne({ email });
-
-  // extract stored OTP
-  const DBOTP = Number(tempData.OTP)
+  const DBOTP = Number(tempData.OTP);
 
   //if OTP doesn't matched return
-  if (!(userOTP === DBOTP)) {
+  if (userOTP !== DBOTP.toString()) {
     return res.status(404).json({
-      message: "*This OTP is invalid.",
+      message: "Invalid OTP try again.",
       code: "failed",
     })
   }
+
 
   //create the new user
   const user = await Users.create({
@@ -330,8 +180,12 @@ export const verifySignup = async (req, res) => {
     email: email,
     password: tempData.password,
   });
-
-  //delete temporary data from PendingSignup collection
+  if (!user) {
+    return res.status(500).json({
+      message: "Server Error, please try again letter",
+      code: "failed",
+    })
+  }
   await PendingSignup.deleteOne({ email });
 
   //creating a new token for the new user
@@ -356,16 +210,14 @@ export const verifySignup = async (req, res) => {
   const messageName = newUser.username.split(" ");
   res.status(201).json({
     message: `Have a Great Day ${messageName[0]}!`,
-    code: "created"
+    code: "success",
+    name: messageName
   });
 
 }
 
 
-
-
-
-
+//login code block
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -373,6 +225,7 @@ export const login = async (req, res) => {
 
   if (!existingUser) {
     return res.json({
+      code: "failed",
       message: "User Not Found.",
     });
   }
@@ -384,6 +237,7 @@ export const login = async (req, res) => {
 
   if (!isMatch) {
     return res.json({
+      code: "failed",
       message: "Worng password Try Again.",
     });
   }
@@ -406,10 +260,14 @@ export const login = async (req, res) => {
   const messageName = existingUser.username.split(" ");
 
   res.json({
+    code: "success",
     message: `Welcome Back ${messageName[0]}!`,
+    name: messageName
   });
 };
 
+
+//logout code block
 export const logout = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,

@@ -22,6 +22,9 @@ const authMiddleware = async (req, res, next) => {
             });
         }
         req.user = decoded.userId;
+        req.email = searchUser.email;
+        // console.log(searchUser.email);
+
         next();
     } catch (e) {
         console.log(e)

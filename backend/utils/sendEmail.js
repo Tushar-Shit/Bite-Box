@@ -57,16 +57,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-async function sendEmail(to, subject, message) {
+async function sendEmail(to, subject, html) {
   try {
     const response = await fetch(process.env.GOOGLE_WEB_APP_URL, {
       method: "POST",
@@ -76,7 +67,7 @@ async function sendEmail(to, subject, message) {
       body: JSON.stringify({
         to,
         subject,
-        message,
+        html,
       }),
     });
 
@@ -89,6 +80,7 @@ async function sendEmail(to, subject, message) {
     if (!data.success) {
       throw new Error(data.error || "Email sending failed");
     }
+    // console.log("respons sfter sending email", data);
 
     return data;
   } catch (err) {
