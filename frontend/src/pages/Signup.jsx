@@ -1,14 +1,15 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
+import AllCount from "../context/allCount";
 function Signup() {
   //UI variables
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [message, setMessage]=useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
-
+  const { verifyCode, setVerifyCode } = useContext(AllCount);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -31,8 +32,8 @@ function Signup() {
     //show alert box if password not matched
     if (formData.password !== formData.confirmPassword) {
       setLoading(false);
-      setFailed(true)
-      setMessage("Password not matched.")
+      setFailed(true);
+      setMessage("Password not matched.");
       return;
     }
     try {
@@ -67,7 +68,7 @@ function Signup() {
         password: "",
         confirmPassword: "",
       });
-
+      setVerifyCode("SIGNUP");
       navigate("/verify-email", {
         state: "ve",
       });
@@ -93,7 +94,7 @@ function Signup() {
           <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
             {/* Header */}
             <div className="bg-red-600 text-white px-6 py-4 text-center">
-              <h2 className="text-xl font-semibold">Verification Failed</h2>
+              <h2 className="text-xl font-semibold">Signup Failed</h2>
             </div>
 
             {/* Body */}
@@ -175,8 +176,8 @@ function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full text-white py-3 rounded-lg 
-              ${loading ? "bg-gray-400 cursor-not-allowed" : " bg-orange-600 hover:bg-red-700"}
+              className={`w-full text-white py-3 rounded-lg  
+              ${loading ? "bg-gray-400 cursor-not-allowed" : "cursor-pointer bg-orange-600 hover:bg-red-700"}
               `}
             >
               {loading ? "Processing..." : "Signup"}
@@ -185,9 +186,9 @@ function Signup() {
 
           <p className="text-center mt-4 text-gray-600">
             Already have an account?{"  "}
-            <a href="/login" className="text-red-700 font-semibold">
+            <Link to="/login" className="text-red-700 font-semibold">
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>

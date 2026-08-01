@@ -1,4 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
+import { Helmet } from "react-helmet-async";
+import AllCount from "../context/allCount";
 import { useNavigate } from "react-router-dom";
 
 const VerifyOTP = () => {
@@ -6,14 +8,17 @@ const VerifyOTP = () => {
   const email = sessionStorage.getItem("email");
   const password = sessionStorage.getItem("password");
   const navigate = useNavigate();
+  const {
+    user,
+    setUser,
+    contextEmail,
+    setContextEmail,
+    verifyCode,
+    setVerifyCode,
+  } = useContext(AllCount);
 
-  //supporting UI chages variables
-  const [invalid, setInvalid] = useState(false);
-  const [failmsg, setFailmsg] = useState("");
-  const [spinner, setSpinner] = useState(false);
-
-  //UI changes and resend countdown
-  const [time, setTime] = useState(59);
+  //resend OTP countdown
+  const [time, setTime] = useState(30);
   const [wait, setWait] = useState(true);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,7 +35,160 @@ const VerifyOTP = () => {
     return () => clearInterval(interval);
   }, []);
 
-  //  resend code after 1 minute
+  //autometically move focus while entering code
+  const inputRefs = useRef([]);
+  const handleChange = (e, index) => {
+    const value = e.target.value;
+    // Allow only digits
+    if (!/^\d?$/.test(value)) {
+      e.target.value = "";
+      return;
+    }
+    // Move to next input
+    if (value && index < 5) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  //validate the OTP and check exact 6digits
+  const getOTP = () => {
+    const otp = [];
+
+    for (const input of inputRefs.current) {
+      if (!input || !/^[0-9]$/.test(input.value)) {
+        return null;
+      }
+
+      otp.push(input.value);
+    }
+
+    return otp.join("");
+  };
+
+  //verify OTP function
+  const [verifying, setVerifying] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [failmsg, setFailmsg] = useState("");
+  const [messageBox, setMessageBox] = useState(false);
+  async function verifyOTP(e) {
+    e.preventDefault();
+    setVerifying(true);
+    const finalOTP = getOTP();
+
+    if (!finalOTP) {
+      setMessageBox(true);
+      setInvalid(true);
+      setFailmsg("Please enter a valid 6-digit OTP.");
+      return;
+    }
+
+    try {
+      if (verifyCode === "SIGNUP") {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/signup/verify-otp`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email,
+              userOTP: finalOTP,
+            }),
+          },
+        );
+        const data = await response.json();
+        if (data.code === "failed") {
+          setUser(false);
+          setMessageBox(true);
+          setInvalid(true);
+          setFailmsg(data.message);
+          return;
+        }
+        if (data.code === "success") {
+          setUser(true);
+          sessionStorage.setItem("username", data.name);
+          sessionStorage.setItem("user", JSON.stringify(true));
+          sessionStorage.removeItem("email");
+          sessionStorage.removeItem("password");
+
+          //merge session data and DB data.
+          // if user created merge session and DB data
+          const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+          const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+          const favResponse = await fetch(
+            `${import.meta.env.VITE_API_URL}/user/addfav`,
+            {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ foodId: sessionFav }),
+            },
+          );
+          const { message } = await favResponse.json();
+          if (message === "Add to Favourite") {
+            sessionStorage.removeItem("fav");
+          }
+
+          const cartDetails = sessionCart.map((item) => ({
+            id: item._id,
+            quantity: item.quantity,
+          }));
+          const cartResponse = await fetch(
+            ` ${import.meta.env.VITE_API_URL}/user/cart`,
+            {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                data: cartDetails,
+                command: "SCA", //Session Cart Add
+              }),
+            },
+          );
+          const cartData = await cartResponse.json();
+          if (cartData.message === "Added to Cart") {
+            sessionStorage.removeItem("cart");
+          }
+          navigate("/", {
+            state: data.message,
+          });
+          window.location.reload();
+        }
+      } else if (verifyCode === "EMAIL_CHANGE") {
+        console.log("HELLO FROM EMAIL_CHANGE");
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/verify-code`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              OTP: finalOTP,
+            }),
+          },
+        );
+        const data = await response.json();
+        console.log(data.message);
+        // navigate("/", {
+        //   state: data.message,
+        // });
+        // window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+      setUser(false);
+      setMessageBox(true);
+      setFailmsg("Something unexpected occur please try again later");
+    }
+  }
+
+  //resend otp function
+  const [spinner, setSpinner] = useState(false);
   async function resendCode() {
     setSpinner(true);
     try {
@@ -50,131 +208,66 @@ const VerifyOTP = () => {
         },
       );
       const data = await response.json();
-      if (data.code === "successful") window.location.reload();
-    } catch (error) {
-      console.log(error);
+      if (data.code === "failed" || data.code === "error") {
+        setSpinner(false);
+        setMessageBox(true);
+        setFailmsg(data.message);
+      }
+      if (data.code === "successful") setSpinner(false);
+    } catch (err) {
+      setSpinner(false);
+      setMessageBox(true);
+      setFailmsg("Server error try again later.");
+      console.log(err);
     }
   }
 
-  //autometically move focus while entering code
-  const inputRefs = useRef([]);
-  const handleChange = (e, index) => {
-    const value = e.target.value;
-    // Allow only digits
-    if (!/^\d?$/.test(value)) {
-      e.target.value = "";
-      return;
-    }
-    // Move to next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1].focus();
-    }
-  };
-
-  //verify code and signup/login process
-  async function verifyCode() {
-    const inputArray = inputRefs.current.map((item) => Number(item.value));
-    if (inputArray.length !== 6) {
-      return alert("Code must be 6 digits.");
-    }
-
-    //make a single 6 digit number
-    const finalCode = inputArray.reduce((acc, currentVal) => {
-      return acc * 10 + currentVal;
-    }, 0);
-
-    //verify the OTP
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/signup/verify-otp`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          userOTP: finalCode,
-        }),
-      },
-    );
-    const data = await response.json();
-
-    // if user not created show message
-    if (!(data.code === "created")) {
-      setInvalid(true);
-      setFailmsg(data.message);
-      return;
-    }
-
-    //if user created merge session and DB data
-    const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-    const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-
-    const favResponse = await fetch(
-      `${import.meta.env.VITE_API_URL}/user/addfav`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          foodId: sessionFav,
-        }),
-      },
-    );
-    const { message } = await favResponse.json();
-    if (message === "Add to Favourite") {
-      sessionStorage.removeItem("fav");
-    }
-
-    const cartDetails = sessionCart.map((item) => ({
-      id: item._id,
-      quantity: item.quantity,
-    }));
-
-    const cartResponse = await fetch(
-      `${import.meta.env.VITE_API_URL}/user/cart`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: cartDetails,
-          command: "SCA", //Session Cart Add
-        }),
-      },
-    );
-    const cartData = await cartResponse.json();
-    if (cartData.message === "Added to Cart") {
-      sessionStorage.removeItem("cart");
-    }
-
-    sessionStorage.removeItem("username");
-    sessionStorage.removeItem("email");
-    sessionStorage.removeItem("password");
-
-    navigate("/", {
-      state: {
-        message: data.message,
-      },
-    });
-    window.location.reload(); //forcefully reload the page after login
+  function reset() {
+    setFailmsg("");
+    setMessageBox(false);
+    setInvalid(false);
+    setVerifying(false);
+    setSpinner(false);
   }
-
   return (
     <>
+      <Helmet>
+        <title>BiteBox | Verify Signup OTP</title>
+      </Helmet>
       {spinner && (
         <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
           <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
 
+      {/* failed message card */}
+      {messageBox && (
+        <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
+          <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
+            <div className="bg-red-600 text-white px-6 py-4 text-center">
+              <h2 className="text-xl font-semibold">Varification Failed</h2>
+            </div>
+
+            <div className="bg-white text-black px-6 py-5">
+              <p className="text-center">{failmsg}</p>
+
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={reset}
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition cursor-pointer"
+                >
+                  Okay
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="h-full flex items-center justify-center px-5">
-        <div className="border-t w-full max-w-md bg-white rounded-3xl shadow-xl p-6 text-center shadow-black">
+        <form
+          onSubmit={verifyOTP}
+          className="border-t w-full max-w-md bg-white rounded-3xl shadow-xl p-6 text-center shadow-black"
+        >
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800">
               Verify Your Email
@@ -202,23 +295,18 @@ const VerifyOTP = () => {
                   }
                 }}
                 required
-                className={`w-12 h-14 border-2 ${invalid ? "border-red-600 focus:border-red-600" : "border-gray-200"} rounded-xl text-center text-2xl font-bold outline-none focus:border-green-500`}
+                className={`w-12 h-14  border-2 ${invalid ? "border-red-600 focus:border-red-600" : "border-gray-200"} rounded-xl text-center text-2xl font-bold outline-none focus:border-green-500`}
               />
             ))}
           </div>
 
-          {invalid && (
-            <div className="py-2 px-5 text-left text-red-600 font-semibold text-sm">
-              <p>{failmsg}</p>
-            </div>
-          )}
-
           <button
-            onClick={verifyCode}
-            className={`w-[90%] ${invalid ? "mt-0" : "mt-3"} bg-orange-500 hover:bg-orange-600 transition text-white py-3 rounded-xl font-semibold`}
+            disabled={verifying}
+            className={`w-[90%] mt-3 ${verifying ? "bg-gray-400 cursor-not-allowed" : "cursor-pointer bg-orange-600 hover:bg-red-700"} transition text-white py-3 rounded-xl font-semibold`}
           >
-            Verify OTP
+            {verifying ? "Varifying..." : "Verify OTP"}
           </button>
+
           <div className="mt-4 text-center flex items-baseline-last justify-between">
             <p className="text-sm">Didn't receive the code?</p>
 
@@ -241,7 +329,7 @@ const VerifyOTP = () => {
               folder before requesting new OTP.
             </p>
           </div>
-        </div>
+        </form>
       </div>
     </>
   );

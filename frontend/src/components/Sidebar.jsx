@@ -60,6 +60,7 @@ function Sidebar({ onClick, showSide }) {
         email: "",
       });
       sessionStorage.setItem("user", JSON.stringify(false));
+      sessionStorage.setItem("username", JSON.stringify(null));
       onClick();
       window.location.reload();
     } catch (err) {

@@ -85,36 +85,15 @@ const Home = () => {
           setChefChoice(chefChoiceFood.slice(0, 4));
         }
 
-        //checking user is logged in or not
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/profile`,
-          {
-            credentials: "include",
-          },
-        );
-        const userData = await response.json();
-        //  NO LOGIN  || NO USER
-        if (userData.code === "NL" || userData.code === "NU") {
-          isLoggedIn = false;
-          sessionStorage.setItem("user", false);
-          console.log(userData.message);
-          return;
-        } else {
-          isLoggedIn = true;
-          sessionStorage.setItem("user", true);
-          // console.log(isLoggedIn);
-          setUser(userData);
-        }
-
         //extract fav foods for icon state, only when user logged in
-        const data = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/favourite`,
-          {
-            credentials: "include",
-          },
-        );
-        const { favourites } = await data.json();
-        setFavFoods(favourites);
+        // const data = await fetch(
+        //   `${import.meta.env.VITE_API_URL}/user/favourite`,
+        //   {
+        //     credentials: "include",
+        //   },
+        // );
+        // const { favourites } = await data.json();
+        // setFavFoods(favourites);
       } catch (err) {
         console.error(err);
       }
@@ -167,7 +146,7 @@ const Home = () => {
       </Helmet>
 
       {/* navbar */}
-      <Navbar onClick={showSideBar} user={user} />
+      <Navbar onClick={showSideBar} />
 
       {message && <MessageBar message={message} />}
       {msg && <ShortMsg message={msg} />}

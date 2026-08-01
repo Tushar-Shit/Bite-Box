@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+// impoet Link
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
+import AllCount from "../context/allCount";
 function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -15,12 +17,14 @@ function Login() {
       [e.target.name]: e.target.value,
     });
   };
-
-
-//login function
+  const { user, setUser } = useContext(AllCount);
+  const [failed, setFailed] = useState(false);
+  const [message, setMessage] = useState("");
+  const [processing, setProcessing] = useState(false);
+  //login function
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setProcessing(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/auth/login`,
@@ -40,57 +44,66 @@ function Login() {
       const data = await response.json();
 
       //merge session data and DB data after successfull login
-      if (data.message.startsWith("Welcome")) {
-        const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-        const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-
-        const favResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/addfav`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              foodId: sessionFav,
-            }),
-          },
-        );
-        const { message } = await favResponse.json();
-        if (message === "Add to Favourite") {
-          sessionStorage.removeItem("fav");
-        }
-
-        const cartDetails = sessionCart.map((item) => ({
-          id: item._id,
-          quantity: item.quantity,
-        }));
-        // console.log(cartDetails);
-        const cartResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/cart`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              data: cartDetails,
-              command: "SCA", //Session Cart Add
-            }),
-          },
-        );
-        const data = await cartResponse.json();
-        if (data.message === "Added to Cart") {
-          sessionStorage.removeItem("cart");
-        }
+      if (data.code === "failed") {
+        setFailed(true);
+        setMessage(data.message);
+        return;
       }
+
+      //set the user as true
+      setUser(true);
+      sessionStorage.setItem("username", data.name);
+      sessionStorage.setItem("user", JSON.stringify(true));
+
+      const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+      const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+
+      const favResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            foodId: sessionFav,
+          }),
+        },
+      );
+      const { message } = await favResponse.json();
+      if (message === "Add to Favourite") {
+        sessionStorage.removeItem("fav");
+      }
+
+      const cartDetails = sessionCart.map((item) => ({
+        id: item._id,
+        quantity: item.quantity,
+      }));
+      // console.log(cartDetails);
+      const cartResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/cart`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: cartDetails,
+            command: "SCA", //Session Cart Add
+          }),
+        },
+      );
+      const cartData = await cartResponse.json();
+      if (cartData.message === "Added to Cart") {
+        sessionStorage.removeItem("cart");
+      }
+
       setFormData({
         email: "",
         password: "",
       });
-      sessionStorage.setItem("user", JSON.stringify(true));
 
       navigate("/", {
         state: { message: data.message },
@@ -98,16 +111,48 @@ function Login() {
 
       // window.location.reload(); //forcefully reload the page after login
     } catch (error) {
+      setUser(false);
+      setFailed(true);
+      setMessage("Something went worng, please try again");
       console.error(error);
-      alert("Something went wrong");
     }
   };
+
+  function reset() {
+    setFailed(false);
+    setMessage("");
+    setProcessing(false);
+  }
 
   return (
     <>
       <Helmet>
         <title>BiteBox | Login</title>
       </Helmet>
+      {failed && (
+        <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
+          <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
+            {/* Header */}
+            <div className="bg-red-600 text-white px-6 py-4 text-center">
+              <h2 className="text-xl font-semibold">Login Failed</h2>
+            </div>
+
+            {/* Body */}
+            <div className="bg-white text-black px-6 py-5">
+              <p className="text-center">{message}</p>
+
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={reset}
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
+                >
+                  Okay
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <CustomNav text="Login" path="/" />
       <div className="h-[90vh] flex items-center justify-center bg-gray-100">
@@ -143,18 +188,20 @@ function Login() {
 
             <button
               type="submit"
-              className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-red-700"
+              className={`w-full ${processing ? "bg-gray-400 cursor-not-allowed" : "bg-orange-600 hover:bg-red-700 cursor-pointer"}  text-white py-3 rounded-lg`}
             >
-              Login
+              {processing ? "Processing..." : "Login"}
             </button>
           </form>
-
-          <p className="text-center mt-4 text-gray-600">
-            Don't have any account?{"  "}
-            <a href="/signup" className="text-red-700 font-medium">
-              SignUp
-            </a>
-          </p>
+          <div className="w-full mt-3 flex justify-between items-baseline text-red-600">
+            <div className="text-center text-sm text-gray-600">
+              <span className="text-sm"> Don't have any account?&nbsp;</span>
+              <Link to="/signup" className="text-red-700 font-medium">
+                SignUp
+              </Link>
+            </div>
+            <Link to="/forget-pass">Forget Password?</Link>
+          </div>
         </div>
       </div>
     </>
