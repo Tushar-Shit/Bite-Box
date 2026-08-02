@@ -1,17 +1,22 @@
+import React, { useState, useEffect, useContext } from "react";
+import AllCount from "../context/allCount";
 import { UserRound, Menu } from "lucide-react";
-import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = ({ onClick }) => {
-  // check user logged in or not and get username
-  const user = JSON.parse(sessionStorage.getItem("user")) || null;
-  const [name, setName] = useState(null);
+  const { user, setUser } = useContext(AllCount);
+  const [loggedin, setLoggedin] = useState(false);
+  const [name, setName] = useState("");
   useEffect(() => {
-    if (user) {
-      const username = sessionStorage.getItem("username") || null;
-      if (username) setName(username.split(" ")[0]);
+    if (!user || !user.userName) {
+      console.log("user not found");
+      setLoggedin(false);
+      return;
     }
-  }, []);
+    // console.log(user);
+    setLoggedin(true);
+    setName(user.userName.split(" ")[0]);
+  }, [user]);
 
   return (
     <div className="flex justify-between items-center px-4 w-full h-16 bg-red-500 py-3">
@@ -19,7 +24,7 @@ const Navbar = ({ onClick }) => {
         <Menu />
         <p className="text-lg font-bold">BiteBox</p>
       </div>
-      {user ? (
+      {loggedin ? (
         <>
           <div
             className="flex flex-col items-center cursor-pointer"

@@ -17,9 +17,10 @@ import { ShortMsg } from "../components/MessageBar";
 import { SeeMore, Heartclick } from "../atomic/atomic";
 
 //Hooks, navigation, other essential components
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import AllCount from "../context/allCount";
 
 //images for showing categories
 const images = {
@@ -35,6 +36,7 @@ const images = {
 
 //starting of home component
 const Home = () => {
+  const { user, setUser, favCount, setFavCount } = useContext(AllCount);
   //loader state
   const [loader, setLoader] = useState(true);
 
@@ -46,11 +48,6 @@ const Home = () => {
   const [chefChoice, setChefChoice] = useState([]);
 
   const [favFoods, setFavFoods] = useState([]);
-  const [user, setUser] = useState({
-    username: "",
-    email: "",
-  });
-  let isLoggedIn = false;
 
   //handle guest users
   const [guestFav, setGuestFav] = useState([]);
@@ -60,7 +57,7 @@ const Home = () => {
   useEffect(() => {
     async function getData() {
       try {
-        //fetch all food data
+        //initial food data for all time
         const res = await fetch(`${import.meta.env.VITE_API_URL}`);
         const {
           trendingFood,
@@ -84,22 +81,38 @@ const Home = () => {
           setBestSeller(bestSellerFood.slice(0, 8));
           setChefChoice(chefChoiceFood.slice(0, 4));
         }
-
-        //extract fav foods for icon state, only when user logged in
-        // const data = await fetch(
-        //   `${import.meta.env.VITE_API_URL}/user/favourite`,
-        //   {
-        //     credentials: "include",
-        //   },
-        // );
-        // const { favourites } = await data.json();
-        // setFavFoods(favourites);
       } catch (err) {
         console.error(err);
       }
     }
     getData();
-  }, [isLoggedIn]);
+  }, [user]);
+
+  // extract favourite items
+  useEffect(() => {
+    if (!user || !user.userName) {
+      const preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+      setFavFoods(preFav);
+      return;
+    }
+    try {
+      async function getfavfood() {
+        const data = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          {
+            credentials: "include",
+          },
+        );
+        const { favourites } = await data.json();
+        setFavFoods(favourites);
+      }
+      getfavfood();
+    } catch (err) {
+      console.log(err);
+    }
+  }, [user, favCount]);
+
+
 
   const [showSide, setShowSide] = useState(false); //sidebar logic
   const showSideBar = () => {
@@ -121,25 +134,21 @@ const Home = () => {
   }, []);
 
   const [msg, setMsg] = useState(null);
-  const [update, setUpdate] = useState(false);
   useEffect(() => {
     if (!msg) return;
 
     const timer = setTimeout(() => {
       setMsg(null);
-      setUpdate((update) => !update);
-    }, 2000); // 3 seconds
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [msg]);
 
   function satisfymessage(text) {
     setMsg(text);
-    // window.location.reload()
-    setUpdate((update) => !update);
   }
   return (
-    <div className="h-screen flex flex-col ">
+    <div className={`h-screen flex flex-col ${loader &&"overflow-y-hidden"} `}>
       {/*  page title */}
       <Helmet>
         <title>BiteBox | The Home of Deliciousness</title>
@@ -205,7 +214,7 @@ const Home = () => {
                   unit={item.unit}
                   category={item.Category}
                   isFav={favFoods.some((food) => food._id === item._id)}
-                  available={true}
+                  available={item.available}
                   satisfymessage={satisfymessage}
                 />
               ))}
@@ -235,7 +244,7 @@ const Home = () => {
                   price={item.price}
                   unit={item.unit}
                   isFav={favFoods.some((food) => food._id === item._id)}
-                  available={true}
+                  available={item.available}
                   satisfymessage={satisfymessage}
                 />
               ))}
@@ -256,7 +265,7 @@ const Home = () => {
                   quantity={item.quantity}
                   price={item.price}
                   unit={item.unit}
-                  available={false}
+                  available={item.available}
                 />
               ))}
               <Link to={`/tag/bestseller`}>
@@ -285,7 +294,7 @@ const Home = () => {
                   price={item.price}
                   unit={item.unit}
                   isFav={favFoods.some((food) => food._id === item._id)}
-                  available={true}
+                  available={item.available}
                   satisfymessage={satisfymessage}
                 />
               ))}
@@ -312,7 +321,7 @@ const Home = () => {
                   price={item.price}
                   unit={item.unit}
                   isFav={favFoods.some((food) => food._id === item._id)}
-                  available={true}
+                  available={item.available}
                   satisfymessage={satisfymessage}
                 />
               ))}

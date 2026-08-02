@@ -49,4 +49,4 @@ const reviewData = [
     }
 ];
 
-module.exports = reviewData;
+export default reviewData;

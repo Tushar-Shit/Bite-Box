@@ -12,12 +12,8 @@ import { ShortMsg } from "../components/MessageBar";
 const MealDetails = () => {
   const { id } = useParams();
 
-  const { favCount, setFavCount, cartCount, setCartCount } =
+  const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
-
-  //keep the user status
-  const user = JSON.parse(sessionStorage.getItem("user"));
-  const [loggedIn, setLoggedIn] = useState(user);
 
   //fav, cart, food, reviews informations
   const [fav, setFav] = useState(false);
@@ -36,7 +32,7 @@ const MealDetails = () => {
         setAllReviews(reviews);
 
         //  Guest user icons setup
-        if (loggedIn === false) {
+        if (!user || !user.user.userName) {
           const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
           if (sessionFav.some((item) => item._id === id)) setFav(true);
 
@@ -76,8 +72,7 @@ const MealDetails = () => {
       }
     }
     getData();
-  }, []);
-
+  }, [user]);
 
   //handle favourite items (add, remove)
   const handle = async (e) => {
@@ -86,7 +81,7 @@ const MealDetails = () => {
     if (!id) return;
 
     //if user not logged in
-    if (loggedIn === false) {
+    if (!user || !user.userName) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const index = preFav.findIndex((item) => item._id === id);
       if (index === -1) {
@@ -98,6 +93,7 @@ const MealDetails = () => {
           price: food.price,
           unit: food.unit,
           quantity: food.quantity,
+          available: food.available,
         });
         setMsg("item added");
         setFav(true);
@@ -148,7 +144,7 @@ const MealDetails = () => {
     e.stopPropagation();
 
     //if user not logged in
-    if (loggedIn === false) {
+    if (!user || !user.userName) {
       let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
       const index = preCart.findIndex((item) => item._id === id);
       if (index === -1) {
@@ -159,7 +155,8 @@ const MealDetails = () => {
           price: food.price,
           unit: food.unit,
           quantity: quantity,
-          servingQuantity:food.servingQuantity,
+          servingQuantity: food.servingQuantity,
+          available: food.available,
         });
         setInCart(true);
         setMsg("item added");
@@ -239,7 +236,7 @@ const MealDetails = () => {
       command === "increase" ? quantity + 1 : Math.max(1, quantity - 1);
 
     //set UI, session cart(if) || when user not logged in
-    if (loggedIn === false) {
+    if (!user || !user.username) {
       const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
       const thisItem = sessionCart.find((item) => item._id === id);
       setQuantity(newQuantity); //update the UI first
@@ -293,8 +290,7 @@ const MealDetails = () => {
 
     const timer = setTimeout(() => {
       setMsg(null);
-      // setUpdate(false);
-    }, 2000); // 3 seconds
+    }, 2000); 
 
     return () => clearTimeout(timer);
   }, [msg]);

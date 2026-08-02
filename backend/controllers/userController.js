@@ -4,21 +4,11 @@ import Cart from "../models/cart.js";
 
 // user name and email for navbar
 export const profile = async (req, res) => {
-    console.log("trtrtrtrtetetete")
     const user = await Users.findById(
         req.user
     );
 
-    // if (!user) {
-    //     return res.json({
-    //         code: "failed",
-    //         message: "No User Found"
-    //     })
-    // }
-    res.json({
-        username: user.username,
-        email: user.email,
-    });
+    res.json(user);
 };
 
 export const addfav = async (req, res) => {
@@ -57,7 +47,6 @@ export const favourite = async (req, res) => {
 
 //provide cart data
 export const getCart = async (req, res) => {
-    console.log("inside getcart, usercontroller")
     const currentUserId = req.user;
     const data = await Cart.findOne({ userId: currentUserId }).populate("items.foodId");
     if (!data || data.items.length <= 0) {
@@ -96,17 +85,21 @@ export const updateCart = async (req, res) => {
         const foodMap = new Map(
             foods.map(food => [food._id.toString(), food])
         );
-
         //make pair of id and quantity { ex52bydh3736nd.., 3}
         const quantityMap = new Map(
             data.map(item => [item.id.toString(), item.quantity])
+        );
+        const availableMap = new Map(
+            data.map(item => [item.id.toString(), item.available])
         );
 
         const cartItems = foods.map(food => ({
             foodId: food._id,
             quantity: quantityMap.get(food._id.toString()),
-            price: quantityMap.get(food._id.toString()) * food.price
+            price: quantityMap.get(food._id.toString()) * food.price,
+            available: availableMap.get(food._id.toString()),
         }));
+        console.log(cartItems);
 
         const existingCart = await Cart.findOne({ userId: req.user });
         if (existingCart) {

@@ -160,122 +160,139 @@ export const resendOTP = async (req, res) => {
 
 //OTP verifying and user created
 export const verifySignup = async (req, res) => {
-  const { email, userOTP } = req.body;
+  try {
+    const { email, userOTP } = req.body;
 
-  const tempData = await PendingSignup.findOne({ email });
-  const DBOTP = Number(tempData.OTP);
+    const tempData = await PendingSignup.findOne({ email });
+    const DBOTP = Number(tempData.OTP);
 
-  //if OTP doesn't matched return
-  if (userOTP !== DBOTP.toString()) {
-    return res.status(404).json({
-      message: "Invalid OTP try again.",
-      code: "failed",
-    })
+    //if OTP doesn't matched return
+    if (userOTP !== DBOTP.toString()) {
+      return res.status(404).json({
+        message: "Invalid OTP try again.",
+        code: "failed",
+      })
+    }
+
+    //create the new user
+    const user = await Users.create({
+      username: tempData.username,
+      email: email,
+      password: tempData.password,
+    });
+    if (!user) {
+      return res.status(500).json({
+        message: "Server Error, please try again letter",
+        code: "failed",
+      })
+    }
+    await PendingSignup.deleteOne({ email });
+
+    //creating a new token for the new user
+    const newUser = await Users.findOne({ email });
+    const token = jwt.sign(
+      {
+        userId: newUser._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    //set the cookie for 7days
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,    //7 days
+    });
+
+    //greet the user
+    const messageName = newUser.username.split(" ");
+    res.status(201).json({
+      message: `Have a Great Day ${messageName[0]}!`,
+      code: "success",
+      user: {
+        userid: newUser._id,
+        username: newUser.username,
+        useremail: newUser.email,
+        userrole: "user"
+      }
+
+    });
+  } catch (err) {
+    console.log(err)
   }
-
-
-  //create the new user
-  const user = await Users.create({
-    username: tempData.username,
-    email: email,
-    password: tempData.password,
-  });
-  if (!user) {
-    return res.status(500).json({
-      message: "Server Error, please try again letter",
-      code: "failed",
-    })
-  }
-  await PendingSignup.deleteOne({ email });
-
-  //creating a new token for the new user
-  const newUser = await Users.findOne({ email });
-  const token = jwt.sign(
-    {
-      userId: newUser._id,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
-
-  //set the cookie for 7days
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,    //7 days
-  });
-
-  //greet the user
-  const messageName = newUser.username.split(" ");
-  res.status(201).json({
-    message: `Have a Great Day ${messageName[0]}!`,
-    code: "success",
-    name: messageName
-  });
 
 }
 
 
 //login code block
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
+    const existingUser = await Users.findOne({ email });
 
-  const existingUser = await Users.findOne({ email });
+    if (!existingUser) {
+      return res.json({
+        code: "failed",
+        message: "User Not Found.",
+      });
+    }
 
-  if (!existingUser) {
-    return res.json({
-      code: "failed",
-      message: "User Not Found.",
+    const isMatch = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+
+    if (!isMatch) {
+      return res.json({
+        code: "failed",
+        message: "Worng password Try Again.",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: existingUser._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-  }
 
-  const isMatch = await bcrypt.compare(
-    password,
-    existingUser.password
-  );
+    const messageName = existingUser.username.split(" ");
 
-  if (!isMatch) {
-    return res.json({
-      code: "failed",
-      message: "Worng password Try Again.",
+    res.json({
+      code: "success",
+      message: `Welcome Back ${messageName[0]}!`,
+      user: { userid: existingUser._id, username: existingUser.username, useremail: existingUser.email, userrole: "user" }
     });
+  } catch (err) {
+    console.log(err)
   }
-
-  const token = jwt.sign(
-    {
-      userId: existingUser._id,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
-
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-
-  const messageName = existingUser.username.split(" ");
-
-  res.json({
-    code: "success",
-    message: `Welcome Back ${messageName[0]}!`,
-    name: messageName
-  });
 };
 
 
 //logout code block
 export const logout = async (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-  });
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    });
 
-  res.json({
-    message: "Logged out successfully",
-  });
+    res.json({
+      message: "Logged out successfully",
+    });
+  } catch (err) {
+    console.log(err);
+
+  }
 };

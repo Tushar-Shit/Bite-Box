@@ -18,21 +18,18 @@ const HorizontalFC = ({
   //design purpose
   view,
 }) => {
-  const { favCount, setFavCount, cartCount, setCartCount } =
+  const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
 
-  const [fav, setFav] = useState(false);
+  const [fav, setFav] = useState(isFav);
   useEffect(() => {
     setFav(isFav);
   }, [isFav]);
 
   const [inCart, setInCart] = useState(false);
   useEffect(() => {
-    //Guest user icon state
-    let user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
-      const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-      if (sessionFav.some((item) => item._id === id)) setFav(true);
+    //Guest user cart icon
+    if (!user || !user.userName) {
       const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
       if (sessionCart.some((item) => item._id === id)) setInCart(true);
       return;
@@ -49,7 +46,7 @@ const HorizontalFC = ({
       if (item.some((i) => i.foodId._id === id)) setInCart(true);
     }
     getCart();
-  }, []);
+  }, [user]);
 
   //favourite handle function add & remove
   const handle = async (e) => {
@@ -58,8 +55,7 @@ const HorizontalFC = ({
     if (!id) return;
 
     //Guest user add or Remove favourite
-    let user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    if (!user || !user.userName) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const index = preFav.findIndex((item) => item._id === id);
       if (index === -1) {
@@ -71,6 +67,7 @@ const HorizontalFC = ({
           price: price,
           unit: unit,
           quantity: quantity,
+          available: available,
         });
         satisfymessage("item added");
         setFav((prev) => !prev);
@@ -121,8 +118,8 @@ const HorizontalFC = ({
   const addCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+
+    if (!user || !user.userName) {
       let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
       const index = preCart.findIndex((item) => item._id === id);
       if (index === -1) {
@@ -133,7 +130,8 @@ const HorizontalFC = ({
           price: price,
           unit: unit,
           quantity: quantity,
-          servingQuantity:servingQuantity,
+          servingQuantity: servingQuantity,
+          available: available,
         });
         setInCart(true);
         satisfymessage("item added");
@@ -154,7 +152,7 @@ const HorizontalFC = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: quantity }],
+          data: [{ id: id, quantity: quantity}],
           command: "add/dlt", //command need for add and delete to separate updation
         }),
       });

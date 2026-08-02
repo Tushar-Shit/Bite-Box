@@ -7,8 +7,10 @@ import { useState, useEffect, useContext } from "react";
 import Nodata from "../components/NoData";
 import Loader from "../components/Loader";
 import AllCount from "../context/allCount";
+import { Helmet } from "react-helmet-async";
+
 const Favorite = () => {
-  const { favCount, setFavCount, cartCount, setCartCount } =
+  const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
 
   const [loader, setLoader] = useState(true);
@@ -20,14 +22,14 @@ const Favorite = () => {
   //extract all favourite food items
   const [favouriteItems, setFavouriteItems] = useState([]);
   useEffect(() => {
-    // if user not logged in
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    // Guest user favorite foods
+    if (!user || !user.userName) {
       const favData = JSON.parse(sessionStorage.getItem("fav")) || [];
       setFavouriteItems(favData);
       setLoader(false);
       return;
     }
+
     const favdata = async () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/user/favourite`,
@@ -50,7 +52,7 @@ const Favorite = () => {
       }
     };
     favdata();
-  }, [favCount]);
+  }, [user, favCount]);
 
   //update bottom bar
   const [msg, setMsg] = useState(null);
@@ -69,12 +71,15 @@ const Favorite = () => {
 
   return (
     <div className="h-screen w-full">
+      <Helmet>
+        <title>BiteBox | Your choice our recomendation</title>
+      </Helmet>
       <CustomNav text="Favorite Items" />
       {msg && <ShortMsg message={msg} />}
 
       {loader && <Loader />}
 
-      {favouriteItems.length <= 0 && !loader? (
+      {favouriteItems.length <= 0 && !loader ? (
         <Nodata text1="No Item!" text2="Hurry Up Catch Favourites!" />
       ) : (
         <div className="px-4 pt-4 sm:flex sm:flex-wrap sm:gap-4">
@@ -90,7 +95,7 @@ const Favorite = () => {
               price={item.price}
               unit={item.unit}
               isFav={favouriteItems.some((food) => food._id === item._id)}
-              available={true}
+              available={item.available}
               satisfymessage={satisfymessage}
               //design purpose
               view={"list"}

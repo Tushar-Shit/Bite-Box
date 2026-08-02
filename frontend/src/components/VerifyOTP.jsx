@@ -2,10 +2,10 @@ import React, { useRef, useEffect, useState, useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import AllCount from "../context/allCount";
 import { useNavigate } from "react-router-dom";
+import FailedMessage from "./FailedMessage";
 
 const VerifyOTP = () => {
   const username = sessionStorage.getItem("username");
-  const email = sessionStorage.getItem("email");
   const password = sessionStorage.getItem("password");
   const navigate = useNavigate();
   const {
@@ -16,6 +16,13 @@ const VerifyOTP = () => {
     verifyCode,
     setVerifyCode,
   } = useContext(AllCount);
+
+  useEffect(() => {
+    if (!user || !verifyCode || !contextEmail) {
+      setMessageBox(true);
+      setFailmsg("Fail to get email, please try from begining");
+    }
+  }, [user, verifyCode, contextEmail]);
 
   //resend OTP countdown
   const [time, setTime] = useState(30);
@@ -33,7 +40,7 @@ const VerifyOTP = () => {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [wait]);
 
   //autometically move focus while entering code
   const inputRefs = useRef([]);
@@ -93,24 +100,27 @@ const VerifyOTP = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              email: email,
+              email: contextEmail,
               userOTP: finalOTP,
             }),
           },
         );
         const data = await response.json();
         if (data.code === "failed") {
-          setUser(false);
+          setUser(null);
           setMessageBox(true);
           setInvalid(true);
           setFailmsg(data.message);
           return;
         }
         if (data.code === "success") {
-          setUser(true);
-          sessionStorage.setItem("username", data.name);
-          sessionStorage.setItem("user", JSON.stringify(true));
-          sessionStorage.removeItem("email");
+          setUser({
+            userId: data.user.userid,
+            userName: data.user.username,
+            userEmail: data.user.useremail,
+            userRole: data.user.userrole,
+          });
+          sessionStorage.removeItem("username");
           sessionStorage.removeItem("password");
 
           //merge session data and DB data.
@@ -157,8 +167,6 @@ const VerifyOTP = () => {
           window.location.reload();
         }
       } else if (verifyCode === "EMAIL_CHANGE") {
-        console.log("HELLO FROM EMAIL_CHANGE");
-
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/update/verify-code`,
           {
@@ -173,15 +181,22 @@ const VerifyOTP = () => {
           },
         );
         const data = await response.json();
-        console.log(data.message);
-        // navigate("/", {
-        //   state: data.message,
-        // });
-        // window.location.reload();
+        if (data.code === "failed") {
+          setMessageBox(true);
+          setInvalid(true);
+          setFailmsg(data.message);
+          return;
+        }
+        navigate("/", {
+          state: {
+            message: data.message,
+          },
+        });
+        // window.loaction.reload();
       }
     } catch (err) {
       console.log(err);
-      setUser(false);
+      setUser(null);
       setMessageBox(true);
       setFailmsg("Something unexpected occur please try again later");
     }
@@ -191,29 +206,69 @@ const VerifyOTP = () => {
   const [spinner, setSpinner] = useState(false);
   async function resendCode() {
     setSpinner(true);
+    if (!contextEmail) {
+      setMessageBox(true);
+      setFailmsg("Fail to get email, please try from begining");
+      return;
+    }
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/signup/resend-otp`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
+      if (verifyCode === "SIGNUP") {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/signup/resend-otp`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: username,
+              email: contextEmail,
+              password: password,
+            }),
           },
-          body: JSON.stringify({
-            username: username,
-            email: email,
-            password: password,
-          }),
-        },
-      );
-      const data = await response.json();
-      if (data.code === "failed" || data.code === "error") {
-        setSpinner(false);
-        setMessageBox(true);
-        setFailmsg(data.message);
+        );
+        const data = await response.json();
+        if (data.code === "failed" || data.code === "error") {
+          setSpinner(false);
+          setMessageBox(true);
+          setFailmsg(data.message);
+        }
+        if (data.code === "successful") {
+          setWait(true);
+          setTime(30);
+          setSpinner(false);
+        }
+      } else if (verifyCode === "EMAIL_CHANGE") {
+        console.log(contextEmail);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/email-change`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: user.userName,
+              useremail: user.userEmail,
+              newemail: contextEmail,
+            }),
+          },
+        );
+        const data = await response.json();
+        if (data.code === "failed" || data.code === "error") {
+          setSpinner(false);
+          setMessageBox(true);
+          setFailmsg(data.message);
+        }
+        if (data.code === "success") {
+          console.log(data.message);
+          setWait(true);
+          setTime(30);
+          setSpinner(false);
+        }
       }
-      if (data.code === "successful") setSpinner(false);
     } catch (err) {
       setSpinner(false);
       setMessageBox(true);
@@ -231,9 +286,6 @@ const VerifyOTP = () => {
   }
   return (
     <>
-      <Helmet>
-        <title>BiteBox | Verify Signup OTP</title>
-      </Helmet>
       {spinner && (
         <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
           <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -242,38 +294,22 @@ const VerifyOTP = () => {
 
       {/* failed message card */}
       {messageBox && (
-        <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
-          <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
-            <div className="bg-red-600 text-white px-6 py-4 text-center">
-              <h2 className="text-xl font-semibold">Varification Failed</h2>
-            </div>
-
-            <div className="bg-white text-black px-6 py-5">
-              <p className="text-center">{failmsg}</p>
-
-              <div className="mt-6 flex justify-center">
-                <button
-                  onClick={reset}
-                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition cursor-pointer"
-                >
-                  Okay
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <FailedMessage
+          heading="Verification Failed"
+          message={failmsg}
+          reset={reset}
+        />
       )}
+
       <div className="h-full flex items-center justify-center px-5">
-        <form
-          onSubmit={verifyOTP}
-          className="border-t w-full max-w-md bg-white rounded-3xl shadow-xl p-6 text-center shadow-black"
-        >
+        <div className="w-full max-w-md bg-white rounded-3xl p-6 text-center shadow-[0_3px_20px_rgba(107,114,128,0.7)]">
+        <form onSubmit={verifyOTP}>
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800">
               Verify Your Email
             </h1>
             <p className="mt-3">We've sent a 6-digit verification code to</p>
-            <p className="font-semibold text-gray-500 mt-1">{email}</p>
+            <p className="font-semibold text-gray-500 mt-1">{contextEmail}</p>
           </div>
 
           {/* OTP Inputs */}
@@ -306,30 +342,29 @@ const VerifyOTP = () => {
           >
             {verifying ? "Varifying..." : "Verify OTP"}
           </button>
-
-          <div className="mt-4 text-center flex items-baseline-last justify-between">
-            <p className="text-sm">Didn't receive the code?</p>
-
-            <button
-              disabled={wait}
-              onClick={resendCode}
-              className={`mt-2 text-sm font-semibold 
-            ${wait ? "text-gray-500 cursor-not-allowed" : "text-black cursor-pointer underline"}`}
-            >
-              {wait ? `Resend OTP in ${time} seconds` : "Resend OTP"}
-            </button>
-          </div>
-
-          <div className="mt-2 rounded-xl bg-amber-50 border border-amber-300 p-2">
-            <p className="text-sm text-amber-900">
-              <span className="font-bold">Tip: </span>
-              <span>Please check your </span>
-              <span className="font-bold">Spam</span> or{" "}
-              <span className="font-bold">Junk </span>
-              folder before requesting new OTP.
-            </p>
-          </div>
         </form>
+        <div className="mt-4 text-center flex items-baseline-last justify-between">
+          <p className="text-sm">Didn't receive the code?</p>
+          <button
+            disabled={wait}
+            onClick={resendCode}
+            className={`mt-2 text-sm font-semibold 
+            ${wait ? "text-gray-500 cursor-not-allowed" : "text-black cursor-pointer underline"}`}
+          >
+            {wait ? `Resend OTP in ${time} seconds` : "Resend OTP"}
+          </button>
+        </div>
+
+        <div className="mt-2 rounded-xl bg-amber-50 border border-amber-300 p-2">
+          <p className="text-sm text-amber-900">
+            <span className="font-bold">Tip: </span>
+            <span>Please check your </span>
+            <span className="font-bold">Spam</span> or{" "}
+            <span className="font-bold">Junk </span>
+            folder before requesting new OTP.
+          </p>
+        </div>
+        </div>
       </div>
     </>
   );

@@ -1,16 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 const MessageBar = ({ message }) => {
   const [show, setShow] = useState(false);
-  function handleShow() {
-    setShow(!show);
-  }
+
+  useEffect(() => {
+    if (!message) return;
+    setShow(true);
+
+    const timer = setTimeout(() => {
+      setShow(false); // Hide the bar
+      // window.location.reload(); // Reload the browser page
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [message]);
+  if (!show) return null;
+
   return (
-    <div
-      className={`h-15 w-screen bg-zinc-600 p-2 pr-10 fixed bottom-20 z-10 text-white text-lg flex justify-between items-center
-    ${show && "hidden"}`}
-    >
+    <div className="h-15 w-screen bg-zinc-600 p-2 pr-10 fixed bottom-20 z-10 text-white text-lg flex justify-between items-center">
       <p>{message}</p>
-      <p className="text-3xl cursor-pointer select-none" onClick={handleShow}>
+      <p 
+        className="text-3xl cursor-pointer select-none" 
+        onClick={() => {
+          setShow(false);
+          // window.location.reload();
+        }}
+      >
         &times;
       </p>
     </div>
@@ -29,10 +44,9 @@ const ShortMsg = ({ message }) => {
     ${show && "hidden"}`}
     >
       <span className="rounded-xl p-2 bg-zinc-700 text-white">{message}</span>
-      
     </div>
   );
 };
 
 export default MessageBar;
-export {ShortMsg};
+export { ShortMsg };

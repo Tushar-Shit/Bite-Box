@@ -3,13 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
 import AllCount from "../context/allCount";
+import FailedMessage from "../components/FailedMessage";
+
 function Signup() {
   //UI variables
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const { verifyCode, setVerifyCode } = useContext(AllCount);
+  const { verifyCode, setVerifyCode, setContextEmail } = useContext(AllCount);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -60,7 +62,7 @@ function Signup() {
         return;
       }
       sessionStorage.setItem("username", formData.username);
-      sessionStorage.setItem("email", formData.email);
+      setContextEmail(formData.email);
       sessionStorage.setItem("password", formData.password);
       setFormData({
         username: "",
@@ -90,28 +92,11 @@ function Signup() {
       <CustomNav text="Signup" path="/" />
 
       {failed && (
-        <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
-          <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
-            {/* Header */}
-            <div className="bg-red-600 text-white px-6 py-4 text-center">
-              <h2 className="text-xl font-semibold">Signup Failed</h2>
-            </div>
-
-            {/* Body */}
-            <div className="bg-white text-black px-6 py-5">
-              <p className="text-center">{message}</p>
-
-              <div className="mt-6 flex justify-center">
-                <button
-                  onClick={proceed}
-                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
-                >
-                  Okay
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <FailedMessage
+          heading="Signup Failed"
+          message={message}
+          reset={proceed}
+        />
       )}
 
       <div className="h-[86vh] flex items-center justify-center bg-gray-100">

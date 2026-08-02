@@ -2,21 +2,31 @@ import React, { useState, useContext } from "react";
 import AllCount from "../context/allCount";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
+import FailedMessage from "./FailedMessage";
 const ChangeEmail = () => {
   const [newEmail, setnewEmail] = useState("");
   const [submit, setsubmit] = useState(false);
   const [messageBox, setMessageBox] = useState(false);
   const [failMsg, setFailMsg] = useState("");
   const navigate = useNavigate();
-  const { verifyCode, setVerifyCode, contextEmail, setContextEmail } = useContext(AllCount);
+  const {
+    verifyCode,
+    setVerifyCode,
+    contextEmail,
+    setContextEmail,
+    user,
+    userEmail
+  } = useContext(AllCount);
+
   async function otpHandler(e) {
     e.preventDefault();
     setsubmit(true);
     // path /update/email-change
     if (!newEmail) {
       setsubmit(false);
-      return alert(" empty field ");
+      setMessageBox(true);
+      setFailMsg("Empty field");
+      return;
     }
 
     const response = await fetch(
@@ -28,7 +38,9 @@ const ChangeEmail = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: newEmail,
+          username: user.userName,
+          useremail: user.userEmail,
+          newemail: newEmail,
         }),
       },
     );
@@ -40,7 +52,7 @@ const ChangeEmail = () => {
     }
     if (data.code === "success") {
       setContextEmail(data.email);
-      setVerifyCode("EMAIL_CHANGE")
+      setVerifyCode("EMAIL_CHANGE");
       navigate("/verify-email", {
         state: "ve",
       });
@@ -55,26 +67,11 @@ const ChangeEmail = () => {
   return (
     <>
       {messageBox && (
-        <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
-          <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
-            <div className="bg-red-600 text-white px-6 py-4 text-center">
-              <h2 className="text-xl font-semibold">Varification Failed</h2>
-            </div>
-
-            <div className="bg-white text-black px-6 py-5">
-              <p className="text-center">{failMsg}</p>
-
-              <div className="mt-6 flex justify-center">
-                <button
-                  onClick={reset}
-                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition cursor-pointer"
-                >
-                  Okay
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <FailedMessage
+          heading="Verification failed"
+          message={failMsg}
+          reset={reset}
+        />
       )}
 
       <div className="h-[80vh] flex flex-col items-center justify-center">

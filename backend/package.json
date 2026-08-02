@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch server.js",
+    "dummy": "tsx watch initializeDB/app.js",
     "start": "tsx server.js",
     "email": "email dev"
   },

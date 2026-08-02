@@ -7,9 +7,10 @@ import AllCount from "../context/allCount";
 import Loader from "../components/Loader";
 import Nodata from "../components/NoData";
 import { ShortMsg } from "../components/MessageBar";
+import { Helmet } from "react-helmet-async";
 
 const Cart = () => {
-  const { cartCount, setCartCount } = useContext(AllCount);
+  const { cartCount, setCartCount, user, setUser } = useContext(AllCount);
 
   const [refresh, setRefresh] = useState(false);
   const [loggedin, setLoggedin] = useState(null);
@@ -23,30 +24,23 @@ const Cart = () => {
 
   //extracting cart items
   useEffect(() => {
-    // const abcd = JSON.parse(sessionStorage.getItem("cart"));
-    // console.log(abcd);
+    if (!user || !user.userName) {
+      let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      if (preCart.length <= 0) {
+        setResponse({
+          quick: "No Data Found",
+          message: "Your cart is empty....",
+        });
+      }
+      setLoader(false);
+      setCartItems(preCart);
+      const eachFinalPrice = preCart.map((item) => item.price * item.quantity);
+      setTotalPrice(eachFinalPrice.reduce((acc, price) => acc + price, 0));
+      return;
+    }
 
     async function fetchCartItems() {
-      const user = JSON.parse(sessionStorage.getItem("user"));
       setLoggedin(user);
-
-      if (user === false) {
-        let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-        if (preCart.length <= 0) {
-          setResponse({
-            quick: "No Data Found",
-            message: "Your cart is empty....",
-          });
-        }
-        setLoader(false);
-        setCartItems(preCart);
-        const eachFinalPrice = preCart.map(
-          (item) => item.price * item.quantity,
-        );
-        setTotalPrice(eachFinalPrice.reduce((acc, price) => acc + price, 0));
-        return;
-      }
-
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
           credentials: "include",
@@ -70,7 +64,7 @@ const Cart = () => {
     }
 
     fetchCartItems();
-  }, [cartCount, refresh]);
+  }, [cartCount, refresh, user]);
 
   const [msg, setMsg] = useState(null);
   useEffect(() => {
@@ -86,17 +80,33 @@ const Cart = () => {
     setMsg(text);
     setRefresh(!refresh);
   }
-  console.log(loader);
   return (
-    <div className="h-screen w-full relative">
+    <div className="h-screen w-full relative flex flex-col">
+      <Helmet>
+        <title>BiteBox | Your cart where every item with minimum charges</title>
+      </Helmet>
+
       <CustomNav text="My Cart" />
+
       {msg && <ShortMsg message={msg} />}
 
       {loader ? (
         <Loader />
       ) : cartItems.length > 0 ? (
-        <main className="flex flex-col flex-1 overflow-y-auto scrollbar-none">
-          <div className="my-3 px-3 flex flex-col gap-4">
+        <main className="flex-1 flex flex-col overflow-y-auto scrollbar-none md:flex-row md:justify-center md:gap-4 md:px-6 md:py-5 md:overflow-hidden">
+          {/* Cart Items */}
+          <div
+            className="
+    w-full
+    lg:max-w-140
+    px-2 py-3
+    flex flex-col gap-4
+    md:flex-1
+    md:max-w-3xl
+    md:overflow-y-auto
+    md:scrollbar-none
+  "
+          >
             {cartItems.map((item) =>
               loggedin ? (
                 <CartCard
@@ -110,7 +120,7 @@ const Cart = () => {
                   defaultPrice={item.foodId.price}
                   foodUnit={item.quantity}
                   totalPrice={item.price}
-                  available={true}
+                  available={item.foodId.available}
                   satisfymessage={satisfymessage}
                 />
               ) : (
@@ -125,31 +135,60 @@ const Cart = () => {
                   defaultPrice={item.price}
                   foodUnit={item.quantity}
                   totalPrice={item.price}
-                  available={true}
+                  available={item.available}
                   satisfymessage={satisfymessage}
                 />
               ),
             )}
           </div>
 
-          <div className="w-[90%] h-fit mx-auto p-2 mb-2 px-5 bg-zinc-300 rounded-xl flex flex-col">
-            <div className="flex items-center justify-between text-xl font-bold my-3">
-              <h2>Total</h2>
-              <h4>{totalPrice}</h4>
-            </div>
-            <hr />
-            <Link
-              to="/"
-              className="bg-orange-500 py-2 mt-3 mb-1 text-center rounded-4xl text-lg font-bold text-white"
-            >
-              Proceed To CheckOut
-            </Link>
-          </div>
+          {/* Order Summary */}
+          <aside
+            className=" mx-5  mb-17 md:mx-0 md:mb-0 md:flex md:w-87.5 lg:w-100  md:flex-col
+        bg-zinc-200 rounded-xl p-5 shadow-lg"
+          >
+            <h2 className="text-2xl font-bold mb-5">Order Summary</h2>
 
-          <div className="h-12 w-full">
-            <div className="h-12 w-full px-5 py-2 bg-zinc-300 fixed bottom-18 flex justify-between items-center">
-              <p className="font-bold text-2xl">{totalPrice}</p>
-              <p className="w-3/7 p-1 text-center rounded-md bg-amber-500">
+            <div className="flex-1 overflow-y-auto scrollbar-none space-y-3">
+              {cartItems.map((item) =>
+                loggedin ? (
+                  <SummaryDetails
+                    name={item.foodId.name}
+                    price={item.price }
+                  />
+                ) : (
+                  <SummaryDetails
+                    name={item.name}
+                    price={item.price}
+                  />
+                ),
+              )}
+            </div>
+
+            <div className=" border-t pt-4">
+              <div className="flex justify-between items-center text-2xl font-bold mb-4">
+                <h2>Total</h2>
+                <h2>₹{totalPrice}</h2>
+              </div>
+
+              <button
+                className="w-full bg-orange-500 hover:bg-orange-600
+            text-white text-lg font-bold py-3 rounded-full transition"
+              >
+                Proceed To Checkout
+              </button>
+            </div>
+          </aside>
+
+          {/* Mobile Bottom Bar */}
+          <div className="h-12 w-full md:hidden">
+            <div
+              className="fixed bottom-18 left-0 right-0 h-12
+          bg-zinc-300 px-5 flex justify-between items-center"
+            >
+              <p className="font-bold text-2xl">₹{totalPrice}</p>
+
+              <p className="w-3/7 p-2 text-center rounded-md bg-amber-500 font-semibold text-white">
                 Place Order
               </p>
             </div>
@@ -158,9 +197,18 @@ const Cart = () => {
       ) : (
         <Nodata text1={response.quick} text2={response.message} />
       )}
-      {/* </main> */}
+
       <BottomBar />
     </div>
+  );
+};
+
+const SummaryDetails = ({ name, price }) => {
+  return (
+    <p className="flex justify-between border-b pb-2 text-zinc-600">
+      <span>{name}</span>
+      <span>₹{price}.00</span>
+    </p>
   );
 };
 

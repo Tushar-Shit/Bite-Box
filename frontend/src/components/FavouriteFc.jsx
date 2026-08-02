@@ -18,7 +18,7 @@ const FavouriteFc = ({
   //design purpose
   view,
 }) => {
-  const { favCount, setFavCount, cartCount, setCartCount } =
+  const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
 
   const [fav, setFav] = useState(isFav);
@@ -28,15 +28,8 @@ const FavouriteFc = ({
 
   const [inCart, setInCart] = useState(false);
   useEffect(() => {
-    //  Guest user icons set
-    let user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
-      const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
-      if (sessionFav) {
-        const existFav = sessionFav.some((item) => item._id === id);
-        if (existFav) setFav(true);
-      }
-
+    //  Guest user cart icons set
+    if (!user || !user.userName) {
       const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
       if (sessionCart) {
         const existCart = sessionCart.some((item) => item._id === id);
@@ -55,7 +48,7 @@ const FavouriteFc = ({
       if (item.some((i) => i.foodId._id === id)) setInCart(true);
     }
     getCart();
-  }, []);
+  }, [user]);
 
   //favourite handle function add & remove
   const handle = async (e) => {
@@ -63,9 +56,8 @@ const FavouriteFc = ({
     e.stopPropagation(); // Stop event bubbling
     if (!id) return;
 
-    //if user not logged in
-    let user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    //Guest user favoutire item updation
+    if (!user || !user.userName) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const index = preFav.findIndex((item) => item._id === id);
       if (index === -1) {
@@ -106,7 +98,6 @@ const FavouriteFc = ({
           }),
         },
       );
-
       const { message } = await response.json();
       if (message) {
         setFav((prev) => {
@@ -131,8 +122,8 @@ const FavouriteFc = ({
   const addCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    // GUest user Cart haldle
+    if (!user || !user.userName) {
       let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
       const index = preCart.findIndex((item) => item._id === id);
       if (index === -1) {

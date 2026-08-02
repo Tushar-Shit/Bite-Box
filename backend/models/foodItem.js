@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const foodItem = new mongoose.Schema({
     name: String,
     price: Number,
-    servingQuantity:Number,
+    servingQuantity: Number,
     quantity: Number,
     unit: String,
     description: String,
@@ -11,7 +11,8 @@ const foodItem = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
     },
-    tag:String,
+    available: Boolean,
+    tag: String,
 });
 
 const FoodItems = mongoose.model("foodItem", foodItem);

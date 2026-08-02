@@ -1,13 +1,11 @@
+import { useState, useEffect, useContext } from "react";
+import AllCount from "../context/allCount";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import {
   Mail,
   ChevronRight,
   LogOut,
   KeyRound,
-  MapPin,
-  Heart,
-  UserPlus,
   NotebookPen,
 } from "lucide-react";
 
@@ -21,32 +19,15 @@ function SidebarSupport({ title }) {
 }
 
 function Sidebar({ onClick, showSide }) {
+  const { user, setUser } = useContext(AllCount);
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    username: "",
-    email: "",
-  });
 
   useEffect(() => {
-    const profile = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/profile`,
-          {
-            credentials: "include",
-          },
-        );
-
-        const data = await response.json();
-
-        setUser(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    profile();
-  }, []);
+    if (!user || !user.userName) {
+      console.log("user not found");
+      return;
+    }
+  }, [user]);
 
   const logout = async () => {
     try {
@@ -55,12 +36,7 @@ function Sidebar({ onClick, showSide }) {
         credentials: "include",
       });
 
-      setUser({
-        username: "",
-        email: "",
-      });
-      sessionStorage.setItem("user", JSON.stringify(false));
-      sessionStorage.setItem("username", JSON.stringify(null));
+      setUser(null);
       onClick();
       window.location.reload();
     } catch (err) {
@@ -88,7 +64,7 @@ function Sidebar({ onClick, showSide }) {
           </span>
         </div>
         <div className="h-[88%] w-full bg-orange-100 ">
-          {user.username && (
+          {user.userName && (
             <div className="h-fit w-full bg-white flex gap-3 items-center px-3 py-4 rounded-tr-full shadow-[inset_-7px_9px_15px_0px_#9ca3af]">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHCBu2asBmYHBPRvht-u5d_alNH19z7VhL-w&s"
@@ -97,11 +73,11 @@ function Sidebar({ onClick, showSide }) {
               />
 
               <div className="relative">
-                <p className="text-md font-bold">{user.username}</p>
-                <p className="text-[14px] text-gray-500">{user.email}</p>
+                <p className="text-md font-bold">{user.userName}</p>
+                <p className="text-[14px] text-gray-500">{user.userEmail}</p>
                 <Link
                   to="/userinfo"
-                  state={`${user.email}`}
+                  state={`${user.userEmail}`}
                   className="bg-orange-600 p-1 rounded-md text-white text-sm absolute"
                 >
                   See Details
@@ -128,30 +104,12 @@ function Sidebar({ onClick, showSide }) {
             <SidebarSupport title="Change Password" />
           </Link>
 
-          {/* <div className="flex items-center gap-2 px-10 border-b">
-            <MapPin className="w-[10%]" />
-            <SidebarSupport title="My Address" />
-          </div> */}
-
-          <Link
-            to="/orders"
-            className="flex items-center gap-2 px-10 border-b"
-          >
+          <Link to="/orders" className="flex items-center gap-2 px-10 border-b">
             <NotebookPen className="w-[10%]" />
             <SidebarSupport title="Order History" />
           </Link>
 
-          {!user.username ? (
-            <Link
-              to="/signup"
-              className="flex items-center gap-2 px-10 border-b"
-            >
-              <UserPlus className="w-[10%]" />
-              <SidebarSupport title="Sign Up" />
-            </Link>
-          ) : null}
-
-          {user.username && (
+          {user.userName && (
             <div
               className="flex items-center gap-2 px-10 border-b cursor-pointer"
               onClick={logout}

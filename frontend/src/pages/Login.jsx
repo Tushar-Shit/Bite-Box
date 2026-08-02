@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// impoet Link
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
 import AllCount from "../context/allCount";
@@ -51,9 +50,12 @@ function Login() {
       }
 
       //set the user as true
-      setUser(true);
-      sessionStorage.setItem("username", data.name);
-      sessionStorage.setItem("user", JSON.stringify(true));
+      setUser({
+        userId: data.user.userid,
+        userName: data.user.username,
+        userEmail: data.user.useremail,
+        userRole: data.user.userrole,
+      });
 
       const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];

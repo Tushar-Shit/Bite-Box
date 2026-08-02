@@ -4,10 +4,12 @@ import CustomNav from "../CategoryComponents/CustomNav";
 import HorizontalFC from "../components/HorizontalFC";
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ShortMsg } from "../components/MessageBar";
+import AllCount from "../context/allCount";
 
 const ItemList = () => {
+  const { user, setUser } = useContext(AllCount);
   //if user comes from categories page
   const { items } = useParams();
   //if user expand treding, popular, recomandation....
@@ -36,11 +38,11 @@ const ItemList = () => {
           const { fooditems } = await res.json();
           setFoodData(fooditems);
         }
-        const user = JSON.parse(sessionStorage.getItem("user"));
-        if (user === false) {
-          const sessionFav = JSON.parse(sessionStorage.getItem("fav"));
-          if (sessionFav) setFavFoods(sessionFav);
-          else setFavFoods([]);
+
+
+        if (!user || !user.userName) {
+          const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+          setFavFoods(sessionFav);
           return;
         }
 
@@ -57,27 +59,23 @@ const ItemList = () => {
       }
     }
     getData();
-  }, []);
+  }, [user]);
 
   //update bottam bar when heart/cart tigger
   const [msg, setMsg] = useState(null);
-  const [update, setUpdate] = useState(false);
   useEffect(() => {
     if (!msg) return;
 
     const timer = setTimeout(() => {
       setMsg(null);
-      setUpdate(false);
-    }, 2000); // 3 seconds
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [msg]);
 
   function satisfymessage(text) {
     setMsg(text);
-    setUpdate(true);
   }
-  console.log("item.jsx")
   return (
     <>
       <Helmet>
@@ -99,13 +97,14 @@ const ItemList = () => {
             unit={item.unit}
             id={item._id}
             isFav={favFoods.some((food) => food._id === item._id)}
+            available={item.available}
             satisfymessage={satisfymessage}
             //design purpose
             view={"list"}
           />
         ))}
       </div>
-      <BottomBar update={update} />
+      <BottomBar />
     </>
   );
 };

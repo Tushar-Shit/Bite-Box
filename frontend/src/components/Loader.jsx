@@ -37,8 +37,8 @@ export default function FoodLoader({text}) {
   const duplicated = [...foods];
 
   return (
-    <div className="flex flex-col items-center justify-center h-160 overflow-hidden">
-      <div className="relative w-full h-25 overflow-hidden">
+    <div className="flex flex-col items-center justify-center h-screen overflow-hidden">
+      <div className="relative w-full h-25 overflow-hidden flex justify-center">
         <motion.div className="absolute flex items-center">
           {duplicated.map((food, index) => (
             <motion.div
@@ -60,26 +60,6 @@ export default function FoodLoader({text}) {
           ))}
         </motion.div>
       </div>
-
-      {/* <h2 className="flex text-2xl font-bold text-orange-600">
-        <span>{text}</span>
-        <div className="flex gap-1 mt-5 text-lg">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="w-1 h-1 rounded-full bg-orange-500"
-              animate={{
-                y: [0, -2, 0],
-              }}
-              transition={{
-                duration: 0.9,
-                repeat: Infinity,
-                delay: i * 0.2,
-              }}
-            />
-          ))}
-        </div>
-      </h2> */}
     </div>
   );
 }

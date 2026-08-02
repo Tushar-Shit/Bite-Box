@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
+import AllCount from "../context/allCount";
 import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
-import AllCount from "../context/allCount";
 
 const SquareFC = ({
   id,
@@ -16,34 +16,22 @@ const SquareFC = ({
   available,
   satisfymessage,
 }) => {
-  const { setFavCount } = useContext(AllCount);
-
+  const { user, setUser, favCount, setFavCount } = useContext(AllCount);
   const [fav, setFav] = useState(isFav);
 
   useEffect(() => {
     setFav(isFav);
   }, [isFav]);
 
-  //Guest user icon state
-  useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user !== false) return;
-    const preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-    const exist = preFav.some((item) => item._id === id);
-    if (exist) setFav(true);
-  }, [id]);
-
   const handle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!id) return;
 
-    // Guest user store food items
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    // Guest user favourite food updation
+    if (!user || !user.userName) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const index = preFav.findIndex((item) => item._id === id);
-
       if (index === -1) {
         preFav.push({
           _id: id,
@@ -53,6 +41,7 @@ const SquareFC = ({
           price,
           unit,
           quantity,
+          available,
         });
 
         satisfymessage("item added");

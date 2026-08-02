@@ -12,13 +12,12 @@ import {
 } from "lucide-react";
 
 const BottomBar = ({ update }) => {
-  const { favCount, setFavCount, cartCount, setCartCount } =
+  const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
 
   useEffect(() => {
     // Guest user favourite & cart count
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    if (!user || !user.userName) {
       const fav = JSON.parse(sessionStorage.getItem("fav")) || [];
       const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
       setFavCount(fav.length);
@@ -54,7 +53,7 @@ const BottomBar = ({ update }) => {
     }
 
     data();
-  }, []);
+  }, [user, favCount, cartCount]);
 
   return (
     <div className="h-18">
@@ -90,9 +89,9 @@ const BottomBar = ({ update }) => {
           <span>Cart</span>
 
           {cartCount > 0 && (
-          <span className="absolute -right-1.5 -top-1.5 rounded-full px-1 text-sm bg-red-600 text-white">
-            {cartCount}
-          </span>
+            <span className="absolute -right-1.5 -top-1.5 rounded-full px-1 text-sm bg-red-600 text-white">
+              {cartCount}
+            </span>
           )}
         </Link>
       </div>

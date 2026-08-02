@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useContext } from "react";
+import AllCount from "./context/allCount";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Categories from "./pages/Categories";
@@ -8,11 +10,38 @@ import Cart from "./pages/Cart";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import UserProfile from "./pages/UserProfile";
-import React from "react";
 import HelpingPage from "./pages/HelpingPage";
 import Order from "./pages/Order";
 import Testingpage from "./pages/testingpage";
-const App = () => {  
+const App = () => {
+  const { user, setUser } = useContext(AllCount);
+  useEffect(() => {
+    try {
+    async function getuser() {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/profile`,
+        {
+          credentials: "include",
+        },
+      );
+      const data = await response.json();
+      if (data.code === "NU") {
+        console.log(data.message);
+        setUser(null);
+        return;
+      }
+      setUser({
+        userId: data._id,
+        userName: data.username,
+        userEmail: data.email,
+        userRole: "user",
+      });
+    }
+    getuser();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
   return (
     <div>
       <Routes>
@@ -32,9 +61,8 @@ const App = () => {
         <Route path="/cart" element={<Cart />} />
 
         {/* email & password change */}
-        <Route path="/help" element={<HelpingPage/>}/>
+        <Route path="/help" element={<HelpingPage />} />
 
-        
         {/* for test and development purpose */}
         <Route path="/test" element={<Testingpage />} />
         {/* <Route path="/categories/:items/:id" element={<MealDetails />} /> */}

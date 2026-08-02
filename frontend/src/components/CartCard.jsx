@@ -13,15 +13,15 @@ const CartCard = ({
   available,
   satisfymessage,
 }) => {
-  const { favCount, setFavCount, cartCount, setCartCount } =
+  console.log(available)
+  const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
 
   //master function for delete, increase, decrease in both session, DB
   const masterFunc = async (commandVal) => {
     if (!id) return;
 
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user === false) {
+    if (!user || !user.userName) {
       let sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
       const existItem = sessionCart.find((item) => item._id === id);
       if (existItem) {
