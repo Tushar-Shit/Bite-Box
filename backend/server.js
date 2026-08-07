@@ -36,11 +36,6 @@ app.use(
     , credentials: true,
   })
 );
-// app.use(
-//   cors({
-//     origin: "http://0.0.0.0:0",
-//   })
-// );
 app.use(express.json());
 app.use(cookieParser());
 
@@ -66,10 +61,10 @@ app.get("/", async (req, res) => {
 
 //multiple routes
 app.use("/categories", categoryRoute);
-app.use("/reviews", reviewRoute);
 app.use("/auth", authentication);
 app.use("/user", userRoute);
 app.use("/update", updateRoute);
+app.use("/reviews", reviewRoute);
 
 //route for popular, trending, recomendations
 app.get("/tag/:anything", async (req, res) => {

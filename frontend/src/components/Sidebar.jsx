@@ -32,7 +32,7 @@ function Sidebar({ onClick, showSide }) {
   const logout = async () => {
     try {
       const data = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
-        method: "POST",
+        method: "DELETE",
         credentials: "include",
       });
 
@@ -53,7 +53,7 @@ function Sidebar({ onClick, showSide }) {
       }`}
     >
       <div
-        className={`relative flex h-full w-[85%] flex-col bg-white text-black transition-transform duration-700 ease-in-out ${
+        className={` border relative flex h-full w-[85%] sm:max-w-[50%] md:max-w-[40%] lg:max-w-[30%] flex-col text-black transition-transform duration-700 ease-in-out ${
           showSide ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -63,7 +63,7 @@ function Sidebar({ onClick, showSide }) {
             &times;
           </span>
         </div>
-        <div className="h-[88%] w-full bg-orange-100 ">
+        <div className="h-full w-full bg-orange-100 ">
           {user.userName && (
             <div className="h-fit w-full bg-white flex gap-3 items-center px-3 py-4 rounded-tr-full shadow-[inset_-7px_9px_15px_0px_#9ca3af]">
               <img
@@ -78,7 +78,7 @@ function Sidebar({ onClick, showSide }) {
                 <Link
                   to="/userinfo"
                   state={`${user.userEmail}`}
-                  className="bg-orange-600 p-1 rounded-md text-white text-sm absolute"
+                  className="bg-orange-600 p-1 rounded-md text-white text-sm absolute transition hover:ease-in-out hover:shadow-[2px_3px_10px_rgba(200,0,50,1)]"
                 >
                   See Details
                 </Link>

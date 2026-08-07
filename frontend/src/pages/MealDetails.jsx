@@ -47,7 +47,7 @@ const MealDetails = () => {
 
         //  User icon setup ||  fav icon
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          `${import.meta.env.VITE_API_URL}/update/favourite`,
           {
             credentials: "include",
           },
@@ -109,7 +109,7 @@ const MealDetails = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           method: "POST",
           credentials: "include",
@@ -126,7 +126,7 @@ const MealDetails = () => {
       setFav((prev) => !prev);
 
       const totalFav = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           credentials: "include",
         },

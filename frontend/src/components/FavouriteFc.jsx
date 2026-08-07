@@ -86,7 +86,7 @@ const FavouriteFc = ({
     //works only when user is logged in.
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           method: "POST",
           credentials: "include",
@@ -105,7 +105,7 @@ const FavouriteFc = ({
         });
         satisfymessage(message);
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          `${import.meta.env.VITE_API_URL}/update/favourite`,
           {
             credentials: "include",
           },

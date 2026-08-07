@@ -1,48 +1,164 @@
+import React from "react";
 import FoodItem from "../models/foodItem.js";
 import Users from "../models/user.js";
 import Cart from "../models/cart.js";
+import PendingSignup from "../models/pendingSignup";
+import ChangeEmailOTP from "../emails/changeEmailOTP";
+import { render } from "@react-email/render";
+import sendEmail from "../utils/sendEmail";
+import bcrypt from "bcrypt";
 
-// user name and email for navbar
+//return total user data
 export const profile = async (req, res) => {
     const user = await Users.findById(
         req.user
     );
-
     res.json(user);
 };
 
-export const addfav = async (req, res) => {
-    const { foodId } = req.body;
-    const userId = req.user;
-    const exists = await Users.exists({
-        _id: userId,
-        favourites: foodId,
-    });
+//user data update 
+export const updateProfile = async (req, res) => {
+    const { username, email, mobile, address1, address2, } = req.body;
+    const user = await Users.findByIdAndUpdate(
+        req.user,
+        {
+            username,
+            mobile,
+            address1,
+            address2,
+        },
+        {
+            returnDocument: 'after',
+            runValidators: true,
+        }
+    );
 
-    if (exists) {
-        await Users.findByIdAndUpdate(userId, {
-            $pull: { favourites: foodId },
+    res.status(200).json({ message: "successfull" })
+}
+
+//user email change otp send/resend
+export const emailChange = async (req, res) => {
+    try {
+        const userId = req.user;
+        const { newemail, username, useremail } = req.body;
+
+        const userExist = await Users.findOne({ email: newemail })
+        if (userExist) {
+            return res.status(400).json({
+                code: "failed",
+                message: "This email is already registered."
+            })
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000);
+
+        await PendingSignup.deleteOne({ email: useremail });
+
+        // Save pending signup
+        await PendingSignup.create({
+            username: username,
+            email: useremail,
+            password: newemail,
+            OTP: otp,
+            expiresAt: new Date(Date.now() + 5 * 60 * 1000),
         });
-        res.json({
-            message: "Remove From Favourite",
-            code: "okay",
+
+        //converting the JSX template into html
+        const html = await render(
+            React.createElement(ChangeEmailOTP, {
+                username,
+                otp,
+            })
+        );
+
+        //send the actual otp to user
+        await sendEmail(
+            newemail,
+            `${otp} - use this code to change your Email in Bitebox`,
+            html
+        );
+        // console.log("hello");
+        return res.status(200).json({
+            code: "success",
+            message: `OTP sent successfully to ${newemail}`,
+            email: newemail,
         });
-    } else {
-        await Users.findByIdAndUpdate(userId, {
-            $addToSet: { favourites: foodId },
-        });
-        res.json({
-            message: "Add to Favourite",
-            code: "okay",
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({
+            code: "failed",
+            message: "Internal server error"
         });
     }
-};
 
-//gives all favourite items
-export const favourite = async (req, res) => {
-    const user = await Users.findById(req.user).populate("favourites");
-    res.json({ favourites: user.favourites })
-};
+}
+
+//user email change verify code and actual email change
+export const verifyCode = async (req, res) => {
+    try {
+        const { OTP } = req.body;
+        const userId = req.user;
+        const email = req.email;
+
+        const data = await PendingSignup.findOne({
+            email: email,
+            OTP: OTP
+        });
+        if (!data) {
+            return res.status(400).json({
+                code: "failed",
+                message: "Invalid OTP or maybe expired, please try again."
+            });
+        }
+        const userData = await Users.findByIdAndUpdate(
+            userId,
+            { email: data.password },
+            { new: true }
+        );
+        return res.status(200).json({
+            code: "success",
+            message: "Email change successful",
+        })
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+
+//userpassword change
+export const passwordChange = async (req, res) => {
+    const { currentPass, newPass } = req.body;
+    console.log(currentPass, newPass);
+    console.log(req.user);
+    const userData = await Users.findById(req.user);
+    if (!userData) {
+        return res.status(404).json({
+            code: "failed",
+            message: "User Not Found!"
+        });
+    }
+
+    const isMatch = await bcrypt.compare(
+        currentPass,
+        userData.password
+    );
+    if (!isMatch) {
+        return res.status(400).json({
+            code: "failed",
+            message: "Your current password is wrong."
+        });
+    }
+    const hashedPassword = await bcrypt.hash(newPass, 10);
+    userData.password = hashedPassword;
+    await userData.save();
+    return res.status(200).json({
+        code: "success",
+        message: "Password changed successfully!"
+    });
+}
+
+
+
 
 
 //provide cart data

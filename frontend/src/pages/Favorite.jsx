@@ -32,7 +32,7 @@ const Favorite = () => {
 
     const favdata = async () => {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           credentials: "include",
         },

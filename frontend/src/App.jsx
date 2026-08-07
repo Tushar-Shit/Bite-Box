@@ -13,31 +13,32 @@ import UserProfile from "./pages/UserProfile";
 import HelpingPage from "./pages/HelpingPage";
 import Order from "./pages/Order";
 import Testingpage from "./pages/testingpage";
+import ResetPassword from "./components/ResetPassword";
 const App = () => {
   const { user, setUser } = useContext(AllCount);
   useEffect(() => {
     try {
-    async function getuser() {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/profile`,
-        {
-          credentials: "include",
-        },
-      );
-      const data = await response.json();
-      if (data.code === "NU") {
-        console.log(data.message);
-        setUser(null);
-        return;
+      async function getuser() {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/profile`,
+          {
+            credentials: "include",
+          },
+        );
+        const data = await response.json();
+        if (data.code === "NU") {
+          console.log(data.message);
+          setUser(null);
+          return;
+        }
+        setUser({
+          userId: data._id,
+          userName: data.username,
+          userEmail: data.email,
+          userRole: "user",
+        });
       }
-      setUser({
-        userId: data._id,
-        userName: data.username,
-        userEmail: data.email,
-        userRole: "user",
-      });
-    }
-    getuser();
+      getuser();
     } catch (err) {
       console.log(err);
     }
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-email" element={<HelpingPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/userinfo" element={<UserProfile />} />
         <Route path="/orders" element={<Order />} />
 

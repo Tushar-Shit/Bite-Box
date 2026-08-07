@@ -2,19 +2,34 @@ import express from "express";
 import authentication from "../middleware/authentication.js";
 import {
     profile,
-    addfav,
-    favourite,
+    updateProfile,
+    emailChange,
+    verifyCode,
+    passwordChange,
     getCart,
     updateCart
 } from "../controllers/userController.js";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/profile", authentication, profile);
+router.get("/profile", authentication, profile);    //provide user data
+router.patch("/profile", authentication, updateProfile);    //update user data
 
-router.post("/addfav", authentication, addfav);
 
-router.get("/favourite", authentication, favourite);
+router.post("/email-change", authentication, emailChange);  //send OTP to user
+router.patch("/email-change", authentication, verifyCode);  //verify and actual change
+
+
+router.patch("/password-change", authentication, passwordChange);  //password change
+
+
+
+
+
+
+
+
+
 
 router.get("/cart", authentication, getCart);
 

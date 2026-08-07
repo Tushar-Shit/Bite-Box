@@ -3,7 +3,7 @@ import AllCount from "../context/allCount";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import FailedMessage from "./FailedMessage";
-const ChangeEmail = () => {
+const ChangeEmail = ({heading}) => {
   const [newEmail, setnewEmail] = useState("");
   const [submit, setsubmit] = useState(false);
   const [messageBox, setMessageBox] = useState(false);
@@ -30,7 +30,7 @@ const ChangeEmail = () => {
     }
 
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/update/email-change`,
+      `${import.meta.env.VITE_API_URL}/user/email-change`,
       {
         method: "POST",
         credentials: "include",

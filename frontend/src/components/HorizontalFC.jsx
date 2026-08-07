@@ -84,7 +84,7 @@ const HorizontalFC = ({
     //user add or remove favourite
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           method: "POST",
           credentials: "include",
@@ -102,7 +102,7 @@ const HorizontalFC = ({
         satisfymessage(message);
       }
       const favres = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           credentials: "include",
         },

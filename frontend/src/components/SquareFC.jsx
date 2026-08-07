@@ -60,7 +60,7 @@ const SquareFC = ({
     // Logged in user store food items
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           method: "POST",
           credentials: "include",
@@ -79,7 +79,7 @@ const SquareFC = ({
 
       // Fetch latest favourite count
       const favRes = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/favourite`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           credentials: "include",
         },

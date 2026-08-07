@@ -1,11 +1,13 @@
 import React from "react";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { render } from "@react-email/render";
 import Users from "../models/user.js";
 import PendingSignup from "../models/pendingSignup.js";
 import SignupOTP from "../emails/singupOTP.jsx"; //email template
-import sendEmail from "../utils/sendEmail.js";
+import ForgetPassword from "../emails/ForgetPassword.jsx"; //email template
+import sendEmail, { sendResetEmail } from "../utils/sendEmail.js";
 const isProduction = process.env.PROJECT_MODE === "production";
 
 
@@ -79,7 +81,7 @@ export const resendOTP = async (req, res) => {
 
     if (!username || !email || !password) {
       return res.status(400).json({
-        code: "missing",
+        code: "failed",
         message: "All fields are required.",
       });
     }
@@ -93,8 +95,8 @@ export const resendOTP = async (req, res) => {
     // Used to know whether we created a new document
     let createdNew = false;
 
+    // Update existing pending signup
     if (pendingUser) {
-      // Update existing pending signup
       pendingUser.OTP = newOTP;
       pendingUser.expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
@@ -151,7 +153,7 @@ export const resendOTP = async (req, res) => {
     console.error(err);
 
     return res.status(500).json({
-      code: "error",
+      code: "failed",
       message: "Internal server error.",
     });
   }
@@ -169,8 +171,8 @@ export const verifySignup = async (req, res) => {
     //if OTP doesn't matched return
     if (userOTP !== DBOTP.toString()) {
       return res.status(404).json({
-        message: "Invalid OTP try again.",
         code: "failed",
+        message: "Invalid OTP try again.",
       })
     }
 
@@ -193,6 +195,7 @@ export const verifySignup = async (req, res) => {
     const token = jwt.sign(
       {
         userId: newUser._id,
+        tokenVersion: newUser.tokenVersion,
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -254,6 +257,7 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       {
         userId: existingUser._id,
+        tokenVersion: existingUser.tokenVersion,
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -296,3 +300,66 @@ export const logout = async (req, res) => {
 
   }
 };
+
+
+//forget password, reset link generation
+export const forgetPassword = async (req, res) => {
+  const { email } = req.body;
+  const userData = await Users.findOne({ email });
+  if (!userData) {
+    return res.status(404).json({
+      code: "failed",
+      message: "No user is register with this email."
+    })
+  }
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  userData.resetPasswordToken = resetToken;
+  userData.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+  await userData.save();
+  const html = await render(
+    React.createElement(ForgetPassword, {
+      resetLink: `http://10.23.245.131:5173/reset-password/${resetToken}`
+    })
+  );
+  await sendResetEmail(
+    email,
+    `Reset Your Password`,
+    html
+  );
+  return res.status(200).json({
+    code: "success",
+    message: `Password reset link send to ${email}`
+  });
+}
+
+
+//reset password after taking the new password from user
+export const resetPassword = async (req, res) => {
+  const { token, newPass } = req.body;
+  const data = await Users.findOne({ resetPasswordToken: token })
+  if (!data) {
+    return res.status(404).json({
+      code: "failed",
+      message: "Session ended try again."
+    });
+  }
+  const hashedPassword = await bcrypt.hash(newPass, 10)
+
+  data.password = hashedPassword;
+  data.tokenVersion++;
+  data.resetPasswordExpires = null;
+  data.resetPasswordToken = null;
+  await data.save();
+
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  });
+
+  return res.status(200).json({
+    code: "success",
+    message: "Password changed."
+  });
+}

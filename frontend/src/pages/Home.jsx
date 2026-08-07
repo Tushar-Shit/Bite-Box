@@ -98,7 +98,7 @@ const Home = () => {
     try {
       async function getfavfood() {
         const data = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          `${import.meta.env.VITE_API_URL}/update/favourite`,
           {
             credentials: "include",
           },

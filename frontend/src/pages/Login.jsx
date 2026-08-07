@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
 import AllCount from "../context/allCount";
+import FailedMessage from "../components/FailedMessage";
 function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -132,28 +133,7 @@ function Login() {
         <title>BiteBox | Login</title>
       </Helmet>
       {failed && (
-        <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">
-          <div className="w-full max-w-sm overflow-hidden rounded-xl shadow-xl">
-            {/* Header */}
-            <div className="bg-red-600 text-white px-6 py-4 text-center">
-              <h2 className="text-xl font-semibold">Login Failed</h2>
-            </div>
-
-            {/* Body */}
-            <div className="bg-white text-black px-6 py-5">
-              <p className="text-center">{message}</p>
-
-              <div className="mt-6 flex justify-center">
-                <button
-                  onClick={reset}
-                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
-                >
-                  Okay
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <FailedMessage heading="Login Failed" message={message} reset={reset} />
       )}
 
       <CustomNav text="Login" path="/" />
@@ -202,7 +182,13 @@ function Login() {
                 SignUp
               </Link>
             </div>
-            <Link to="/forget-pass">Forget Password?</Link>
+            <Link
+              to="/help"
+              state={"fp"}
+              className="text-right text-red-500 cursor-pointer"
+            >
+              Forget password?
+            </Link>
           </div>
         </div>
       </div>

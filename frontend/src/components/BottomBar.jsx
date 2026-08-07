@@ -39,7 +39,7 @@ const BottomBar = ({ update }) => {
         else setCartCount(Cartitems.length);
 
         const Favdata = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/favourite`,
+          `${import.meta.env.VITE_API_URL}/update/favourite`,
           {
             credentials: "include",
           },

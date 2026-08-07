@@ -128,7 +128,7 @@ const VerifyOTP = () => {
           const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
           const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
           const favResponse = await fetch(
-            `${import.meta.env.VITE_API_URL}/user/addfav`,
+            `${import.meta.env.VITE_API_URL}/update/favourite`,
             {
               method: "POST",
               credentials: "include",
@@ -168,9 +168,9 @@ const VerifyOTP = () => {
         }
       } else if (verifyCode === "EMAIL_CHANGE") {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/update/verify-code`,
+          `${import.meta.env.VITE_API_URL}/user/email-change`,
           {
-            method: "POST",
+            method: "PATCH",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
@@ -212,6 +212,7 @@ const VerifyOTP = () => {
       return;
     }
     try {
+      //resend otp in signup process
       if (verifyCode === "SIGNUP") {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/auth/signup/resend-otp`,
@@ -239,10 +240,12 @@ const VerifyOTP = () => {
           setTime(30);
           setSpinner(false);
         }
-      } else if (verifyCode === "EMAIL_CHANGE") {
+      }
+      //resend otp in email change process
+      else if (verifyCode === "EMAIL_CHANGE") {
         console.log(contextEmail);
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/update/email-change`,
+          `${import.meta.env.VITE_API_URL}/user/email-change`,
           {
             method: "POST",
             credentials: "include",
@@ -303,67 +306,67 @@ const VerifyOTP = () => {
 
       <div className="h-full flex items-center justify-center px-5">
         <div className="w-full max-w-md bg-white rounded-3xl p-6 text-center shadow-[0_3px_20px_rgba(107,114,128,0.7)]">
-        <form onSubmit={verifyOTP}>
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-800">
-              Verify Your Email
-            </h1>
-            <p className="mt-3">We've sent a 6-digit verification code to</p>
-            <p className="font-semibold text-gray-500 mt-1">{contextEmail}</p>
-          </div>
+          <form onSubmit={verifyOTP}>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-800">
+                Verify Your Email
+              </h1>
+              <p className="mt-3">We've sent a 6-digit verification code to</p>
+              <p className="font-semibold text-gray-500 mt-1">{contextEmail}</p>
+            </div>
 
-          {/* OTP Inputs */}
-          <div className="flex justify-between gap-3 mt-5">
-            {[1, 2, 3, 4, 5, 6].map((_, index) => (
-              <input
-                autoFocus={index === 0}
-                key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
-                maxLength={1}
-                onChange={(e) => handleChange(e, index)}
-                onKeyDown={(e) => {
-                  if (e.key === "Tab" && !e.target.value) {
-                    e.preventDefault();
-                  }
+            {/* OTP Inputs */}
+            <div className="flex justify-between gap-3 mt-5">
+              {[1, 2, 3, 4, 5, 6].map((_, index) => (
+                <input
+                  autoFocus={index === 0}
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  maxLength={1}
+                  onChange={(e) => handleChange(e, index)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Tab" && !e.target.value) {
+                      e.preventDefault();
+                    }
 
-                  if (e.key === "Backspace" && !e.target.value && index > 0) {
-                    inputRefs.current[index - 1].focus();
-                  }
-                }}
-                required
-                className={`w-12 h-14  border-2 ${invalid ? "border-red-600 focus:border-red-600" : "border-gray-200"} rounded-xl text-center text-2xl font-bold outline-none focus:border-green-500`}
-              />
-            ))}
-          </div>
+                    if (e.key === "Backspace" && !e.target.value && index > 0) {
+                      inputRefs.current[index - 1].focus();
+                    }
+                  }}
+                  required
+                  className={`w-12 h-14  border-2 ${invalid ? "border-red-600 focus:border-red-600" : "border-gray-200"} rounded-xl text-center text-2xl font-bold outline-none focus:border-green-500`}
+                />
+              ))}
+            </div>
 
-          <button
-            disabled={verifying}
-            className={`w-[90%] mt-3 ${verifying ? "bg-gray-400 cursor-not-allowed" : "cursor-pointer bg-orange-600 hover:bg-red-700"} transition text-white py-3 rounded-xl font-semibold`}
-          >
-            {verifying ? "Varifying..." : "Verify OTP"}
-          </button>
-        </form>
-        <div className="mt-4 text-center flex items-baseline-last justify-between">
-          <p className="text-sm">Didn't receive the code?</p>
-          <button
-            disabled={wait}
-            onClick={resendCode}
-            className={`mt-2 text-sm font-semibold 
+            <button
+              disabled={verifying}
+              className={`w-[90%] mt-3 ${verifying ? "bg-gray-400 cursor-not-allowed" : "cursor-pointer bg-orange-600 hover:bg-red-700"} transition text-white py-3 rounded-xl font-semibold`}
+            >
+              {verifying ? "Varifying..." : "Verify OTP"}
+            </button>
+          </form>
+          <div className="mt-4 text-center flex items-baseline-last justify-between">
+            <p className="text-sm">Didn't receive the code?</p>
+            <button
+              disabled={wait}
+              onClick={resendCode}
+              className={`mt-2 text-sm font-semibold 
             ${wait ? "text-gray-500 cursor-not-allowed" : "text-black cursor-pointer underline"}`}
-          >
-            {wait ? `Resend OTP in ${time} seconds` : "Resend OTP"}
-          </button>
-        </div>
+            >
+              {wait ? `Resend OTP in ${time} seconds` : "Resend OTP"}
+            </button>
+          </div>
 
-        <div className="mt-2 rounded-xl bg-amber-50 border border-amber-300 p-2">
-          <p className="text-sm text-amber-900">
-            <span className="font-bold">Tip: </span>
-            <span>Please check your </span>
-            <span className="font-bold">Spam</span> or{" "}
-            <span className="font-bold">Junk </span>
-            folder before requesting new OTP.
-          </p>
-        </div>
+          <div className="mt-2 rounded-xl bg-amber-50 border border-amber-300 p-2">
+            <p className="text-sm text-amber-900">
+              <span className="font-bold">Tip: </span>
+              <span>Please check your </span>
+              <span className="font-bold">Spam</span> or{" "}
+              <span className="font-bold">Junk </span>
+              folder before requesting new OTP.
+            </p>
+          </div>
         </div>
       </div>
     </>
