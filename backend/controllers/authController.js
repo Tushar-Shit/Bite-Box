@@ -319,7 +319,7 @@ export const forgetPassword = async (req, res) => {
   await userData.save();
   const html = await render(
     React.createElement(ForgetPassword, {
-      resetLink: `http://10.23.245.131:5173/reset-password/${resetToken}`
+      resetLink: `https://bite-box-weld.vercel.app/reset-password/${resetToken}`
     })
   );
   await sendResetEmail(

@@ -112,8 +112,6 @@ const Home = () => {
     }
   }, [user, favCount]);
 
-
-
   const [showSide, setShowSide] = useState(false); //sidebar logic
   const showSideBar = () => {
     setShowSide(!showSide);
@@ -133,13 +131,16 @@ const Home = () => {
     }
   }, []);
 
-  const [msg, setMsg] = useState(null);
+  const anyMessage = sessionStorage.getItem("message") || null;
+  const [msg, setMsg] = useState(anyMessage);
+  // setMsg()
   useEffect(() => {
     if (!msg) return;
 
     const timer = setTimeout(() => {
       setMsg(null);
-    }, 2000);
+      sessionStorage.removeItem("message");
+    }, 3500);
 
     return () => clearTimeout(timer);
   }, [msg]);
@@ -148,7 +149,7 @@ const Home = () => {
     setMsg(text);
   }
   return (
-    <div className={`h-screen flex flex-col ${loader &&"overflow-y-hidden"} `}>
+    <div className={`h-screen flex flex-col ${loader && "overflow-y-hidden"} `}>
       {/*  page title */}
       <Helmet>
         <title>BiteBox | The Home of Deliciousness</title>

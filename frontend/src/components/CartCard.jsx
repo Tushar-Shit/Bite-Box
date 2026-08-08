@@ -13,11 +13,10 @@ const CartCard = ({
   available,
   satisfymessage,
 }) => {
-  console.log(available);
   const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
 
-  //master function for delete, increase, decrease in both session, DB
+  //master function for add and delete in both session, DB
   const masterFunc = async (commandVal) => {
     if (!id) return;
 
@@ -41,14 +40,36 @@ const CartCard = ({
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      if (commandVal === "increase" || commandVal === "decrease") {
+        const updateRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/cart`,
+          {
+            method: "PATCH",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              foodId: id,
+              originalPrice: defaultPrice,
+              command: commandVal, //increase & decrease
+            }),
+          },
+        );
+        const data = await updateRes.json();
+        if (data.code === "success") {
+          satisfymessage(data.message);
+        }
+        return;
+      }
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: quantity }],
+          data: [{ id: id, quantity: quantity, available: available }],
           command: commandVal, //add/dlt, increase, decrease
         }),
       });
@@ -56,9 +77,12 @@ const CartCard = ({
       satisfymessage(message);
 
       //count cart length
-      const cartRes = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
-        credentials: "include",
-      });
+      const cartRes = await fetch(
+        `${import.meta.env.VITE_API_URL}/update/cart`,
+        {
+          credentials: "include",
+        },
+      );
       const totalCart = await cartRes.json();
       setCartCount(totalCart.length);
     } catch (e) {

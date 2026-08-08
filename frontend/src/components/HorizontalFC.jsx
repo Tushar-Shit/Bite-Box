@@ -37,7 +37,7 @@ const HorizontalFC = ({
 
     //extract cart items
     async function getCart() {
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         credentials: "include",
       });
       const item = await data.json();
@@ -145,30 +145,25 @@ const HorizontalFC = ({
       return;
     }
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: quantity }],
+          data: [{ id: id, quantity: quantity, available:available }],
           command: "add/dlt", //command need for add and delete to separate updation
         }),
       });
-      const { message } = await res.json();
-      if (message.trim() === "Already in Cart") {
+      const { code,message } = await res.json();
+      if (code.trim() === "success") {
         satisfymessage(message);
-        setInCart(!inCart);
+        setInCart(inCart=>!inCart);
       }
-      if (message.trim() === "Cart is full") {
-        satisfymessage(message);
-        setInCart(false);
-      } else setInCart(!inCart);
-      satisfymessage(message);
 
       //count cart length
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         credentials: "include",
       });
       const totalCart = await data.json();

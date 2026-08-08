@@ -60,11 +60,8 @@ const ChangePassword = () => {
       setFailMessage(data.message);
       return;
     }
-    navigate("/", {
-      state: {
-        message: data.message,
-      },
-    });
+    sessionStorage.setItem("message", "Password change successful please login again.");
+    window.location.href = "/";
   };
 
   //reset variables

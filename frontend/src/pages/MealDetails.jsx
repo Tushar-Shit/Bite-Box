@@ -56,9 +56,12 @@ const MealDetails = () => {
         setFav(favourites.some((item) => item._id === id));
 
         //  User icon setup ||  cart icon
-        const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
-          credentials: "include",
-        });
+        const data = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/cart`,
+          {
+            credentials: "include",
+          },
+        );
         const items = await data.json();
         if (items.code === "ND") return;
         const exist = items.find((i) => i.foodId._id === id);
@@ -178,21 +181,17 @@ const MealDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: quantity }],
+          data: [{ id: id, quantity: quantity, available: food.available }],
           command: "add/dlt", //command need for add and delete to separate updation
         }),
       });
-      const { message } = await res.json();
-      if (
-        message.trim() === "Already in Cart" ||
-        message.trim() === "Added to Cart"
-      )
-        setInCart(true);
+      const { code, message } = await res.json();
+      if (code.trim() === "success") setInCart(true);
       else setInCart(false);
       setMsg(message);
 
       const totalCart = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/cart`,
+        `${import.meta.env.VITE_API_URL}/update/cart`,
         {
           credentials: "include",
         },
@@ -229,7 +228,7 @@ const MealDetails = () => {
     }
   }, [food, quantity]); // Re-calculates accurately whenever food data or quantity updates
 
-  // ========== updation of the food (guest user nad real user) ==========
+  // ========== updation of the food (guest user and real user) ==========
   async function updateQuantity(command) {
     //calculate the new quantity
     const newQuantity =
@@ -248,28 +247,28 @@ const MealDetails = () => {
     }
     //set UI, DB cart || when user logged in
     try {
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         credentials: "include",
       });
       const cartItems = await data.json();
       const itemExist = cartItems.find((i) => i.foodId._id === id);
       setQuantity(newQuantity); //update the UI first
-      if (itemExist) {
-        itemExist.quantity = newQuantity;
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: [{ id: id, quantity: itemExist.quantity }],
-            command: "SCA", //store as it is in DB
-          }),
-        });
-        const { message } = await res.json();
-        console.log(message);
-      }
+      // if (itemExist) {
+      //   itemExist.quantity = newQuantity;
+      //   const res = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
+      //     method: "POST",
+      //     credentials: "include",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       data: [{ id: id, quantity: itemExist.quantity, available:food.available }],
+      //       command: "SCA", //store as it is in DB
+      //     }),
+      //   });
+      //   const { message } = await res.json();
+      //   console.log(message);
+      // }
     } catch (e) {
       console.log(e);
     }
@@ -290,7 +289,7 @@ const MealDetails = () => {
 
     const timer = setTimeout(() => {
       setMsg(null);
-    }, 2000); 
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [msg]);

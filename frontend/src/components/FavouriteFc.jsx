@@ -30,7 +30,7 @@ const FavouriteFc = ({
   useEffect(() => {
     //  Guest user cart icons set
     if (!user || !user.userName) {
-      const sessionCart = JSON.parse(sessionStorage.getItem("cart"));
+      const sessionCart = JSON.parse(sessionStorage.getItem("cart"))||null;
       if (sessionCart) {
         const existCart = sessionCart.some((item) => item._id === id);
         if (existCart) setInCart(true);
@@ -40,7 +40,7 @@ const FavouriteFc = ({
 
     //  User's cart icon set, fav icon already set from parent
     async function getCart() {
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         credentials: "include",
       });
       const item = await data.json();
@@ -134,6 +134,7 @@ const FavouriteFc = ({
           price: price,
           unit: unit,
           quantity: quantity,
+          available:available,
         });
         setInCart(true);
         satisfymessage("item added");
@@ -148,31 +149,25 @@ const FavouriteFc = ({
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: quantity }],
+          data: [{ id: id, quantity: quantity, available:available }],
           command: "add/dlt", //command need for add and delete to separate updation
         }),
       });
-      const { message } = await res.json();
-      if (message.trim() === "Already in Cart") {
-        console.log(message);
+      const { code, message} = await res.json();
+      if (code.trim() === "success") {
         satisfymessage(message);
-        setInCart(false);
+         setInCart(inCart=>!inCart);
       }
-      if (message.trim() === "Cart is full") {
-        satisfymessage(message);
-        setInCart(false);
-      } else setInCart(!inCart);
-      satisfymessage(message);
 
       //calculate the total number of cart items from DB
-      const cartres = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const cartres = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         credentials: "include",
       });
       const totalCart = await cartres.json();

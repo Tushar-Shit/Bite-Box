@@ -62,7 +62,7 @@ function Login() {
       const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
 
       const favResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/addfav`,
+        `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
           method: "POST",
           credentials: "include",

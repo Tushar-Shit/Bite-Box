@@ -6,10 +6,7 @@ import {
     emailChange,
     verifyCode,
     passwordChange,
-    getCart,
-    updateCart
 } from "../controllers/userController.js";
-
 const router = express.Router({ mergeParams: true });
 
 router.get("/profile", authentication, profile);    //provide user data
@@ -21,18 +18,4 @@ router.patch("/email-change", authentication, verifyCode);  //verify and actual 
 
 
 router.patch("/password-change", authentication, passwordChange);  //password change
-
-
-
-
-
-
-
-
-
-
-router.get("/cart", authentication, getCart);
-
-router.post("/cart", authentication, updateCart);
-
 export default router;

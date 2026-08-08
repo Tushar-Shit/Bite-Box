@@ -28,13 +28,12 @@ const BottomBar = ({ update }) => {
     async function data() {
       try {
         const Cartdata = await fetch(
-          `${import.meta.env.VITE_API_URL}/user/cart`,
+          `${import.meta.env.VITE_API_URL}/update/cart`,
           {
             credentials: "include",
           },
         );
         const Cartitems = await Cartdata.json();
-        // (Cartitems);
         if (Cartitems.code === "ND" || Cartitems.length <= 0) setCartCount(0);
         else setCartCount(Cartitems.length);
 

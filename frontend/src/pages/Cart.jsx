@@ -42,7 +42,7 @@ const Cart = () => {
     async function fetchCartItems() {
       setLoggedin(user);
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
           credentials: "include",
         });
         const cartData = await res.json();

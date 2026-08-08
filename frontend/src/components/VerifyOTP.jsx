@@ -148,9 +148,10 @@ const VerifyOTP = () => {
           const cartDetails = sessionCart.map((item) => ({
             id: item._id,
             quantity: item.quantity,
+            available:item.available,
           }));
           const cartResponse = await fetch(
-            ` ${import.meta.env.VITE_API_URL}/user/cart`,
+            ` ${import.meta.env.VITE_API_URL}/update/cart`,
             {
               method: "POST",
               credentials: "include",
@@ -162,7 +163,7 @@ const VerifyOTP = () => {
             },
           );
           const cartData = await cartResponse.json();
-          if (cartData.message === "Added to Cart") {
+          if (cartData.code === "success") {
             sessionStorage.removeItem("cart");
           }
           navigate("/", {
