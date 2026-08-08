@@ -18,9 +18,13 @@ const VerifyOTP = () => {
   } = useContext(AllCount);
 
   useEffect(() => {
-    if ((verifyCode === "EMAIL_CHANGE") && (!user || !verifyCode || !contextEmail)) {
-      setMessageBox(true);
-      setFailmsg("Fail to get email, please try from begining");
+    if (verifyCode === "EMAIL_CHANGE") {
+      const isMissingData = !user || !contextEmail;
+
+      if (isMissingData) {
+        setMessageBox(true);
+        setFailmsg("Fail to get email, please try from beginning");
+      }
     }
   }, [user, verifyCode, contextEmail]);
 
