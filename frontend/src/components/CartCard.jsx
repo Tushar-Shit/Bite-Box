@@ -13,7 +13,7 @@ const CartCard = ({
   available,
   satisfymessage,
 }) => {
-  console.log(available)
+  console.log(available);
   const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
 
@@ -55,6 +55,7 @@ const CartCard = ({
       const { message } = await res.json();
       satisfymessage(message);
 
+      //count cart length
       const cartRes = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         credentials: "include",
       });

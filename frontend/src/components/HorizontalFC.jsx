@@ -152,7 +152,7 @@ const HorizontalFC = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: quantity}],
+          data: [{ id: id, quantity: quantity }],
           command: "add/dlt", //command need for add and delete to separate updation
         }),
       });
@@ -167,6 +167,7 @@ const HorizontalFC = ({
       } else setInCart(!inCart);
       satisfymessage(message);
 
+      //count cart length
       const data = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
         credentials: "include",
       });

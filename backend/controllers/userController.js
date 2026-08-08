@@ -180,6 +180,8 @@ export const getCart = async (req, res) => {
 export const updateCart = async (req, res) => {
     try {
         const { data, command } = req.body;
+
+
         if (!data.length) {
             return res.status(400).json({
                 message: "Cart is empty."
@@ -197,6 +199,7 @@ export const updateCart = async (req, res) => {
                 message: "One or more food items not found."
             });
         }
+        
         //make pair of id and food document
         const foodMap = new Map(
             foods.map(food => [food._id.toString(), food])
