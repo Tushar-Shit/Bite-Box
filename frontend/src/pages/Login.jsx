@@ -74,8 +74,8 @@ function Login() {
           }),
         },
       );
-      const { message } = await favResponse.json();
-      if (message === "Add to Favourite") {
+      const {code, message } = await favResponse.json();
+      if (code=== "okay") {
         sessionStorage.removeItem("fav");
       }
 
@@ -108,9 +108,9 @@ function Login() {
         email: "",
         password: "",
       });
-
+      console.log(cartData.message);
       navigate("/", {
-        state: { message: cartData.message },
+        state: { message: data.message },
       });
 
       // window.location.reload(); //forcefully reload the page after login

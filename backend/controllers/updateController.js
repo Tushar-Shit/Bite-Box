@@ -25,16 +25,16 @@ export const updateFavourite = async (req, res) => {
             $pull: { favourites: foodId },
         });
         res.json({
-            message: "Remove From Favourite",
             code: "okay",
+            message: "Remove From Favourite",
         });
     } else {
         await Users.findByIdAndUpdate(userId, {
             $addToSet: { favourites: foodId },
         });
         res.json({
-            message: "Add to Favourite",
             code: "okay",
+            message: "Add to Favourite",
         });
     }
 };
@@ -176,7 +176,7 @@ export const updateCart = async (req, res) => {
         });
     }
 
-    
+
     if (command === "increase") {
         item.quantity++;
         item.price = originalPrice * item.quantity;
