@@ -82,10 +82,11 @@ function Login() {
       const cartDetails = sessionCart.map((item) => ({
         id: item._id,
         quantity: item.quantity,
+        available: item.available,
       }));
       // console.log(cartDetails);
       const cartResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/cart`,
+        `${import.meta.env.VITE_API_URL}/update/cart`,
         {
           method: "POST",
           credentials: "include",
@@ -99,7 +100,7 @@ function Login() {
         },
       );
       const cartData = await cartResponse.json();
-      if (cartData.message === "Added to Cart") {
+      if (cartData.code === "success") {
         sessionStorage.removeItem("cart");
       }
 
@@ -109,7 +110,7 @@ function Login() {
       });
 
       navigate("/", {
-        state: { message: data.message },
+        state: { message: cartData.message },
       });
 
       // window.location.reload(); //forcefully reload the page after login
