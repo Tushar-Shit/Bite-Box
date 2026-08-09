@@ -10,6 +10,7 @@ import HorizontalFc from "../components/HorizontalFC";
 import HorizontalRounded from "../components/HorizontalRounded";
 
 //supporting UI components
+import HeroImage from "../components/HeroImage";
 import Loader from "../components/Loader";
 import Subheadsee from "../atomic/Subheading";
 import Subheading from "../atomic/atomic";
@@ -148,6 +149,7 @@ const Home = () => {
   function satisfymessage(text) {
     setMsg(text);
   }
+
   return (
     <div className={`h-screen flex flex-col ${loader && "overflow-y-hidden"} `}>
       {/*  page title */}
@@ -175,17 +177,40 @@ const Home = () => {
           </h1>
 
           {/* hero section  */}
-          <section className="flex overflow-x-auto mt-2 gap-4 h-60 relative px-[5%] snap-x snap-mandatory scroll-smooth no-scrollbar">
-            {/* <HeroImage image={} /> */}
-            {/* Dynamic Dots Indicator */}
-            {/* <ul className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-          <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white"></li>
-          <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
-          <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
-          <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
-          <li className="rounded-full w-6 h-2 transition-colors duration-300 bg-white/50"></li>
-        </ul> */}
-          </section>
+          {/* <section className="w-full overflow-hidden py-3 px-3">
+            <div
+              className="flex gap-5 transition-transform duration-700 ease-in-out"
+              style={{
+                transform: `translateX(calc(-${index} * (94vw + 20px)))`,
+              }}
+            >
+              {extendedFoods.map((food, i) => (
+                <Link
+                  to={food.link}
+                  key={`${food.id}-${i}`}
+                  className="relative min-w-[94vw] h-50 overflow-hidden rounded-2xl shadow-lg group shrink-0"
+                >
+                  <img
+                    src={food.image}
+                    alt={food.text || "Food"}
+                    className="w-full h-full  object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+
+                  {food.text && (
+                    <div className="absolute inset-0 bg-black/30 flex items-end">
+                      <div className="w-full p-4">
+                        <h2 className="text-white text-xl font-bold">
+                          {food.text}
+                        </h2>
+                      </div>
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>*/}
+
+          <HeroImage />
 
           {/* catgories section  */}
           <section id="category-section" className="mb-4">

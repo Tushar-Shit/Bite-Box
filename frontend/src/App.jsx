@@ -66,7 +66,7 @@ const App = () => {
         <Route path="/help" element={<HelpingPage />} />
 
         {/* for test and development purpose */}
-        <Route path="/test" element={<Testingpage />} />
+        <Route path="/search" element={<Testingpage />} />
         {/* <Route path="/categories/:items/:id" element={<MealDetails />} /> */}
       </Routes>
     </div>

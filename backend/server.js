@@ -43,20 +43,24 @@ app.use(cookieParser());
 
 // home route
 app.get("/", async (req, res) => {
-  const trendingFood = await FoodItem.find({ tag: "trending" });
-  const popularFood = await FoodItem.find({ tag: "popular" });
-  const recommendedFood = await FoodItem.find({ tag: "recommended" });
-  const bestSellerFood = await FoodItem.find({ tag: "bestseller" });
-  const chefChoiceFood = await FoodItem.find({ tag: "chefchoice" });
+  try {
+    const trendingFood = await FoodItem.find({ tag: "trending" });
+    const popularFood = await FoodItem.find({ tag: "popular" });
+    const recommendedFood = await FoodItem.find({ tag: "recommended" });
+    const bestSellerFood = await FoodItem.find({ tag: "bestseller" });
+    const chefChoiceFood = await FoodItem.find({ tag: "chefchoice" });
 
-  const everything = {
-    trendingFood,
-    popularFood,
-    recommendedFood,
-    bestSellerFood,
-    chefChoiceFood
+    const everything = {
+      trendingFood,
+      popularFood,
+      recommendedFood,
+      bestSellerFood,
+      chefChoiceFood
+    }
+    res.json(everything);
+  } catch (err) {
+    console.log(err);
   }
-  res.json(everything);
 });
 
 //multiple routes

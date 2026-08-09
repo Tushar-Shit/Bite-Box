@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import AllCount from "../context/allCount";
 import {
   Heart,
@@ -14,6 +14,8 @@ import {
 const BottomBar = ({ update }) => {
   const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
+
+  const location = useLocation();
 
   useEffect(() => {
     // Guest user favourite & cart count
@@ -56,23 +58,23 @@ const BottomBar = ({ update }) => {
 
   return (
     <div className="h-18">
-      <div className="h-18 shrink-0 bg-zinc-100 w-full flex justify-evenly items-center p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] text-slate-500 fixed bottom-0">
-        <Link to="/" className="flex flex-col items-center">
+      <div className="h-18 shrink-0 bg-zinc-100 w-full flex justify-evenly items-center p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] fixed bottom-0">
+        <Link to="/" className={`flex flex-col items-center ${location.pathname.endsWith("/")? "text-orange-500" : "text-slate-500"}`}>
           <House strokeWidth={1.5} />
           <span>Home</span>
         </Link>
 
-        <Link to="/search" className="flex flex-col items-center">
+        <Link to="/search" className={`flex flex-col items-center ${location.pathname.startsWith("/search")? "text-orange-500" : "text-slate-500"}`}>
           <Search strokeWidth={1.5} />
           Search
         </Link>
 
-        <Link to="/categories" className="flex flex-col items-center">
+        <Link to="/categories" className={`flex flex-col items-center ${location.pathname.startsWith("/categories")? "text-orange-500" : "text-slate-500"}`}>
           <Blocks strokeWidth={1.5} />
           Category
         </Link>
 
-        <Link to="/favorite" className="flex flex-col items-center relative">
+        <Link to="/favorite" className={`flex flex-col items-center relative ${location.pathname.startsWith("/favorite")? "text-orange-500" : "text-slate-500"}`}>
           <Heart strokeWidth={1.5} size={26} />
           <span>Favourite</span>
 
@@ -83,7 +85,7 @@ const BottomBar = ({ update }) => {
           )}
         </Link>
 
-        <Link to="/cart" className="flex flex-col items-center relative">
+        <Link to="/cart" className={`flex flex-col items-center relative ${location.pathname.startsWith("/cart")? "text-orange-500" : "text-slate-500"}`}>
           <ShoppingBag strokeWidth={1.5} />
           <span>Cart</span>
 
