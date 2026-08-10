@@ -57,43 +57,109 @@ const BottomBar = ({ update }) => {
   }, [user, favCount, cartCount]);
 
   return (
-    <div className="h-18">
-      <div className="h-18 shrink-0 bg-zinc-100 w-full flex justify-evenly items-center p-3 shadow-[0_3px_10px_rgba(0,0,0,0.9)] fixed bottom-0">
-        <Link to="/" className={`flex flex-col items-center ${location.pathname.endsWith("/")? "text-orange-500" : "text-slate-500"}`}>
-          <House strokeWidth={1.5} />
+    <div className="h-18 shrink-0 w-full shadow-[0_-4px_8px_rgba(0,0,0,0.25)] bg-white z-5">
+      <div className="h-full w-full max-w-md mx-auto flex items-center justify-around px-3 bg-white/90 backdrop-blur-xl border-t border-zinc-100 shadow-[0_-8px_30px_rgba(0,0,0,0.02)] z-50">
+        {/* Home Navigation Link */}
+        <Link
+          to="/"
+          className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl transition-all duration-200 active:scale-90
+      ${
+        location.pathname.endsWith("/")
+          ? "text-orange-500"
+          : "text-slate-500 hover:text-slate-700"
+      }`}
+        >
+          <House
+            strokeWidth={location.pathname.endsWith("/") ? 2.2 : 1.5}
+            size={24}
+          />
           <span>Home</span>
         </Link>
 
-        <Link to="/search" className={`flex flex-col items-center ${location.pathname.startsWith("/search")? "text-orange-500" : "text-slate-500"}`}>
-          <Search strokeWidth={1.5} />
-          Search
+        {/* Search Navigation Link */}
+        <Link
+          to="/search"
+          className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl transition-all duration-200 active:scale-90
+      ${
+        location.pathname.startsWith("/search")
+          ? "text-orange-500"
+          : "text-slate-500 hover:text-slate-700"
+      }`}
+        >
+          <Search
+            strokeWidth={location.pathname.startsWith("/search") ? 2.2 : 1.5}
+            size={24}
+          />
+          <span>Search</span>
         </Link>
 
-        <Link to="/categories" className={`flex flex-col items-center ${location.pathname.startsWith("/categories")? "text-orange-500" : "text-slate-500"}`}>
-          <Blocks strokeWidth={1.5} />
-          Category
+        {/* Categories Navigation Link */}
+        <Link
+          to="/categories"
+          className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl transition-all duration-200 active:scale-90
+      ${
+        location.pathname.startsWith("/categories")
+          ? "text-orange-500"
+          : "text-slate-500 hover:text-slate-700"
+      }`}
+        >
+          <Blocks
+            strokeWidth={
+              location.pathname.startsWith("/categories") ? 2.2 : 1.5
+            }
+            size={24}
+          />
+          <span>Category</span>
         </Link>
 
-        <Link to="/favorite" className={`flex flex-col items-center relative ${location.pathname.startsWith("/favorite")? "text-orange-500" : "text-slate-500"}`}>
-          <Heart strokeWidth={1.5} size={26} />
+        {/* Favourite Navigation Link */}
+        <Link
+          to="/favorite"
+          className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl relative transition-all duration-200 active:scale-90
+      ${
+        location.pathname.startsWith("/favorite")
+          ? "text-orange-500"
+          : "text-slate-500 hover:text-slate-700"
+      }`}
+        >
+          <div className="relative">
+            <Heart
+              strokeWidth={
+                location.pathname.startsWith("/favorite") ? 2.2 : 1.5
+              }
+              size={24}
+            />
+            {favCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-black text-white ring-2 ring-white tabular-nums animate-in zoom-in-50 duration-200">
+                {favCount}
+              </span>
+            )}
+          </div>
           <span>Favourite</span>
-
-          {favCount > 0 && (
-            <span className="absolute left-10 -top-1 rounded-full px-1 text-sm bg-red-600 text-white">
-              {favCount}
-            </span>
-          )}
         </Link>
 
-        <Link to="/cart" className={`flex flex-col items-center relative ${location.pathname.startsWith("/cart")? "text-orange-500" : "text-slate-500"}`}>
-          <ShoppingBag strokeWidth={1.5} />
+        {/* Cart Navigation Link */}
+        <Link
+          to="/cart"
+          className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl relative transition-all duration-200 active:scale-90
+      ${
+        location.pathname.startsWith("/cart")
+          ? "text-orange-500"
+          : "text-slate-500 hover:text-slate-700"
+      }`}
+        >
+          <div className="relative">
+            <ShoppingBag
+              strokeWidth={location.pathname.startsWith("/cart") ? 2.2 : 1.5}
+              size={24}
+            />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-black text-white ring-2 ring-white tabular-nums animate-in zoom-in-50 duration-200">
+                {cartCount}
+              </span>
+            )}
+          </div>
           <span>Cart</span>
-
-          {cartCount > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 rounded-full px-1 text-sm bg-red-600 text-white">
-              {cartCount}
-            </span>
-          )}
         </Link>
       </div>
     </div>

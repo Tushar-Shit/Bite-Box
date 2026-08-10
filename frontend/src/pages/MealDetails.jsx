@@ -1,9 +1,8 @@
 import CustomNav from "../CategoryComponents/CustomNav";
 import { BottomActionBar } from "../components/BottomBar";
 import FeedBackCard from "../components/FeedbackCard";
-import { Heartclick } from "../atomic/atomic";
-import { ChevronRight, Minus, Plus, ThumbsDown, ThumbsUp } from "lucide-react";
-import { SeeMore } from "../atomic/atomic";
+import { Heartclick, SeeMore } from "../atomic/atomic";
+import { Minus, Plus } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import AllCount from "../context/allCount";
 import { useParams } from "react-router-dom";
@@ -12,81 +11,119 @@ import { ShortMsg } from "../components/MessageBar";
 const MealDetails = () => {
   const { id } = useParams();
 
-  const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
+  const { favCount, setFavCount, cartCount, setCartCount, user } =
     useContext(AllCount);
 
-  //fav, cart, food, reviews informations
+  // ----------------------     STATES     ----------------------------
   const [fav, setFav] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [food, setFood] = useState({});
   const [allReviews, setAllReviews] = useState([]);
   const [quantity, setQuantity] = useState(1);
 
+  const [showAll, setShowAll] = useState(false);
+  const [finalPrice, setFinalPrice] = useState(0);
+  const [fullDescription, setFullDescription] = useState(false);
+  const [msg, setMsg] = useState(null);
+
+  //================================  GET FOOD + REVIEWS  ==============================
   useEffect(() => {
-    async function getData() {
+    const getData = async () => {
       try {
-        //extract food & reviews data
         const res = await fetch(`${import.meta.env.VITE_API_URL}/meal/${id}`);
         const { foodItem, reviews } = await res.json();
         setFood(foodItem);
         setAllReviews(reviews);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getData();
+  }, [id]);
 
-        //  Guest user icons setup
-        if (!user || !user.user.userName) {
-          const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-          if (sessionFav.some((item) => item._id === id)) setFav(true);
+  //================================  ICONS'S INITIAL STATE  ==============================
+  useEffect(() => {
+    // ------------------------GUEST USER-----------------------------
+    const initializeUserData = async () => {
+      if (!user?.userName) {
+        const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
+        const isFavourite = sessionFav.some(
+          (item) => String(item._id) === String(id),
+        );
+        setFav(isFavourite);
 
-          const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-          if (sessionCart.some((item) => item._id === id)) {
-            const item = sessionCart.find((item) => item._id === id);
-            setQuantity(item.quantity);
-            setInCart(true);
-          }
-          return;
-        }
+        const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+        const cartItem = sessionCart.find(
+          (item) => String(item._id) === String(id),
+        );
+        if (cartItem) {
+          setQuantity(cartItem.quantity);
+          setInCart(true);
+        } else setInCart(false);
 
-        //  User icon setup ||  fav icon
-        const response = await fetch(
+        return;
+      }
+
+      // -----------------------------LOGGED-IN USER------------------------------
+      try {
+        //````````````````````````````favourite``````````````````````````````
+        const favResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/update/favourite`,
           {
             credentials: "include",
           },
         );
-        const { favourites } = await response.json();
-        setFav(favourites.some((item) => item._id === id));
+        const favData = await favResponse.json();
+        const favourites = favData.favourites || [];
+        const isFavourite = favourites.some(
+          (item) => String(item._id) === String(id),
+        );
+        setFav(isFavourite);
 
-        //  User icon setup ||  cart icon
-        const data = await fetch(
+        //````````````````````````````````cart```````````````````````````````
+        const cartResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/update/cart`,
           {
             credentials: "include",
           },
         );
-        const items = await data.json();
-        if (items.code === "ND") return;
-        const exist = items.find((i) => i.foodId._id === id);
-        console.log(exist);
-        if (exist) {
-          setQuantity(exist.quantity);
+        const cartData = await cartResponse.json();
+        // Your API appears to return "ND" when cart is empty
+        if (cartData.code === "ND" || !Array.isArray(cartData)) {
+          setInCart(false);
+          setQuantity(1);
+          return;
+        }
+
+        const cartItem = cartData.find(
+          (item) => String(item.foodId?._id) === String(id),
+        );
+
+        if (cartItem) {
+          setQuantity(cartItem.quantity);
           setInCart(true);
+        } else {
+          setInCart(false);
+          setQuantity(1);
         }
       } catch (err) {
-        console.log(err);
+        console.error("Failed to initialize favourite/cart:", err);
       }
-    }
-    getData();
-  }, [user]);
+    };
 
-  //handle favourite items (add, remove)
+    initializeUserData();
+  }, [user, id]);
+
+  // ============================== FAVOURITE HANDLER===============================
   const handle = async (e) => {
-    e.preventDefault(); // Prevent Link navigation
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     if (!id) return;
 
-    //if user not logged in
+    // -------------------- GUEST USER ------------------------
     if (!user || !user.userName) {
       let preFav = JSON.parse(sessionStorage.getItem("fav")) || [];
-      const index = preFav.findIndex((item) => item._id === id);
+      const index = preFav.findIndex((item) => String(item._id) === String(id));
       if (index === -1) {
         preFav.push({
           _id: id,
@@ -110,6 +147,7 @@ const MealDetails = () => {
       return;
     }
 
+    // -------------------- LOGGED-IN USER ------------------------
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/update/favourite`,
@@ -128,6 +166,7 @@ const MealDetails = () => {
       setMsg(message);
       setFav((prev) => !prev);
 
+      // Update favourite count
       const totalFav = await fetch(
         `${import.meta.env.VITE_API_URL}/update/favourite`,
         {
@@ -141,15 +180,19 @@ const MealDetails = () => {
     }
   };
 
-  //handle cart item (add, remove)
+  //============================== CART HANDLER =============================
   const addCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    //if user not logged in
+    // ------------------------ GUEST USER ---------------------------
     if (!user || !user.userName) {
       let preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-      const index = preCart.findIndex((item) => item._id === id);
+
+      const index = preCart.findIndex(
+        (item) => String(item._id) === String(id),
+      );
+
       if (index === -1) {
         preCart.push({
           _id: id,
@@ -173,30 +216,37 @@ const MealDetails = () => {
       return;
     }
 
+    // ----------------------- LOGGED-IN USER  -----------------------------
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/cart`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [{ id: id, quantity: quantity, available: food.available }],
-          command: "add/dlt", //command need for add and delete to separate updation
+          data: [
+            {
+              id: id,
+              quantity: quantity,
+              available: food.available,
+            },
+          ],
+          command: "add/dlt",
         }),
       });
       const { code, message } = await res.json();
-      if (code.trim() === "success") setInCart(true);
-      else setInCart(false);
+      if (code.trim() === "success") setInCart((pre) => !pre);
+      else setInCart((pre) => !pre);
       setMsg(message);
 
+      // Update cart count
       const totalCart = await fetch(
         `${import.meta.env.VITE_API_URL}/update/cart`,
         {
           credentials: "include",
         },
       );
-
       const cartlength = await totalCart.json();
       setCartCount(cartlength.length);
     } catch (e) {
@@ -204,11 +254,62 @@ const MealDetails = () => {
     }
   };
 
-  // Showing reviews logic
-  const [showAll, setShowAll] = useState(false);
-  const displayedReviews = showAll ? allReviews : allReviews.slice(0, 4);
+  //======================== QUANTITY + PRICE =========================
+  useEffect(() => {
+    if (food.price) {
+      setFinalPrice(food.price * quantity);
+    }
+  }, [food, quantity]);
+  //======================== QUANTITY + PRICE =========================
+  async function updateQuantity(command) {
+    const newQuantity =
+      command === "increase" ? quantity + 1 : Math.max(1, quantity - 1);
 
-  // Calculating food rating = all reviews rating / all reviews
+    // --------------------GUEST USER------------------------
+    if (!user || !user.userName) {
+      const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      const thisItem = sessionCart.find(
+        (item) => String(item._id) === String(id),
+      );
+      setQuantity(newQuantity);
+
+      if (thisItem) {
+        thisItem.quantity = newQuantity;
+        sessionStorage.setItem("cart", JSON.stringify(sessionCart));
+      }
+      return;
+    }
+
+    // -------------------------LOGGED-IN USER-------------------------
+    try {
+      const data = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          foodId: id,
+          originalPrice: food.price,
+          command: command,
+        }),
+      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/update/cart`,
+        {
+          credentials: "include",
+        },
+      );
+      const cartItems = await response.json();
+      const itemExist = cartItems.find((i) => i.foodId._id === id);
+      setQuantity(itemExist.quantity);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  // ================================= REVIEWS ==============================
+  const displayedReviews = showAll ? allReviews : allReviews.slice(0, 4);
   const foodRate =
     allReviews.length > 0
       ? Number(
@@ -219,178 +320,130 @@ const MealDetails = () => {
         )
       : 0;
 
-  // Quantity and price calculation
-  const [finalPrice, setFinalPrice] = useState(0);
-  useEffect(() => {
-    if (food.price) {
-      // Synchronize the price when data initially loads or resets
-      setFinalPrice(food.price * quantity);
-    }
-  }, [food, quantity]); // Re-calculates accurately whenever food data or quantity updates
-
-  // ========== updation of the food (guest user and real user) ==========
-  async function updateQuantity(command) {
-    //calculate the new quantity
-    const newQuantity =
-      command === "increase" ? quantity + 1 : Math.max(1, quantity - 1);
-
-    //set UI, session cart(if) || when user not logged in
-    if (!user || !user.username) {
-      const sessionCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-      const thisItem = sessionCart.find((item) => item._id === id);
-      setQuantity(newQuantity); //update the UI first
-      if (thisItem) {
-        thisItem.quantity = newQuantity;
-        sessionStorage.setItem("cart", JSON.stringify(sessionCart));
-      }
-      return;
-    }
-    //set UI, DB cart || when user logged in
-    try {
-      const data = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
-        credentials: "include",
-      });
-      const cartItems = await data.json();
-      const itemExist = cartItems.find((i) => i.foodId._id === id);
-      setQuantity(newQuantity); //update the UI first
-      // if (itemExist) {
-      //   itemExist.quantity = newQuantity;
-      //   const res = await fetch(`${import.meta.env.VITE_API_URL}/update/cart`, {
-      //     method: "POST",
-      //     credentials: "include",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       data: [{ id: id, quantity: itemExist.quantity, available:food.available }],
-      //       command: "SCA", //store as it is in DB
-      //     }),
-      //   });
-      //   const { message } = await res.json();
-      //   console.log(message);
-      // }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  // Description "Read More" logic
-  const [fullDescription, setFullDescription] = useState(false);
-  // Safeguard against missing or undefined description strings
+  // ============================= DESCRIPTION ===============================
   const words = food.description ? food.description.split(" ") : [];
-  const isLongDescription = words.length > 6; // Set to 15 words limit as requested
+  const isLongDescription = words.length > 6;
   const truncatedDescription = isLongDescription
     ? words.slice(0, 6).join(" ")
     : food.description;
 
-  const [msg, setMsg] = useState(null);
+  //================================ MESSAGE TIMEOUT ==========================
   useEffect(() => {
     if (!msg) return;
-
     const timer = setTimeout(() => {
       setMsg(null);
     }, 2000);
-
     return () => clearTimeout(timer);
   }, [msg]);
 
   return (
-    <div className="Meal-Page h-full relative ">
+    <div className="fixed inset-0 h-dvh flex flex-col">
       {/* Top navbar */}
       <CustomNav text="Meal Details" />
+
+      {/* Message */}
       {msg && <ShortMsg message={msg} />}
+      <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
+        {/* Food image */}
+        <div className="border w-[90%] h-[30vh] rounded-lg m-auto my-3 relative">
+          <img
+            src={food.image}
+            alt=""
+            className="w-full h-full object-cover rounded-lg"
+          />
 
-      {/* Main food image */}
-      <div className="w-[83vw] h-[30vh] rounded-lg m-auto my-5 relative">
-        <img
-          src={food.image}
-          alt=""
-          className="w-full h-full object-cover rounded-lg"
-        />
-        <div className="absolute top-0 right-0 rounded-full bg-white p-0.5 cursor-pointer">
-          <Heartclick onClick={handle} isFav={fav} />
-        </div>
-      </div>
-
-      {/* the buying informations (title, quantity, price) */}
-      <div className="h-fit px-6 mb-3">
-        <span className="text-2xl font-bold">{food.name}</span>
-        <div className="flex justify-between items-center">
-          <span className="text-xl font-semibold">
-            {food.quantity} {food.unit}
-          </span>
-          {/* quantity component */}
-          <div className="flex justify-evenly gap-2 items-center bg-zinc-300 rounded-2xl p-1">
-            <button
-              onClick={() => updateQuantity("decrease")}
-              className="bg-white text-black rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
-            >
-              <Minus size={18} />
-            </button>
-            <div className="font-semibold mx-1 w-4 text-center">{quantity}</div>
-            <button
-              onClick={() => updateQuantity("increase")}
-              className="bg-orange-500 text-white rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
-            >
-              <Plus size={18} />
-            </button>
+          <div className="h-9 w-9 absolute top-2 right-2 flex items-center justify-center rounded-full bg-white p-0.5 cursor-pointer">
+            <Heartclick onClick={handle} isFav={fav} />
           </div>
         </div>
 
-        {/* Price & rating */}
-        <div className="flex gap-1 items-baseline">
-          <span className="text-xl font-semibold">₹{food.price}</span>
-          <span className="ml-2 text-amber-500 font-bold">★ {foodRate}</span>
-        </div>
-      </div>
+        {/* Food information */}
+        <div className="border h-fit px-6 mb-3">
+          <span className="text-2xl font-bold">{food.name}</span>
 
-      {/* Description */}
-      <div className="px-6 h-fit mb-4">
-        <div className="text-lg font-bold text-red-700 mb-1">Description</div>
-        <p className="text-zinc-700 leading-relaxed text-sm">
-          {fullDescription ? food.description : truncatedDescription}
-
-          {isLongDescription && (
-            <span
-              onClick={() => setFullDescription(!fullDescription)}
-              className="text-red-500 font-bold ml-1 hover:underline bg-transparent border-none cursor-pointer outline-none"
-            >
-              {fullDescription ? "Read Less" : "Read More..."}
+          <div className="flex justify-between items-center">
+            <span className="text-xl font-semibold">
+              {food.quantity} {food.unit}
             </span>
-          )}
-        </p>
-      </div>
 
-      {/* Feedbacks */}
-      <div className="px-6 mt-5">
-        <div className="text-lg font-bold text-zinc-700 mb-1">Feedbacks</div>
-        <div className="feedback-con h-fit mb-24 flex flex-col gap-3">
-          {displayedReviews.map((review) => (
-            <FeedBackCard
-              key={review._id}
-              id={review._id}
-              author={review.author}
-              rating={review.rating}
-              like={review.like}
-              unlike={review.unlike}
-              comment={review.comment}
-            />
-          ))}
-          {allReviews.length > 4 && (
-            <SeeMore
-              text={showAll ? "See Less" : "See More"}
-              onClick={() => {
-                setShowAll(!showAll);
-              }}
-            />
-          )}
+            {/* Quantity */}
+            <div className="flex justify-evenly gap-2 items-center bg-zinc-300 rounded-2xl p-1">
+              <button
+                onClick={() => updateQuantity("decrease")}
+                className="bg-white text-black rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
+              >
+                <Minus size={18} />
+              </button>
+
+              <div className="font-semibold mx-1 w-4 text-center">
+                {quantity}
+              </div>
+
+              <button
+                onClick={() => updateQuantity("increase")}
+                className="bg-orange-500 text-white rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
+              >
+                <Plus size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Price + rating */}
+          <div className="flex gap-1 items-baseline">
+            <span className="text-xl font-semibold">₹{food.price}</span>
+
+            <span className="ml-2 text-amber-500 font-bold">★ {foodRate}</span>
+          </div>
         </div>
-      </div>
 
-      {/* Bottom nav (add to cart & buy) */}
-      <div className="fixed bottom-0 bg-zinc-100 left-0 w-full z-50">
-        <BottomActionBar onClick={addCart} price={finalPrice} state={inCart} />
-      </div>
+        {/* Description */}
+        <div className="border px-6 h-fit mb-4">
+          <div className="text-lg font-bold text-red-700 mb-1">Description</div>
+
+          <p className="text-zinc-700 leading-relaxed text-sm">
+            {fullDescription ? food.description : truncatedDescription}
+
+            {isLongDescription && (
+              <span
+                onClick={() => setFullDescription(!fullDescription)}
+                className="text-red-500 font-bold ml-1 hover:underline bg-transparent border-none cursor-pointer outline-none"
+              >
+                {fullDescription ? "Read Less" : "Read More..."}
+              </span>
+            )}
+          </p>
+        </div>
+
+        {/* Reviews */}
+        <div className="border px-6 mt-5">
+          <div className="text-lg font-bold text-zinc-700 mb-1">Feedbacks</div>
+
+          <div className="feedback-con h-fit mb-24 flex flex-col gap-3">
+            {displayedReviews.map((review) => (
+              <FeedBackCard
+                key={review._id}
+                id={review._id}
+                author={review.author}
+                rating={review.rating}
+                like={review.like}
+                unlike={review.unlike}
+                comment={review.comment}
+              />
+            ))}
+
+            {allReviews.length > 4 && (
+              <SeeMore
+                text={showAll ? "See Less" : "See More"}
+                onClick={() => {
+                  setShowAll(!showAll);
+                }}
+              />
+            )}
+          </div>
+        </div>
+      </main>
+      {/* Bottom action bar */}
+      <BottomActionBar onClick={addCart} price={finalPrice} state={inCart} />
     </div>
   );
 };

@@ -12,13 +12,14 @@ import Login from "./pages/Login";
 import UserProfile from "./pages/UserProfile";
 import HelpingPage from "./pages/HelpingPage";
 import Order from "./pages/Order";
-import Testingpage from "./pages/testingpage";
+import Search from "./pages/Search";
 import ResetPassword from "./components/ResetPassword";
+import Sidebar from "./components/Sidebar";
 const App = () => {
   const { user, setUser } = useContext(AllCount);
   useEffect(() => {
-    try {
-      async function getuser() {
+    const getUser = async () => {
+      try {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/user/profile`,
           {
@@ -27,7 +28,6 @@ const App = () => {
         );
         const data = await response.json();
         if (data.code === "NU") {
-          console.log(data.message);
           setUser(null);
           return;
         }
@@ -37,36 +37,39 @@ const App = () => {
           userEmail: data.email,
           userRole: "user",
         });
+      } catch (err) {
+        console.log("PROFILE ERROR:", err);
+        setUser(null);
       }
-      getuser();
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    };
+
+    getUser();
+  }, [setUser]);
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        route
+        <Route path="/" element={<Home />}>
+          <Route path="sidebar" element={<Sidebar />} />
+        </Route>
+
+
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-email" element={<HelpingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/userinfo" element={<UserProfile />} />
         <Route path="/orders" element={<Order />} />
-
         <Route path="/categories" element={<Categories />} />
         <Route path="/categories/:items" element={<ItemList />} />
         <Route path="/tag/:anything" element={<ItemList />} />
-
         <Route path="/favorite" element={<Favorite />} />
         <Route path="/meal/:id" element={<MealDetails />} />
         <Route path="/cart" element={<Cart />} />
-
         {/* email & password change */}
         <Route path="/help" element={<HelpingPage />} />
-
         {/* for test and development purpose */}
-        <Route path="/search" element={<Testingpage />} />
+        <Route path="/search" element={<Search />} />
         {/* <Route path="/categories/:items/:id" element={<MealDetails />} /> */}
       </Routes>
     </div>

@@ -39,7 +39,6 @@ const ItemList = () => {
           setFoodData(fooditems);
         }
 
-
         if (!user || !user.userName) {
           const sessionFav = JSON.parse(sessionStorage.getItem("fav")) || [];
           setFavFoods(sessionFav);
@@ -77,7 +76,7 @@ const ItemList = () => {
     setMsg(text);
   }
   return (
-    <>
+    <div className="fixed inset-0 h-dvh flex flex-col">
       <Helmet>
         <title>
           {items ? `${items} | Category` : `${anything} | Category`}
@@ -85,27 +84,29 @@ const ItemList = () => {
       </Helmet>
       <CustomNav text={items ? `All ${items} list` : `${anything}`} />
       {msg && <ShortMsg message={msg} />}
-      <div className="px-4 pt-4 sm:flex sm:flex-wrap sm:gap-4">
-        {fooddata.map((item) => (
-          <HorizontalFC
-            key={item._id} // MongoDB unique ID required for React loops
-            image={item.image}
-            name={item.name}
-            description={item.description}
-            quantity={item.quantity}
-            price={item.price}
-            unit={item.unit}
-            id={item._id}
-            isFav={favFoods.some((food) => food._id === item._id)}
-            available={item.available}
-            satisfymessage={satisfymessage}
-            //design purpose
-            view={"list"}
-          />
-        ))}
-      </div>
+      <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
+        <div className="px-4 pt-4 sm:flex sm:flex-wrap sm:gap-4">
+          {fooddata.map((item) => (
+            <HorizontalFC
+              key={item._id} // MongoDB unique ID required for React loops
+              image={item.image}
+              name={item.name}
+              description={item.description}
+              quantity={item.quantity}
+              price={item.price}
+              unit={item.unit}
+              id={item._id}
+              isFav={favFoods.some((food) => food._id === item._id)}
+              available={item.available}
+              satisfymessage={satisfymessage}
+              //design purpose
+              view={"list"}
+            />
+          ))}
+        </div>
+      </main>
       <BottomBar />
-    </>
+    </div>
   );
 };
 

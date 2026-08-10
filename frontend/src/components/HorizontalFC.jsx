@@ -173,85 +173,98 @@ const HorizontalFC = ({
     }
   };
 
-  return (
-    <Link
-      to={`/meal/${id}`}
-      className={`w-full h-35 shrink-0 bg-zinc-200 p-3 mb-4 flex gap-3 items-center rounded-lg shadow-[4px_1px_7px_rgba(0,0,0,0.4)]
-                  ${view === "list" ? "sm:min-w-72 sm:grow sm:basis-0 sm:m-0 sm:max-w-90" : "sm:min-w-73 sm:grow sm:basis-0 sm:m-0"}
-                  ${view === "list" ? "md:max-lg:min-w-87 md:max-lg:max-w-120" : "md:max-lg:min-w-87"}
-                  ${view === "list" ? "lg:max-2xl:min-w-75 lg:max-2xl:max-w-100" : "lg:max-xl:min-w-90"}
-                  ${view === "list" ? "2xl:min-w-100 2xl:max-w-122" : "2xl:max-w-100"}`}
-    >
-      {/* food image  */}
-      <div className="flex-2 h-full rounded-l-lg">
-        <img
-          className="w-full h-full object-cover rounded-l-lg"
-          src={image}
-          alt=""
-        />
-      </div>
-      {/* food name  */}
-      <div className="flex-3">
-        <div id="name-heart-container" className="flex justify-between mt-2">
-          <span id="Food_name" className="w-2/3 text-md font-bold truncate">
+return (
+  <Link
+    to={`/meal/${id}`}
+    className={`group relative flex gap-4 items-center shrink-0 w-full h-40 p-3 mb-4 rounded-2xl bg-white border border-zinc-100 shadow-[0_4px_8px_rgb(0,0,0,0.16)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300 ease-out
+      ${view === "list" ? "sm:min-w-72 sm:grow sm:basis-0 sm:m-0 sm:max-w-90" : "sm:min-w-73 sm:grow sm:basis-0 sm:m-0"}
+      ${view === "list" ? "md:max-lg:min-w-87 md:max-lg:max-w-120" : "md:max-lg:min-w-87"}
+      ${view === "list" ? "lg:max-2xl:min-w-75 lg:max-2xl:max-w-100" : "lg:max-xl:min-w-90"}
+      ${view === "list" ? "2xl:min-w-100 2xl:max-w-122" : "2xl:max-w-100"}`}
+  >
+    {/* Food Image Container */}
+    <div className="relative flex-2 h-full overflow-hidden rounded-xl bg-zinc-100">
+      <img
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+        src={image}
+        alt={name}
+      />
+    </div>
+
+    {/* Food Content Details */}
+    <div className="flex-3 flex flex-col justify-between h-full py-0.5 pr-1">
+      <div>
+        {/* Top Header Row */}
+        <div id="name-heart-container" className="flex justify-between items-start gap-2">
+          <span id="Food_name" className="text-base font-bold text-zinc-800 tracking-tight line-clamp-1 group-hover:text-amber-600 transition-colors duration-200">
             {name}
           </span>
-          <Heartclick onClick={handle} isFav={fav} />
+          <div className="relative z-10 shrink-0 transform active:scale-90 transition-transform">
+            <Heartclick onClick={handle} isFav={fav} />
+          </div>
         </div>
 
-        {/* short description  */}
-        <div id="short-descrip" className="text-sm mb-2 line-clamp-2">
+        {/* Short Description */}
+        <div id="short-descrip" className="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">
           {description}
         </div>
-        {/* serving quantity & unit  */}
-        <div
-          id="serve-quantity-availability"
-          className="min-w-40 w-3/6 flex items-center justify-between"
-        >
-          <p id="serve-unit">
-            <span id="food-serve-quantity">{servingQuantity}</span>{" "}
-            <span id="food-unit">{unit}</span>
+      </div>
+
+      {/* Bottom Information Segment */}
+      <div className="space-y-2">
+        {/* Serving Quantity, Unit & Availability Status Row */}
+        <div id="serve-quantity-availability" className="flex items-center justify-between gap-2 relative z-10">
+          {/* Enhanced Serving Portion Box */}
+          <p id="serve-unit" className="bg-amber-50/65 text-[11px] px-2.5 py-1 rounded-lg border border-amber-100/50 text-amber-900 font-medium tracking-tight">
+           <span id="food-serve-quantity" className="font-extrabold text-amber-700">{servingQuantity}</span>{" "}
+            <span id="food-unit" className="text-amber-800 font-semibold">{unit}</span>
           </p>
+
+          {/* Availability Status Badge placed on the same line */}
           {available ? (
-            <span
-              id="food-availbility"
-              className="text-sm font-bold text-green-700"
-            >
-              <span className="text-lg mr-0.5">&#183;</span>Available
+            <span id="food-availbility" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Available
             </span>
           ) : (
-            <span
-              id="food-availbility"
-              className="text-sm font-bold text-red-700"
-            >
-              <span className="text-lg mr-0.5">&#183;</span>Unavailable
+            <span id="food-availbility" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+              Unavailable
             </span>
           )}
         </div>
-        <div
-          id="price-rating-cart"
-          className="flex justify-between text-md mb-2 relative"
-        >
-          <div id="price-rating" className="flex gap-2">
-            <span id="price" className="font-bold">
+
+        {/* Price, Rating & Action Button */}
+        <div id="price-rating-cart" className="flex justify-between items-center relative">
+          <div id="price-rating" className="flex items-baseline gap-2">
+            <span id="price" className="text-lg font-extrabold text-zinc-900">
               ₹{price}
             </span>
-            <span id="rating">🔥4.3</span>
+            <span id="rating" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-bold text-amber-700">
+              🔥4.3
+            </span>
           </div>
+
+          {/* Modernized Shopping Cart Button */}
           <button
-            className="bg-zinc-100 p-1 rounded-full absolute -right-1 -bottom-1 cursor-pointer"
+            className={`relative z-10 p-2 rounded-xl cursor-pointer border transition-all duration-200 active:scale-95 shadow-sm
+              ${inCart 
+                ? "bg-zinc-900 border-zinc-900 text-white shadow-zinc-900/10" 
+                : "bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300"
+              }`}
             onClick={addCart}
           >
             {inCart ? (
-              <ShoppingCart fill="black" />
+              <ShoppingCart fill="currentColor" size={18} />
             ) : (
-              <ShoppingCart strokeWidth={1.3} />
+              <ShoppingCart strokeWidth={1.8} size={18} />
             )}
           </button>
         </div>
       </div>
-    </Link>
-  );
+    </div>
+  </Link>
+);
 };
 
 export default HorizontalFC;

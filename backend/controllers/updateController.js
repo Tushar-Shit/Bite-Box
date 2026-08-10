@@ -1,7 +1,7 @@
 import Users from "../models/user";
 import Cart from "../models/cart";
 import FoodItem from "../models/foodItem";
-
+import Category from "../models/categories";
 
 
 //gives all favourite items
@@ -153,7 +153,7 @@ export const addAndDelete = async (req, res) => {
 
 export const updateCart = async (req, res) => {
     const { foodId, originalPrice, command } = req.body;
-
+    console.log(foodId, originalPrice, command);
     if (!foodId || (command !== "increase" && command !== "decrease")) {
         return res.status(400).json({
             code: "failed",
@@ -194,3 +194,134 @@ export const updateCart = async (req, res) => {
         message: "Item updated",
     })
 }
+
+
+//search mechanism
+export const searchFood = async (req, res) => {
+    const { text } = req.params;
+
+    const keywords = text
+        .trim()
+        .split(",")
+        .map(keyword => keyword.trim())
+        .filter(Boolean);
+
+    if (keywords.length === 0) {
+        return res.status(400).json({
+            code: "failed",
+            message: "Search text is required."
+        });
+    }
+
+    const conditions = keywords.flatMap(keyword => [
+        {
+            name: {
+                $regex: keyword,
+                $options: "i"
+            }
+        },
+        {
+            tag: {
+                $regex: keyword,
+                $options: "i"
+            }
+        },
+
+    ]);
+
+    const foods = await FoodItem.aggregate([
+        // Find foods that match at least one keyword
+        {
+            $match: {
+                $or: conditions
+            }
+        },
+
+        // Calculate priority score
+        {
+            $addFields: {
+                score: {
+                    $sum: keywords.map(keyword => ({
+                        $add: [
+                            // Exact name match
+                            {
+                                $cond: [
+                                    {
+                                        $regexMatch: {
+                                            input: "$name",
+                                            regex: `^${keyword}$`,
+                                            options: "i"
+                                        }
+                                    },
+                                    100,
+                                    0
+                                ]
+                            },
+
+                            // Name starts with keyword
+                            {
+                                $cond: [
+                                    {
+                                        $regexMatch: {
+                                            input: "$name",
+                                            regex: `^${keyword}`,
+                                            options: "i"
+                                        }
+                                    },
+                                    70,
+                                    0
+                                ]
+                            },
+
+                            // Name contains keyword
+                            {
+                                $cond: [
+                                    {
+                                        $regexMatch: {
+                                            input: "$name",
+                                            regex: keyword,
+                                            options: "i"
+                                        }
+                                    },
+                                    50,
+                                    0
+                                ]
+                            },
+
+                            // Tag contains keyword
+                            {
+                                $cond: [
+                                    {
+                                        $regexMatch: {
+                                            input: "$tag",
+                                            regex: keyword,
+                                            options: "i"
+                                        }
+                                    },
+                                    30,
+                                    0
+                                ]
+                            },
+                        ]
+                    }))
+                }
+            }
+        },
+
+        // Highest score first
+        {
+            $sort: {
+                score: -1
+            }
+        }
+    ]);
+
+    if (foods.length === 0) {
+        return res.status(404).json({
+            code: "failed",
+            message: "No food available with this name."
+        });
+    }
+
+    return res.status(200).json({ foods });
+};

@@ -4,6 +4,7 @@ import CustomNav from "../CategoryComponents/CustomNav";
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import FoodLoader from "../components/Loader";
+import BottomBar from "../components/BottomBar";
 // Support component
 const KeyValue = ({ keyName, value }) => {
   return (
@@ -157,124 +158,206 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="fixed inset-0 h-dvh flex flex-col bg-zinc-50/50 antialiased selection:bg-amber-100 z-0">
       <Helmet>
         <title>BiteBox | Your Profile</title>
       </Helmet>
 
+      {/* Header Navigation */}
       <CustomNav text="Your Profile" />
-      {loader ? (
-        <FoodLoader />
-      ) : (
-        <>
-          <div className="mt-5 flex items-center justify-center">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHCBu2asBmYHBPRvht-u5d_alNH19z7VhL-w&s"
-              alt="Profile"
-              className="h-[10vh] w-[10vh] rounded-full"
-            />
+
+      {/* Scrollable Content Container */}
+      <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none pb-24">
+        {loader ? (
+          <div className="h-64 flex items-center justify-center">
+            <FoodLoader />
           </div>
-
-          <div className="flex flex-col justify-center items-center">
-            <p className="text-xl font-bold">{user.username}</p>
-            <p className="text-md text-zinc-500">{user.email}</p>
-            <p className="text-sm text-zinc-400">Joined {joinDate}</p>
-          </div>
-          {edit ? (
-            <form
-              onSubmit={handleSubmit}
-              className="w-[95%] max-w-3xl mx-auto mt-5 p-5 bg-zinc-200 rounded-lg shadow flex flex-col gap-4"
-            >
-              <div>
-                <label className="font-semibold">Full Name</label>
-                <input
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="w-full mt-1 border rounded-md p-2 bg-white outline-none"
+        ) : (
+          <>
+            {/* Header Hero Section: Profile Card Overview */}
+            <div className="w-full bg-white border-b border-zinc-100 py-6 px-4 shadow-[0_2px_12px_rgba(0,0,0,0.01)] flex flex-col items-center justify-center text-center z-0">
+              {/* High-visibility Ring Enclosed Avatar */}
+              <div className="relative z-0 group">
+                <div className="absolute inset-0 bg-linear-to-tr from-amber-500 to-orange-400 rounded-full blur-[2px] opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <img
+                  src={
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHCBu2asBmYHBPRvht-u5d_alNH19z7VhL-w&s"
+                  }
+                  alt="Profile"
+                  className="relative z-0 h-24 w-24 rounded-full object-cover border-4 border-white shadow-md transition-transform duration-500 group-hover:scale-[1.02]"
                 />
               </div>
 
-              <div>
-                <label className="font-semibold">Email</label>
-                <input
-                  value={formData.email}
-                  disabled
-                  className="w-full mt-1 border rounded-md p-2 bg-zinc-100 text-zinc-500 cursor-not-allowed"
-                />
+              {/* Meta Typography Profile Details */}
+              <div className="mt-3 space-y-0.5 z-0">
+                <p className="text-xl font-extrabold text-zinc-900 tracking-tight">
+                  {user.username}
+                </p>
+                <p className="text-sm font-medium text-zinc-500 flex items-center justify-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  {user.email}
+                </p>
+                <p className="inline-flex items-center gap-1 mt-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-100/40">
+                  Joined {joinDate}
+                </p>
               </div>
+            </div>
 
-              <div>
-                <label className="font-semibold">Mobile Number</label>
-                <input
-                  name="mobile"
-                  value={formData.mobile}
-                  onChange={handleChange}
-                  className="w-full mt-1 border rounded-md p-2 bg-white outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="font-semibold">Address 1</label>
-                <input
-                  name="address1"
-                  value={formData.address1}
-                  onChange={handleChange}
-                  className="w-full mt-1 border rounded-md p-2 bg-white outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="font-semibold">Address 2</label>
-                <textarea
-                  rows={3}
-                  name="address2"
-                  value={formData.address2}
-                  onChange={handleChange}
-                  className="w-full mt-1 border rounded-md p-2 bg-white outline-none resize-none"
-                />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="w-full sm:w-36 h-10 rounded-lg bg-zinc-500 text-white hover:bg-zinc-600 transition"
+            {/* Core Dynamic Workflow Layout Container */}
+            <div className="w-[92%] max-w-2xl mx-auto mt-5 relative z-0">
+              {edit ? (
+                /* ==================== FORM EDITING STATE ==================== */
+                <form
+                  onSubmit={handleSubmit}
+                  className="p-5 sm:p-6 bg-white border border-zinc-100 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col gap-4 z-0"
                 >
-                  Cancel
-                </button>
+                  {/* Full Name Field Wrapper */}
+                  <div className="relative z-0">
+                    <label className="text-xs font-bold text-zinc-700 tracking-wide uppercase">
+                      Full Name
+                    </label>
+                    <div className="relative mt-1 z-0">
+                      <input
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        className="w-full text-sm text-zinc-800 font-medium border border-zinc-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 rounded-xl p-2.5 px-3.5 bg-white outline-none transition-all duration-150"
+                        placeholder="Enter full name"
+                      />
+                    </div>
+                  </div>
 
-                <button
-                  type="submit"
-                  className="w-full sm:w-36 h-10 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          ) : (
-            <>
-              <div className="w-[95%] max-w-3xl mx-auto mt-5 p-4 sm:p-5 md:p-6 bg-zinc-200 rounded-lg shadow flex flex-col gap-3">
-                <KeyValue keyName="Full Name" value={user.username} />
-                <KeyValue keyName="Email" value={user.email} />
-                <KeyValue keyName="Mobile No." value={user.mobile || "NIL"} />
-                <KeyValue keyName="Address 1" value={user.address1 || "NIL"} />
-                <KeyValue keyName="Address 2" value={user.address2 || "NIL"} />
+                  {/* Disabled Email Field Wrapper */}
+                  <div className="relative z-0">
+                    <label className="text-xs font-bold text-zinc-400 tracking-wide uppercase">
+                      Email Address
+                    </label>
+                    <div className="relative mt-1 z-0">
+                      <input
+                        value={formData.email}
+                        disabled
+                        className="w-full text-sm text-zinc-400 font-medium border border-zinc-200/60 rounded-xl p-2.5 px-3.5 bg-zinc-50/80 cursor-not-allowed select-none"
+                      />
+                    </div>
+                  </div>
 
-                <div className="flex justify-center pt-2">
-                  <button
-                    onClick={() => setEdit(true)}
-                    className="w-full sm:w-48 md:w-52 h-10 flex items-center justify-center gap-2 bg-orange-500 hover:bg-red-600 transition-colors rounded-lg text-white cursor-pointer"
-                  >
-                    <SquarePen size={16} />
-                    Edit
-                  </button>
+                  {/* Mobile Number Field Wrapper */}
+                  <div className="relative z-0">
+                    <label className="text-xs font-bold text-zinc-700 tracking-wide uppercase">
+                      Mobile Number
+                    </label>
+                    <div className="relative mt-1 z-0">
+                      <input
+                        name="mobile"
+                        value={formData.mobile}
+                        onChange={handleChange}
+                        className="w-full text-sm text-zinc-800 font-medium border border-zinc-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 rounded-xl p-2.5 px-3.5 bg-white outline-none transition-all duration-150"
+                        placeholder="Enter mobile number"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Address 1 Field Wrapper */}
+                  <div className="relative z-0">
+                    <label className="text-xs font-bold text-zinc-700 tracking-wide uppercase">
+                      Primary Address (Line 1)
+                    </label>
+                    <div className="relative mt-1 z-0">
+                      <input
+                        name="address1"
+                        value={formData.address1}
+                        onChange={handleChange}
+                        className="w-full text-sm text-zinc-800 font-medium border border-zinc-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 rounded-xl p-2.5 px-3.5 bg-white outline-none transition-all duration-150"
+                        placeholder="Street name, building info"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Address 2 Field Wrapper */}
+                  <div className="relative z-0">
+                    <label className="text-xs font-bold text-zinc-700 tracking-wide uppercase">
+                      Secondary Address (Line 2)
+                    </label>
+                    <div className="relative mt-1 z-0">
+                      <textarea
+                        rows={3}
+                        name="address2"
+                        value={formData.address2}
+                        onChange={handleChange}
+                        className="w-full text-sm text-zinc-800 font-medium border border-zinc-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/10 rounded-xl p-2.5 px-3.5 bg-white outline-none resize-none transition-all duration-150"
+                        placeholder="Locality, landmarks, city"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Interaction Controls */}
+                  <div className="flex items-center gap-3 pt-2 z-0">
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="flex-1 h-11 text-sm font-bold rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition active:scale-[0.98] cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="flex-1 h-11 text-sm font-bold rounded-xl bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-sm shadow-orange-500/10 transition active:scale-[0.98] cursor-pointer"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* ==================== DEFAULT READ-ONLY STATE ==================== */
+                <div className="p-5 sm:p-6 bg-white border border-zinc-100 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col gap-4 z-0">
+                  {/* Information Row Segment Grid list */}
+                  <div className="divide-y divide-zinc-100/80 space-y-3.5 z-0">
+                    <div className="pt-0">
+                      <KeyValue keyName="Full Name" value={user.username} />
+                    </div>
+                    <div className="pt-3.5">
+                      <KeyValue keyName="Email Address" value={user.email} />
+                    </div>
+                    <div className="pt-3.5">
+                      <KeyValue
+                        keyName="Mobile No."
+                        value={user.mobile || "NIL"}
+                      />
+                    </div>
+                    <div className="pt-3.5">
+                      <KeyValue
+                        keyName="Address 1"
+                        value={user.address1 || "NIL"}
+                      />
+                    </div>
+                    <div className="pt-3.5">
+                      <KeyValue
+                        keyName="Address 2"
+                        value={user.address2 || "NIL"}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Edit State Activator Button */}
+                  <div className="flex justify-center pt-4 border-t border-zinc-100 z-0">
+                    <button
+                      onClick={() => setEdit(true)}
+                      className="w-full sm:w-48 h-11 flex items-center justify-center gap-2 bg-zinc-950 hover:bg-amber-500 text-white hover:text-white transition-all duration-200 rounded-xl text-sm font-bold cursor-pointer active:scale-95 shadow-md shadow-zinc-950/5 hover:shadow-amber-500/10"
+                    >
+                      <SquarePen size={15} strokeWidth={2.5} />
+                      Edit Profile
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
-        </>
-      )}
+              )}
+            </div>
+          </>
+        )}
+      </main>
+
+      {/* Bottom Sticky Action Tab-bar */}
+      <BottomBar />
     </div>
   );
 };

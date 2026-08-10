@@ -81,32 +81,18 @@ const Cart = () => {
     setRefresh(!refresh);
   }
   return (
-    <div className="h-screen w-full relative flex flex-col">
+    <div className="fixed inset-0 h-dvh flex flex-col">
       <Helmet>
         <title>BiteBox | Your cart where every item with minimum charges</title>
       </Helmet>
-
       <CustomNav text="My Cart" />
-
       {msg && <ShortMsg message={msg} />}
-
       {loader ? (
         <Loader />
       ) : cartItems.length > 0 ? (
         <main className="flex-1 flex flex-col overflow-y-auto scrollbar-none md:flex-row md:justify-center md:gap-4 md:px-6 md:py-5 md:overflow-hidden">
           {/* Cart Items */}
-          <div
-            className="
-    w-full
-    lg:max-w-140
-    px-2 py-3
-    flex flex-col gap-4
-    md:flex-1
-    md:max-w-3xl
-    md:overflow-y-auto
-    md:scrollbar-none
-  "
-          >
+          <div className="w-full lg:max-w-140 px-2 py-3 flex flex-col gap-4 md:flex-1 md:max-w-3xl md:overflow-y-auto md:scrollbar-none">
             {cartItems.map((item) =>
               loggedin ? (
                 <CartCard
@@ -152,15 +138,9 @@ const Cart = () => {
             <div className="flex-1 overflow-y-auto scrollbar-none space-y-3">
               {cartItems.map((item) =>
                 loggedin ? (
-                  <SummaryDetails
-                    name={item.foodId.name}
-                    price={item.price }
-                  />
+                  <SummaryDetails name={item.foodId.name} price={item.price} />
                 ) : (
-                  <SummaryDetails
-                    name={item.name}
-                    price={item.price}
-                  />
+                  <SummaryDetails name={item.name} price={item.price} />
                 ),
               )}
             </div>
@@ -197,7 +177,6 @@ const Cart = () => {
       ) : (
         <Nodata text1={response.quick} text2={response.message} />
       )}
-
       <BottomBar />
     </div>
   );

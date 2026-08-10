@@ -91,49 +91,69 @@ const SquareFC = ({
     }
   };
 
-  return (
-    <Link
-      to={`/meal/${id}`}
-      className="shrink-0 w-[45%] max-w-47 h-55 shadow-[2px_2px_5px_rgba(0,0,0,0.4)] rounded-lg relative"
-    >
-      <div className="bg-zinc-50 rounded-full p-1 w-7 h-7 absolute right-1 top-1 flex items-center">
-        <Heartclick onClick={handle} isFav={fav} />
+return (
+  <Link
+    to={`/meal/${id}`}
+    className="group relative shrink-0 w-[45%] max-w-47 h-56 flex flex-col justify-between bg-white border border-zinc-100 shadow-[0_2px_8px_rgba(0,0,0,0.16)] hover:shadow-[0_3px_12px_rgba(0,0,0,0.40)] hover:-translate-y-1 rounded-2xl overflow-hidden transition-all duration-300 ease-out z-0"
+  >
+    {/* Floating Favorite Button - Kept Top Right */}
+    <div className="absolute right-2 top-2 z-10 bg-white/80 backdrop-blur-md rounded-xl p-1.5 w-8 h-8 flex items-center justify-center shadow-sm border border-zinc-200/40 transform active:scale-90 transition-transform">
+      <Heartclick onClick={handle} isFav={fav} />
+    </div>
+
+    {/* Food Image Container */}
+    <div className="h-[55%] overflow-hidden bg-zinc-50 relative z-0">
+      <img
+        src={image}
+        alt={name}
+        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+      />
+    </div>
+
+    {/* Food Details Content - Zero vertical padding/margins */}
+    <div className="flex flex-col flex-1 px-3 py-0 justify-around relative z-0">
+      {/* Title Section - Scaled up text */}
+      <div className="z-0 p-0 m-0">
+        <p className="font-bold text-base text-zinc-900 tracking-tight truncate group-hover:text-amber-600 transition-colors duration-200">
+          {name}
+        </p>
       </div>
 
-      <div className="h-[60%]">
-        <img
-          src={image}
-          alt={name}
-          className="h-full w-full object-cover rounded-t-md"
-        />
-      </div>
+      {/* Portion Info & Status Metrics Row - Zero vertical spacing */}
+      <div className="w-full flex items-center justify-between gap-1.5 p-0 m-0 relative z-0">
+        {/* Scaled up Quantity Display */}
+        <p className="text-xs text-zinc-600 font-semibold tracking-wide whitespace-nowrap">
+          <span className="font-extrabold text-zinc-800">{servingQuantity}</span>{" "}
+          <span className="text-zinc-700">{unit}</span>
+        </p>
 
-      <div className="flex flex-col p-2 pl-3 text-md">
-        <p className="font-bold truncate">{name}</p>
-
-        <div className="w-full flex items-center justify-between pr-2">
-          <p>
-            {servingQuantity} {unit}
+        {/* Scaled up Dynamic Status Pill */}
+        {available ? (
+          <p className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100/30 whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Available</span>
           </p>
-
-          {available ? (
-            <p className="text-green-700 text-sm font-bold">
-              <span>Available</span>
-            </p>
-          ) : (
-            <p className="text-red-700 text-sm font-bold">
-              <span>Unavailable</span>
-            </p>
-          )}
-        </div>
-
-        <div className="flex justify-between">
-          <p className="font-bold">₹{price}</p>
-          <span className="mr-3">🔥 4.3</span>
-        </div>
+        ) : (
+          <p className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-xs font-bold bg-rose-50 text-rose-500 border border-rose-100/30 whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+            <span>Unavailable</span>
+          </p>
+        )}
       </div>
-    </Link>
-  );
+
+      {/* Financials & Rating Footer - Scaled up text, zero vertical padding */}
+      <div className="flex justify-between items-center p-0 m-0 border-t border-zinc-100/80 z-0">
+        <p className="text-base font-extrabold text-zinc-900 tracking-tight">₹{price}</p>
+        <span className="inline-flex items-center gap-0.5 text-xs font-bold text-amber-700 bg-amber-50/60 px-1.5 py-0.5 rounded-md border border-amber-100/30">
+          🔥 4.3
+        </span>
+      </div>
+    </div>
+  </Link>
+);
+
+
+
 };
 
 export default SquareFC;

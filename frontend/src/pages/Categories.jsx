@@ -25,22 +25,24 @@ const Categories = () => {
     getData();
   }, []);
   return (
-    <div className="h-screen w-full">
+    <div className="fixed inset-0 h-dvh flex flex-col">
       <Helmet>
         <title>BiteBox | Categories</title>
       </Helmet>
       <CustomNav text="Categories" path="/" />
       {loaderState && <Loader />}
-      <div className="flex flex-wrap justify-center gap-5 my-5 xl:py-15 lg:items-center">
-        {allData.map((category) => (
-          <CategoryCards
-            key={category._id} // MongoDB unique ID required for React loops
-            text={category.name}
-            image={category.image}
-            items={category.items}
-          />
-        ))}
-      </div>
+      <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
+        <div className="flex flex-wrap justify-center gap-5 my-5 xl:py-15 lg:items-center">
+          {allData.map((category) => (
+            <CategoryCards
+              key={category._id} // MongoDB unique ID required for React loops
+              text={category.name}
+              image={category.image}
+              items={category.items}
+            />
+          ))}
+        </div>
+      </main>
       <BottomBar />
     </div>
   );

@@ -1,5 +1,6 @@
 import { Minus, Plus, Trash2, Star } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
 import AllCount from "../context/allCount";
 const CartCard = ({
   id,
@@ -17,7 +18,9 @@ const CartCard = ({
     useContext(AllCount);
 
   //master function for add and delete in both session, DB
-  const masterFunc = async (commandVal) => {
+  const masterFunc = async (e, commandVal) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!id) return;
 
     if (!user || !user.userName) {
@@ -28,7 +31,8 @@ const CartCard = ({
           (existItem.quantity++, satisfymessage("item increased"));
 
         commandVal === "decrease" &&
-          (existItem.quantity--, satisfymessage("item decreased"));
+          ((existItem.quantity = Math.max(1, existItem.quantity - 1)),
+          satisfymessage("item decreased"));
 
         commandVal === "add/dlt" &&
           ((sessionCart = sessionCart.filter((item) => item._id !== id)),
@@ -91,79 +95,131 @@ const CartCard = ({
   };
 
   return (
-    <div className="w-full h-35 p-2 bg-zinc-200 flex items-center justify-between gap-1 rounded-lg">
-      <div className="h-full w-2/5">
-        <img src={image} alt="" className="object-cover h-full w-full" />
+    <Link
+      to={`/meal/${id}`}
+      className="group relative w-full h-40 p-3 bg-white hover:bg-zinc-50/40 border border-zinc-100 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.07)] flex items-center justify-between gap-4 rounded-2xl transition-all duration-300 ease-out z-0"
+    >
+      {/* Left Side: Food Image Container (Expanded by 5% to 40% to fill void space) */}
+      <div className="h-full w-[40%] shrink-0 overflow-hidden rounded-xl bg-zinc-50 relative z-0">
+        <img
+          src={image}
+          alt={name}
+          className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-500 ease-out"
+        />
       </div>
-      <div className=" w-3/5 h-full flex flex-col justify-center px-2">
-        <div className="w-9/10 text-lg font-bold truncate">{name}</div>
-        <div
-          id="serve-quantity-availability"
-          className="min-w-35 w-3/6 flex items-center justify-between"
-        >
-          <p id="serve-unit">
-            <span id="food-serve-quantity">{servingQuantity}</span>{" "}
-            <span id="food-unit">{unit}</span>
-          </p>
-          {available ? (
-            <span
-              id="food-availbility"
-              className="text-sm font-bold text-green-700"
+
+      {/* Right Side: Food Details & Controls Container */}
+      <div className="flex-1 h-full flex flex-col justify-between py-1 relative z-0">
+        {/* Top Section: Slightly Enhanced Title & Status Attributes */}
+        <div className="z-0">
+          <div className="w-11/12 text-[17px] font-bold text-zinc-900 tracking-tight leading-snug truncate group-hover:text-amber-600 transition-colors duration-200">
+            {name}
+          </div>
+
+          {/* Quantity and Availability Metrics Row (Completely flat bg-less items) */}
+          <div
+            id="serve-quantity-availability"
+            className="flex items-center gap-2.5 mt-1 relative z-0"
+          >
+            <p
+              id="serve-unit"
+              className="text-[11px] text-zinc-500 font-medium tracking-wide"
             >
-              <span className="text-lg mr-0.5">&#183;</span>Available
-            </span>
-          ) : (
-            <span
-              id="food-availbility"
-              className="text-sm font-bold text-red-700"
-            >
-              <span className="text-lg mr-0.5">&#183;</span>Unavailable
-            </span>
-          )}
-        </div>
-        <div className="flex gap-3 items-center">
-          <div className="text-md font-bold">₹{defaultPrice}</div>
-          <div className="flex gap-0.5">
-            <Star size={12} fill="black" />
-            <Star size={12} fill="black" />
-            <Star size={12} fill="black" />
-            <Star size={12} fill="black" />
-            <Star size={12} />
+              Portion:{" "}
+              <span
+                id="food-serve-quantity"
+                className="font-bold text-zinc-800"
+              >
+                {servingQuantity}
+              </span>{" "}
+              <span id="food-unit" className="text-zinc-600">
+                {unit}
+              </span>
+            </p>
+
+            <span className="text-zinc-300 text-[10px]">|</span>
+
+            {available ? (
+              <span
+                id="food-availbility"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Available
+              </span>
+            ) : (
+              <span
+                id="food-availbility"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-500"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                Unavailable
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="mt-1 flex justify-around items-center ">
-          <div className="flex justify-evenly gap-2 items-center bg-zinc-100 rounded-2xl p-1">
-            <button
-              onClick={() => {
-                if (foodUnit <= 1) return;
-                masterFunc("decrease");
-              }}
-              className=" text-red-700 rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
-            >
-              <Minus size={18} />
-            </button>
-            <div className="font-semibold mx-1 w-4 text-center">{foodUnit}</div>
-            <button
-              onClick={() => {
-                masterFunc("increase");
-              }}
-              className="text-green-700 rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
-            >
-              <Plus size={18} />
-            </button>
+        {/* Middle Section: Price & Stars Kept Ultra-Close (Left Aligned Flow) */}
+        <div className="flex items-center gap-2.5 z-0">
+          <div className="text-lg font-extrabold text-zinc-900 tracking-tight">
+            ₹{defaultPrice}
           </div>
-          <div
-            className="flex items-center text-sm font-medium bg-zinc-800 text-white p-1 px-2 rounded-lg cursor-pointer select-none"
-            onClick={() => masterFunc("add/dlt")}
-          >
-            <Trash2 size={15} />
-            Delete
+          <div className="flex gap-0 text-amber-400 bg-amber-50/50 px-1 py-0.5 rounded-md border border-amber-100/30">
+            <Star size={11} fill="currentColor" stroke="currentColor" />
+            <Star size={11} fill="currentColor" stroke="currentColor" />
+            <Star size={11} fill="currentColor" stroke="currentColor" />
+            <Star size={11} fill="currentColor" stroke="currentColor" />
+            <Star size={11} stroke="currentColor" className="text-zinc-200" />
           </div>
         </div>
-        {/* <div className="border mt-0.5"></div> */}
+
+        {/* Bottom Section: Clean Controller Panel & Strong Delete Button */}
+        <div className="flex items-center justify-between gap-2 relative z-0">
+          {/* Modernized Borderless Controller Component */}
+          <div className="flex items-center p-0.5 z-0">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (foodUnit <= 1) return;
+                masterFunc(e, "decrease");
+              }}
+              className="w-7 h-7 bg-zinc-100 hover:bg-rose-50 hover:text-rose-600 text-zinc-600 rounded-lg border-none cursor-pointer flex items-center justify-center transition-all duration-150 active:scale-90"
+            >
+              <Minus size={12} strokeWidth={3} />
+            </button>
+
+            <div className="font-bold text-sm text-zinc-900 mx-2.5 min-w-4 text-center tabular-nums">
+              {foodUnit}
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                masterFunc(e, "increase");
+              }}
+              className="w-7 h-7 bg-zinc-100 hover:bg-emerald-50 hover:text-emerald-600 text-zinc-600 rounded-lg border-none cursor-pointer flex items-center justify-center transition-all duration-150 active:scale-90"
+            >
+              <Plus size={12} strokeWidth={3} />
+            </button>
+          </div>
+
+          {/* Action Button: Strong Text Delete Trigger */}
+          <button
+            className="inline-flex items-center gap-1.5 text-xs font-black bg-rose-50 hover:bg-rose-100/80 text-rose-700 p-2 px-3.5 rounded-xl cursor-pointer select-none transition-all duration-200 border border-rose-200/30 active:scale-95 shadow-sm z-0"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              masterFunc(e, "add/dlt");
+            }}
+          >
+            <Trash2 size={13} strokeWidth={2.5} />
+            Delete
+          </button>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

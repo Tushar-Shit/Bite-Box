@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import BottomBar from "../components/BottomBar";
-import Sidebar from "../components/Sidebar";
+// import Sidebar from "../components/Sidebar";
 import MessageBar from "../components/MessageBar";
 
 // different types of cards
@@ -20,7 +20,7 @@ import { SeeMore, Heartclick } from "../atomic/atomic";
 //Hooks, navigation, other essential components
 import { useEffect, useState, useContext } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import AllCount from "../context/allCount";
 
 //images for showing categories
@@ -113,10 +113,6 @@ const Home = () => {
     }
   }, [user, favCount]);
 
-  const [showSide, setShowSide] = useState(false); //sidebar logic
-  const showSideBar = () => {
-    setShowSide(!showSide);
-  };
 
   //satisfaction messages
   const location = useLocation();
@@ -151,23 +147,23 @@ const Home = () => {
   }
 
   return (
-    <div className={`h-screen flex flex-col ${loader && "overflow-y-hidden"} `}>
+    <div className="fixed inset-0 h-dvh flex flex-col">
       {/*  page title */}
       <Helmet>
         <title>BiteBox | The Home of Deliciousness</title>
       </Helmet>
 
       {/* navbar */}
-      <Navbar onClick={showSideBar} />
+      <Navbar onClick={() => navigate("/sidebar")} />
 
       {message && <MessageBar message={message} />}
       {msg && <ShortMsg message={msg} />}
-      {showSide && <Sidebar onClick={showSideBar} showSide={showSide} />}
+
 
       {loader ? (
         <Loader />
       ) : (
-        <main className="flex-1 overflow-y-auto scrollbar-none">
+        <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
           <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
             Are you Hungry
             {/* <Utensils strokeWidth={1} className="w-5" /> */}
@@ -175,40 +171,6 @@ const Home = () => {
           <h1 className="ml-3 my-0 font-extrabold text-xl">
             What meal do you Want?
           </h1>
-
-          {/* hero section  */}
-          {/* <section className="w-full overflow-hidden py-3 px-3">
-            <div
-              className="flex gap-5 transition-transform duration-700 ease-in-out"
-              style={{
-                transform: `translateX(calc(-${index} * (94vw + 20px)))`,
-              }}
-            >
-              {extendedFoods.map((food, i) => (
-                <Link
-                  to={food.link}
-                  key={`${food.id}-${i}`}
-                  className="relative min-w-[94vw] h-50 overflow-hidden rounded-2xl shadow-lg group shrink-0"
-                >
-                  <img
-                    src={food.image}
-                    alt={food.text || "Food"}
-                    className="w-full h-full  object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-
-                  {food.text && (
-                    <div className="absolute inset-0 bg-black/30 flex items-end">
-                      <div className="w-full p-4">
-                        <h2 className="text-white text-xl font-bold">
-                          {food.text}
-                        </h2>
-                      </div>
-                    </div>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </section>*/}
 
           <HeroImage />
 
@@ -355,6 +317,8 @@ const Home = () => {
           </section>
         </main>
       )}
+
+      <Outlet />
       <BottomBar />
     </div>
   );
