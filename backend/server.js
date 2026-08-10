@@ -85,6 +85,10 @@ app.get("/meal/:id", async (req, res) => {
   res.json({ foodItem, reviews });
 })
 
+//for keep alive the backend in render
+app.get("/health", async (req, res) => {
+  return res.status(200).json({ code: "success", message: "Active successfull." });
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
