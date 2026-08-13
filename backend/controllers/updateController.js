@@ -56,9 +56,7 @@ export const getCart = async (req, res) => {
 
 
 export const addAndDelete = async (req, res) => {
-    try {
         const { data, command } = req.body;
-
         //validate data and command
         if ((!Array.isArray(data) || !data.length) || (command !== "SCA" && command !== "add/dlt")) {
             return res.status(400).json({
@@ -93,7 +91,7 @@ export const addAndDelete = async (req, res) => {
             price: quantityMap.get(food._id.toString()) * food.price,
             available: availableMap.get(food._id.toString()),
         }));
-
+        
         //check cart's existance then check each item's existance then add or delete
         const existingCart = await Cart.findOne({ userId: req.user });
         if (existingCart) {
@@ -114,15 +112,23 @@ export const addAndDelete = async (req, res) => {
                         existingCart.items.push(cartItem);
 
                 } else if (command === "add/dlt") {
-                    if (existItem)
-                        existingCart.items.pull({ foodId: cartItem.foodId });
-                    else
+
+                    if (existItem) {
+
+                        const index = existingCart.items.findIndex(
+                            item => item.foodId.toString() === cartItem.foodId.toString()
+                        );
+
+                        existingCart.items.splice(index, 1);
+                    } else {
+
                         existingCart.items.push(cartItem);
+                    }
+
                 }
             }
 
             await existingCart.save();
-
             return res.status(200).json({
                 code: "success",
                 message: command === "SCA"
@@ -132,23 +138,19 @@ export const addAndDelete = async (req, res) => {
         }
         else {
             //run if cart not exist, for very new users
-            await Cart.create({
+            const cart = await Cart.create({
                 userId: req.user,
                 items: cartItems
             });
+            // console.log(any);
+            // await Users.findByIdAndUpdate(req.user, {
+            //     cart: cart._id
+            // });
             return res.status(200).json({
                 code: "success",
                 message: "Your cart is created"
             });
         }
-    } catch (e) {
-        console.error(e);
-        return res.status(500).json({
-            code: "failed",
-            message: "Internal Server Error"
-        });
-    }
-
 }
 
 export const updateCart = async (req, res) => {

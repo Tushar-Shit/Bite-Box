@@ -16,6 +16,10 @@ const cartItem = new Schema({
     price: {
         type: Number,
         required: true,
+    },
+    available: {
+        type: Boolean,
+        required: true,
     }
 }, {
     _id: false,
@@ -25,7 +29,7 @@ const cartSchema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         ref: "user",
-        // required: true,
+        required: true,
         unique: true,
     },
     items: [cartItem],

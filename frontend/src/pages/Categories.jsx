@@ -32,7 +32,7 @@ const Categories = () => {
       <CustomNav text="Categories" path="/" />
       {loaderState && <Loader />}
       <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
-        <div className="flex flex-wrap justify-center gap-5 my-5 xl:py-15 lg:items-center">
+        <div className="flex flex-wrap justify-center gap-5 px-5 my-5 xl:py-15 lg:items-center">
           {allData.map((category) => (
             <CategoryCards
               key={category._id} // MongoDB unique ID required for React loops

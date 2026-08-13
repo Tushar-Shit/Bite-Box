@@ -3,7 +3,7 @@ import AllCount from "../context/allCount";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import FailedMessage from "./FailedMessage";
-const ChangeEmail = ({heading}) => {
+const ChangeEmail = ({ heading }) => {
   const [newEmail, setnewEmail] = useState("");
   const [submit, setsubmit] = useState(false);
   const [messageBox, setMessageBox] = useState(false);
@@ -15,7 +15,7 @@ const ChangeEmail = ({heading}) => {
     contextEmail,
     setContextEmail,
     user,
-    userEmail
+    userEmail,
   } = useContext(AllCount);
 
   async function otpHandler(e) {
@@ -28,34 +28,37 @@ const ChangeEmail = ({heading}) => {
       setFailMsg("Empty field");
       return;
     }
-
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/user/email-change`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/email-change`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user.userName,
+            useremail: user.userEmail,
+            newemail: newEmail,
+          }),
         },
-        body: JSON.stringify({
-          username: user.userName,
-          useremail: user.userEmail,
-          newemail: newEmail,
-        }),
-      },
-    );
-    const data = await response.json();
-    if (data.code === "failed") {
-      setMessageBox(true);
-      setFailMsg(data.message);
-      return;
-    }
-    if (data.code === "success") {
-      setContextEmail(data.email);
-      setVerifyCode("EMAIL_CHANGE");
-      navigate("/verify-email", {
-        state: "ve",
-      });
+      );
+      const data = await response.json();
+      if (data.code === "failed") {
+        setMessageBox(true);
+        setFailMsg(data.message);
+        return;
+      }
+      if (data.code === "success") {
+        setContextEmail(data.email);
+        setVerifyCode("EMAIL_CHANGE");
+        navigate("/verify-email", {
+          state: "ve",
+        });
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
   function reset() {

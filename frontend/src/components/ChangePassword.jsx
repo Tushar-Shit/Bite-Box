@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import FailedMessage from "./FailedMessage";
 
 const ChangePassword = () => {
@@ -17,7 +16,6 @@ const ChangePassword = () => {
   const handleOnchange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  console.log(formData);
 
   //changing password function
   const handleChangePassword = async (e) => {
@@ -39,31 +37,37 @@ const ChangePassword = () => {
       setFailMessage("The new password do not match.");
       return;
     }
-    setInvalid(false);
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/user/password-change`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      setInvalid(false);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/password-change`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            currentPass: formData.currentPassword,
+            newPass: formData.newPassword,
+          }),
         },
-        credentials: "include",
-        body: JSON.stringify({
-          currentPass: formData.currentPassword,
-          newPass: formData.newPassword,
-        }),
-      },
-    );
-    const data = await response.json();
-    if (data.code === "failed") {
-      setInvalid(true);
-      setFailMessage(data.message);
-      return;
+      );
+      const data = await response.json();
+      if (data.code === "failed") {
+        setInvalid(true);
+        setFailMessage(data.message);
+        return;
+      }
+      sessionStorage.setItem(
+        "message",
+        "Password change successful please login again.",
+      );
+      window.location.href = "/";
+    } catch (err) {
+      console.log(err);
     }
-    sessionStorage.setItem("message", "Password change successful please login again.");
-    window.location.href = "/";
   };
-
   //reset variables
   const reset = () => {
     setInvalid(false);
@@ -147,11 +151,8 @@ const ChangePassword = () => {
             // disabled={}
             className={`w-full text-white py-3 rounded-lg 
               cursor-pointer bg-orange-600 hover:bg-red-700`}
-            // ${ ? "bg-gray-400 cursor-not-allowed" : "cursor-pointer bg-orange-600 hover:bg-red-700"}
-            // `}
           >
             Change Password
-            {/* { ? "Sending..." : "Send OTP"} */}
           </button>
           <Link
             to="/help"

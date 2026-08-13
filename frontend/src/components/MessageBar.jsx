@@ -9,7 +9,6 @@ const MessageBar = ({ message }) => {
 
     const timer = setTimeout(() => {
       setShow(false); // Hide the bar
-      // window.location.reload(); // Reload the browser page
     }, 2000);
 
     return () => clearTimeout(timer);

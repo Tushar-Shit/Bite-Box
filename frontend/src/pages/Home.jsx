@@ -37,7 +37,8 @@ const images = {
 
 //starting of home component
 const Home = () => {
-  const { user, setUser, favCount, setFavCount } = useContext(AllCount);
+  const { user, setUser, favCount, setFavCount, cartCount, setCartCount } =
+    useContext(AllCount);
   //loader state
   const [loader, setLoader] = useState(true);
 
@@ -49,7 +50,7 @@ const Home = () => {
   const [chefChoice, setChefChoice] = useState([]);
 
   const [favFoods, setFavFoods] = useState([]);
-
+  const [cartFoods, setCartFoods] = useState([]);
   //handle guest users
   const [guestFav, setGuestFav] = useState([]);
   const [guestCart, setGuestCart] = useState([]);
@@ -96,8 +97,8 @@ const Home = () => {
       setFavFoods(preFav);
       return;
     }
-    try {
-      async function getfavfood() {
+    async function getfavfood() {
+      try {
         const data = await fetch(
           `${import.meta.env.VITE_API_URL}/update/favourite`,
           {
@@ -106,13 +107,37 @@ const Home = () => {
         );
         const { favourites } = await data.json();
         setFavFoods(favourites);
+      } catch (err) {
+        console.log(err);
       }
-      getfavfood();
-    } catch (err) {
-      console.log(err);
     }
+    getfavfood();
   }, [user, favCount]);
 
+  useEffect(() => {
+    if (!user || !user.userName) {
+      const preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      console.log(preCart);
+      setCartFoods(preCart);
+      return;
+    }
+    async function getfavfood12() {
+      try {
+        const data = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/cart`,
+          {
+            credentials: "include",
+          },
+        );
+        const cartArray = await data.json();
+        if (cartArray.length >= 0) setCartFoods(cartArray);
+        else setCartFoods([]);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    getfavfood12();
+  }, [user, cartCount]);
 
   //satisfaction messages
   const location = useLocation();
@@ -158,7 +183,6 @@ const Home = () => {
 
       {message && <MessageBar message={message} />}
       {msg && <ShortMsg message={msg} />}
-
 
       {loader ? (
         <Loader />
@@ -232,6 +256,13 @@ const Home = () => {
                   price={item.price}
                   unit={item.unit}
                   isFav={favFoods.some((food) => food._id === item._id)}
+                  inCart={
+                    user.userName
+                      ? cartFoods.some(
+                          (cartFood) => cartFood.foodId._id === item._id,
+                        )
+                      : cartFoods.some((food) => food._id === item._id)
+                  }
                   available={item.available}
                   satisfymessage={satisfymessage}
                 />
@@ -309,6 +340,13 @@ const Home = () => {
                   price={item.price}
                   unit={item.unit}
                   isFav={favFoods.some((food) => food._id === item._id)}
+                  inCart={
+                    user.userName
+                      ? cartFoods.some(
+                          (cartFood) => cartFood.foodId._id === item._id,
+                        )
+                      : cartFoods.some((food) => food._id === item._id)
+                  }
                   available={item.available}
                   satisfymessage={satisfymessage}
                 />

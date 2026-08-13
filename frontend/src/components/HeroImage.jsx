@@ -90,28 +90,12 @@ const HeroImage = () => {
           <Link
             to={food.link}
             key={`${food.id}-${i}`}
-            className="
-              relative
-              min-w-[94vw]
-              h-50
-              overflow-hidden
-              rounded-2xl
-              shadow-lg
-              group
-              shrink-0
-            "
+            className="relative min-w-[94vw] h-50 overflow-hidden rounded-2xl shadow-lg group shrink-0"
           >
             <img
               src={food.image}
               alt={food.text || "Food"}
-              className="
-                w-full
-                h-full
-                object-cover
-                transition-transform
-                duration-500
-                group-hover:scale-105
-              "
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
             {food.text && (

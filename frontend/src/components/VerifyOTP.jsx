@@ -197,7 +197,6 @@ const VerifyOTP = () => {
             message: data.message,
           },
         });
-        // window.loaction.reload();
       }
     } catch (err) {
       console.log(err);

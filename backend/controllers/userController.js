@@ -38,7 +38,6 @@ export const updateProfile = async (req, res) => {
 
 //user email change otp send/resend
 export const emailChange = async (req, res) => {
-    try {
         const userId = req.user;
         const { newemail, username, useremail } = req.body;
 
@@ -83,19 +82,10 @@ export const emailChange = async (req, res) => {
             message: `OTP sent successfully to ${newemail}`,
             email: newemail,
         });
-    } catch (err) {
-        console.log(err);
-        return res.status(400).json({
-            code: "failed",
-            message: "Internal server error"
-        });
-    }
-
 }
 
 //user email change verify code and actual email change
 export const verifyCode = async (req, res) => {
-    try {
         const { OTP } = req.body;
         const userId = req.user;
         const email = req.email;
@@ -119,17 +109,11 @@ export const verifyCode = async (req, res) => {
             code: "success",
             message: "Email change successful",
         })
-    } catch (err) {
-        console.log(err);
-
-    }
 }
 
 //userpassword change
 export const passwordChange = async (req, res) => {
     const { currentPass, newPass } = req.body;
-    console.log(currentPass, newPass);
-    console.log(req.user);
     const userData = await Users.findById(req.user);
     if (!userData) {
         return res.status(404).json({

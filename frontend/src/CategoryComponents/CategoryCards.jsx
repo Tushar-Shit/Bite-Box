@@ -1,4 +1,3 @@
-import { Heartclick } from "../atomic/atomic";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 const CategoryCards = ({text,items,image}) => {

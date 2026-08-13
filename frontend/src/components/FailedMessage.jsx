@@ -1,5 +1,3 @@
-import React from "react";
-
 const FailedMessage = ({heading, message, reset}) => {
   return (
     <div className="fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center">

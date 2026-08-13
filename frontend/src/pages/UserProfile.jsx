@@ -87,7 +87,6 @@ const UserProfile = () => {
         console.log(err);
       }
     }
-
     getUser();
   }, []);
 

@@ -1,5 +1,3 @@
-import { ShoppingCart, Search, UserRound, Component } from "lucide-react";
-import { Heartclick } from "../atomic/atomic";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import AllCount from "../context/allCount";

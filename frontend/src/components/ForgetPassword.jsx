@@ -14,29 +14,33 @@ const ForgetPassword = () => {
   async function submitHandler(e) {
     e.preventDefault();
     setsubmit(true);
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/forget-password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/forget-password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: newEmail,
+          }),
         },
-        body: JSON.stringify({
-          email: newEmail,
-        }),
-      },
-    );
-    const data = await response.json();
-    if (data.code === "failed") {
-      setMessageBox(true);
-      setFailMsg(data.message);
-      return;
-    }
-    if (data.code === "success") {
-      setsubmit(false);
-      setMessageBox(true);
-      setFailMsg(data.message);
-      setSuccess(true);
+      );
+      const data = await response.json();
+      if (data.code === "failed") {
+        setMessageBox(true);
+        setFailMsg(data.message);
+        return;
+      }
+      if (data.code === "success") {
+        setsubmit(false);
+        setMessageBox(true);
+        setFailMsg(data.message);
+        setSuccess(true);
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 

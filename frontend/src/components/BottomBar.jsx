@@ -5,7 +5,6 @@ import {
   Heart,
   House,
   Blocks,
-  NotebookPen,
   ShoppingBag,
   ShoppingCart,
   Search,
@@ -194,7 +193,7 @@ const BottomActionBar = ({ onClick, price, state }) => {
           <ShoppingCart /> Add to Cart
         </div>
       )}
-      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer select-none">
+      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer">
         Buy at <span>₹{price}</span>
       </div>
     </div>

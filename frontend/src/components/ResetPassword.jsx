@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
-// import AllCount from "../context/allCount";
 import FailedMessage from "./FailedMessage";
 function ResetPassword() {
   const { token } = useParams();
@@ -26,7 +25,6 @@ function ResetPassword() {
   //login function
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setProcessing(true);
     if (formData.newPassword === "" || formData.conNewPassword === "") {
       setFailed(true);
       setMessage("Please fill out all the fields.");
@@ -36,31 +34,34 @@ function ResetPassword() {
       setMessage("Password not match");
       return;
     }
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/reset-password`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/reset-password`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: key,
+            newPass: formData.newPassword,
+          }),
         },
-        body: JSON.stringify({
-          token: key,
-          newPass: formData.newPassword,
-        }),
-      },
-    );
-    const data = await response.json();
-    if (data.code === "failed") {
-      setFailed(true);
-      setMessage(data.message);
-      return;
+      );
+      const data = await response.json();
+      if (data.code === "failed") {
+        setFailed(true);
+        setMessage(data.message);
+        return;
+      }
+      if (data.code === "success") {
+        setSuccess(true);
+        setFailed(true);
+        setMessage(data.message);
+      }
+    } catch (err) {
+      console.log(err);
     }
-    if (data.code === "success") {
-      setSuccess(true);
-      setFailed(true);
-      setMessage(data.message);
-    }
-   
   };
 
   function reset() {

@@ -1,7 +1,7 @@
 import { Minus, Plus, Trash2, Star } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
 import AllCount from "../context/allCount";
+import { Link } from "react-router-dom";
 const CartCard = ({
   id,
   image,
@@ -125,7 +125,6 @@ const CartCard = ({
               id="serve-unit"
               className="text-[11px] text-zinc-500 font-medium tracking-wide"
             >
-              Portion:{" "}
               <span
                 id="food-serve-quantity"
                 className="font-bold text-zinc-800"

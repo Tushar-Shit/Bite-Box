@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+//necessary components
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
@@ -22,15 +23,17 @@ import reviewRoute from "./routes/reviews.js";
 import userRoute from "./routes/user.js";
 import updateRoute from "./routes/update.js";
 
+//middleware
+import errorHandler from "./middleware/errorHandler.js";
+
 const app = express();
 const port = process.env.PORT || 7000;
 //Database connection
 connectDB();
-
 // middleware functions
 app.use(
   cors({
-    origin: ["http://10.23.245.131:5173",
+    origin: ["http://10.97.194.131:5173",
       "http://192.168.31.96:5173",
       "https://bite-box-weld.vercel.app"]
     , credentials: true,
@@ -44,11 +47,11 @@ app.use(cookieParser());
 // home route
 app.get("/", async (req, res) => {
   try {
-    const trendingFood = await FoodItem.find({ tag: "trending" });
-    const popularFood = await FoodItem.find({ tag: "popular" });
-    const recommendedFood = await FoodItem.find({ tag: "recommended" });
-    const bestSellerFood = await FoodItem.find({ tag: "bestseller" });
-    const chefChoiceFood = await FoodItem.find({ tag: "chefchoice" });
+    const trendingFood = await FoodItem.find({ tag: "trending" }).limit(5);
+    const popularFood = await FoodItem.find({ tag: "popular" }).limit(4);
+    const recommendedFood = await FoodItem.find({ tag: "recommended" }).limit(4);
+    const bestSellerFood = await FoodItem.find({ tag: "bestseller" }).limit(5);
+    const chefChoiceFood = await FoodItem.find({ tag: "chefchoice" }).limit(4);
 
     const everything = {
       trendingFood,
@@ -89,6 +92,8 @@ app.get("/meal/:id", async (req, res) => {
 app.get("/health", async (req, res) => {
   return res.status(200).json({ code: "success", message: "Active successfull." });
 })
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

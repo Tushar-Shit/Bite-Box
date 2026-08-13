@@ -39,10 +39,10 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "foodItem",
     },],
-    cart: [{
+    cart: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "foodItem",
-    },],
+      ref: "cart",
+    },
   },
 
   {

@@ -21,6 +21,7 @@ const Favorite = () => {
 
   //extract all favourite food items
   const [favouriteItems, setFavouriteItems] = useState([]);
+  const [cartFoods, setCartFoods] = useState([]);
   useEffect(() => {
     // Guest user favorite foods
     if (!user || !user.userName) {
@@ -31,37 +32,66 @@ const Favorite = () => {
     }
 
     const favdata = async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/update/favourite`,
-        {
-          credentials: "include",
-        },
-      );
-      const { favourites } = await response.json();
-      if (favourites.code === "NL") {
-        setResponse({
-          quick: favourites.quick,
-          message: favourites.message,
-        });
-        return;
-      }
-      if (favourites) {
-        setFavouriteItems(favourites);
-        setLoader(false);
-        setFavCount(favourites.length);
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/favourite`,
+          {
+            credentials: "include",
+          },
+        );
+        const { favourites } = await response.json();
+        if (favourites.code === "NL") {
+          setResponse({
+            quick: favourites.quick,
+            message: favourites.message,
+          });
+          return;
+        }
+        if (favourites) {
+          setFavouriteItems(favourites);
+          setLoader(false);
+          setFavCount(favourites.length);
+        }
+      } catch (err) {
+        console.log(err);
       }
     };
     favdata();
   }, [user, favCount]);
+
+  useEffect(() => {
+    if (!user || !user.userName) {
+      const preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      setCartFoods(preCart);
+      return;
+    }
+    try {
+      async function getfavfood12() {
+        const data = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/cart`,
+          {
+            credentials: "include",
+          },
+        );
+        const cartArray = await data.json();
+        setCartFoods(cartArray);
+      }
+      getfavfood12();
+    } catch (err) {
+      console.log(err);
+    }
+  }, [user, cartCount]);
 
   //update bottom bar
   const [msg, setMsg] = useState(null);
   const [update, setUpdate] = useState(false);
   useEffect(() => {
     if (!msg) return;
+
     const timer = setTimeout(() => {
       setMsg(null);
     }, 2000); // 3 seconds
+
     return () => clearTimeout(timer);
   }, [msg]);
 
@@ -94,6 +124,13 @@ const Favorite = () => {
                 price={item.price}
                 unit={item.unit}
                 isFav={favouriteItems.some((food) => food._id === item._id)}
+                inCart={
+                  !user || !user.userName
+                    ? cartFoods.some((food) => food._id === item._id)
+                    : cartFoods.some(
+                        (cartFood) => cartFood.foodId._id === item._id,
+                      )
+                }
                 available={item.available}
                 satisfymessage={satisfymessage}
                 //design purpose

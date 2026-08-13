@@ -1,5 +1,5 @@
 import { ArrowLeft, Bell } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CustomNav = ({ text }) => {
   const navigate = useNavigate();

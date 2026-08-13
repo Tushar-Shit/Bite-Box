@@ -1,11 +1,7 @@
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChevronRight, Heart } from "lucide-react";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 const Subheading = ({ title }) => {
-  // console.log(props);
   return (
     <span className="text-green-700 text-[1.25rem] font-bold">
     {title}
@@ -29,8 +25,6 @@ const SeeMore = ({ text, onClick }) => {
 
 //heart icon
 const Heartclick = ({onClick, isFav}) => {
-  // console.log(isFav);
-  
   return isFav ? (
     <Heart
       fill="red"
@@ -39,7 +33,6 @@ const Heartclick = ({onClick, isFav}) => {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        // fill();
         onClick(e);
       }}
     />
@@ -50,7 +43,6 @@ const Heartclick = ({onClick, isFav}) => {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        // fill();
         onClick(e);
       }}
     />

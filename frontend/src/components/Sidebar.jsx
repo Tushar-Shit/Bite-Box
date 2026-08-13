@@ -60,8 +60,8 @@ return (
             <h2 className="text-xl font-bold">My Profile</h2>
           </div>
 
-          <button type="button" onClick={closeSidebar} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-2xl transition hover:bg-white/25 cursor-pointer">
-            ×
+          <button type="button" onClick={closeSidebar} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-2xl transition hover:bg-white/25 leading-0 cursor-pointer">
+            &times;
           </button>
         </div>
       </div>

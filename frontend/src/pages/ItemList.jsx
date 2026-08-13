@@ -9,7 +9,7 @@ import { ShortMsg } from "../components/MessageBar";
 import AllCount from "../context/allCount";
 
 const ItemList = () => {
-  const { user, setUser } = useContext(AllCount);
+  const { user, setUser, cartCount } = useContext(AllCount);
   //if user comes from categories page
   const { items } = useParams();
   //if user expand treding, popular, recomandation....
@@ -60,6 +60,31 @@ const ItemList = () => {
     getData();
   }, [user]);
 
+  const [cartFoods, setCartFoods] = useState([]);
+  useEffect(() => {
+    if (!user || !user.userName) {
+      const preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+      console.log(preCart);
+      setCartFoods(preCart);
+      return;
+    }
+    async function getfavfood12() {
+      try {
+        const data = await fetch(
+          `${import.meta.env.VITE_API_URL}/update/cart`,
+          {
+            credentials: "include",
+          },
+        );
+        const cartArray = await data.json();
+        setCartFoods(cartArray);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    getfavfood12();
+  }, [user, cartCount]);
+
   //update bottam bar when heart/cart tigger
   const [msg, setMsg] = useState(null);
   useEffect(() => {
@@ -93,10 +118,18 @@ const ItemList = () => {
               name={item.name}
               description={item.description}
               quantity={item.quantity}
+              servingQuantity={item.servingQuantity}
               price={item.price}
               unit={item.unit}
               id={item._id}
               isFav={favFoods.some((food) => food._id === item._id)}
+              inCart={
+                user.userName
+                  ? cartFoods.some(
+                      (cartFood) => cartFood.foodId._id === item._id,
+                    )
+                  : cartFoods.some((food) => food._id === item._id)
+              }
               available={item.available}
               satisfymessage={satisfymessage}
               //design purpose
