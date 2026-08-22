@@ -15,6 +15,8 @@ import Order from "./pages/Order";
 import Search from "./pages/Search";
 import ResetPassword from "./components/ResetPassword";
 import Sidebar from "./components/Sidebar";
+import OrderDetails from "./pages/OrderDetails";
+import PlaceOrder from"./pages/PlaceOrder"
 const App = () => {
   const { user, setUser } = useContext(AllCount);
   useEffect(() => {
@@ -60,11 +62,13 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/userinfo" element={<UserProfile />} />
         <Route path="/orders" element={<Order />} />
+        <Route path="/orders/:id" element={<OrderDetails />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/categories/:items" element={<ItemList />} />
         <Route path="/tag/:anything" element={<ItemList />} />
         <Route path="/favorite" element={<Favorite />} />
         <Route path="/meal/:id" element={<MealDetails />} />
+        <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/cart" element={<Cart />} />
         {/* email & password change */}
         <Route path="/help" element={<HelpingPage />} />

@@ -56,16 +56,16 @@ const BottomBar = ({ update }) => {
   }, [user, favCount, cartCount]);
 
   return (
-    <div className="h-18 shrink-0 w-full shadow-[0_-4px_8px_rgba(0,0,0,0.25)] bg-white z-5">
-      <div className="h-full w-full max-w-md mx-auto flex items-center justify-around px-3 bg-white/90 backdrop-blur-xl border-t border-zinc-100 shadow-[0_-8px_30px_rgba(0,0,0,0.02)] z-50">
+    <div className="h-18 md:h-max shrink-0 shadow-[0_-4px_8px_rgba(0,0,0,0.25)] bg-white md:shadow-none md:bg-transparent  z-5">
+      <div className="h-full w-full max-w-md mx-auto flex items-center justify-around px-3 bg-white/90 backdrop-blur-xl border-t border-zinc-100 md:border-none shadow-[0_-8px_30px_rgba(0,0,0,0.02)] z-50 md:gap-10 md:bg-transparent">
         {/* Home Navigation Link */}
         <Link
           to="/"
           className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl transition-all duration-200 active:scale-90
       ${
         location.pathname.endsWith("/")
-          ? "text-orange-500"
-          : "text-slate-500 hover:text-slate-700"
+          ? "text-orange-500 "
+          : "text-slate-500 md:text-slate-700 hover:text-black md:hover:scale-110"
       }`}
         >
           <House
@@ -82,7 +82,7 @@ const BottomBar = ({ update }) => {
       ${
         location.pathname.startsWith("/search")
           ? "text-orange-500"
-          : "text-slate-500 hover:text-slate-700"
+          : "text-slate-500 md:text-slate-700 hover:text-black md:hover:scale-110"
       }`}
         >
           <Search
@@ -98,8 +98,8 @@ const BottomBar = ({ update }) => {
           className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl transition-all duration-200 active:scale-90
       ${
         location.pathname.startsWith("/categories")
-          ? "text-orange-500"
-          : "text-slate-500 hover:text-slate-700"
+          ? "text-orange-500 "
+          : "text-slate-500 md:text-slate-700 hover:text-black md:hover:scale-110"
       }`}
         >
           <Blocks
@@ -117,8 +117,8 @@ const BottomBar = ({ update }) => {
           className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl relative transition-all duration-200 active:scale-90
       ${
         location.pathname.startsWith("/favorite")
-          ? "text-orange-500"
-          : "text-slate-500 hover:text-slate-700"
+          ? "text-orange-500 "
+          : "text-slate-500 md:text-slate-700 hover:text-black md:hover:scale-110"
       }`}
         >
           <div className="relative">
@@ -143,8 +143,8 @@ const BottomBar = ({ update }) => {
           className={`flex flex-col items-center justify-center gap-0.5 text-xs font-bold tracking-tight w-14 h-14 rounded-xl relative transition-all duration-200 active:scale-90
       ${
         location.pathname.startsWith("/cart")
-          ? "text-orange-500"
-          : "text-slate-500 hover:text-slate-700"
+          ? "text-orange-500 "
+          : "text-slate-500 md:text-slate-700 hover:text-black md:hover:scale-110"
       }`}
         >
           <div className="relative">
@@ -167,7 +167,7 @@ const BottomBar = ({ update }) => {
 
 export default BottomBar;
 
-const BottomActionBar = ({ onClick, price, state }) => {
+const BottomActionBar = ({ onClick, price, state, buy }) => {
   return (
     <div className="flex justify-around py-4 items-center rounded-t-lg bg-zinc-300">
       {state ? (
@@ -193,7 +193,14 @@ const BottomActionBar = ({ onClick, price, state }) => {
           <ShoppingCart /> Add to Cart
         </div>
       )}
-      <div className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer">
+      <div
+        className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          buy();
+        }}
+      >
         Buy at <span>₹{price}</span>
       </div>
     </div>

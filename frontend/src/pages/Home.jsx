@@ -37,8 +37,7 @@ const images = {
 
 //starting of home component
 const Home = () => {
-  const { user, setUser, favCount, setFavCount, cartCount, setCartCount } =
-    useContext(AllCount);
+  const { user, favCount, cartCount } = useContext(AllCount);
   //loader state
   const [loader, setLoader] = useState(true);
 
@@ -117,7 +116,6 @@ const Home = () => {
   useEffect(() => {
     if (!user || !user.userName) {
       const preCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-      console.log(preCart);
       setCartFoods(preCart);
       return;
     }
@@ -187,7 +185,7 @@ const Home = () => {
       {loader ? (
         <Loader />
       ) : (
-        <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
+        <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none md:pb-10">
           <h1 className="ml-3 my-0 mt-1.5 flex font-bold text-gray-400 text-md">
             Are you Hungry
             {/* <Utensils strokeWidth={1} className="w-5" /> */}
@@ -357,7 +355,9 @@ const Home = () => {
       )}
 
       <Outlet />
-      <BottomBar />
+      <div className="md:hidden">
+        <BottomBar />
+      </div>
     </div>
   );
 };

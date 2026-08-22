@@ -90,7 +90,7 @@ const HeroImage = () => {
           <Link
             to={food.link}
             key={`${food.id}-${i}`}
-            className="relative min-w-[94vw] h-50 overflow-hidden rounded-2xl shadow-lg group shrink-0"
+            className="relative min-w-[94vw] h-50 md:h-90 overflow-hidden rounded-2xl shadow-lg group shrink-0"
           >
             <img
               src={food.image}
@@ -99,9 +99,9 @@ const HeroImage = () => {
             />
 
             {food.text && (
-              <div className="absolute inset-0 bg-black/30 flex items-end">
+              <div className="absolute inset-0 bg-black/50 hover:bg-black/30 duration-300 flex items-end">
                 <div className="w-full p-4">
-                  <h2 className="text-white text-xl font-bold">{food.text}</h2>
+                  <h2 className="text-white text-xl md:text-3xl font-bold">{food.text}</h2>
                 </div>
               </div>
             )}

@@ -157,7 +157,7 @@ const HorizontalFC = ({
   return (
     <Link
       to={`/meal/${id}`}
-      className={`group relative flex gap-4 items-center shrink-0 w-full h-40 p-3 mb-4 rounded-2xl bg-white border border-zinc-100 shadow-[0_4px_8px_rgb(0,0,0,0.16)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300 ease-out
+      className={`group relative flex gap-4 items-center shrink-0 w-full h-40 p-3 mb-4 rounded-2xl bg-white border border-zinc-100 shadow-[0_4px_8px_rgb(0,0,0,0.16)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-0.5 transition-[box-shadow,transform] duration-300 ease-out
       ${view === "list" ? "sm:min-w-72 sm:grow sm:basis-0 sm:m-0 sm:max-w-90" : "sm:min-w-73 sm:grow sm:basis-0 sm:m-0"}
       ${view === "list" ? "md:max-lg:min-w-87 md:max-lg:max-w-120" : "md:max-lg:min-w-87"}
       ${view === "list" ? "lg:max-2xl:min-w-75 lg:max-2xl:max-w-100" : "lg:max-xl:min-w-90"}
@@ -186,9 +186,9 @@ const HorizontalFC = ({
             >
               {name}
             </span>
-            <div className="relative z-10 shrink-0 transform active:scale-90 transition-transform">
+            {/* <div className="relative z-10 shrink-0  active:scale-90 transition-transform"> */}
               <Heartclick onClick={handle} isFav={fav} />
-            </div>
+            {/* </div> */}
           </div>
 
           {/* Short Description */}
@@ -205,7 +205,7 @@ const HorizontalFC = ({
           {/* Serving Quantity, Unit & Availability Status Row */}
           <div
             id="serve-quantity-availability"
-            className="flex items-center justify-between gap-2 relative z-10"
+            className="flex items-center justify-between gap-2 "
           >
             {/* Enhanced Serving Portion Box */}
             <p
@@ -229,7 +229,7 @@ const HorizontalFC = ({
                 id="food-availbility"
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/50"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 Available
               </span>
             ) : (
@@ -262,7 +262,7 @@ const HorizontalFC = ({
 
             {/* Modernized Shopping Cart Button */}
             <button
-              className={`relative z-10 p-2 rounded-xl cursor-pointer border transition-all duration-200 active:scale-95 shadow-sm
+              className={`p-2 rounded-xl cursor-pointer border transition-all duration-200 active:scale-95 shadow-sm
               ${
                 cartIcon
                   ? "bg-zinc-900 border-zinc-900 text-white shadow-zinc-900/10"

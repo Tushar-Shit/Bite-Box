@@ -97,7 +97,7 @@ return (
     className="group relative shrink-0 w-[45%] max-w-47 h-56 flex flex-col justify-between bg-white border border-zinc-100 shadow-[0_2px_8px_rgba(0,0,0,0.16)] hover:shadow-[0_3px_12px_rgba(0,0,0,0.40)] hover:-translate-y-1 rounded-2xl overflow-hidden transition-all duration-300 ease-out z-0"
   >
     {/* Floating Favorite Button - Kept Top Right */}
-    <div className="absolute right-2 top-2 z-10 bg-white/80 backdrop-blur-md rounded-xl p-1.5 w-8 h-8 flex items-center justify-center shadow-sm border border-zinc-200/40 transform active:scale-90 transition-transform">
+    <div className="absolute right-2 top-2 z-10 bg-white/80 backdrop-blur-md rounded-xl p-1.5 w-8 h-8 flex items-center justify-center shadow-sm border border-zinc-200/40 ">
       <Heartclick onClick={handle} isFav={fav} />
     </div>
 
@@ -130,7 +130,7 @@ return (
         {/* Scaled up Dynamic Status Pill */}
         {available ? (
           <p className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100/30 whitespace-nowrap">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             <span>Available</span>
           </p>
         ) : (

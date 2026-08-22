@@ -5,15 +5,17 @@ import { Heartclick, SeeMore } from "../atomic/atomic";
 import { Minus, Plus } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import AllCount from "../context/allCount";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ShortMsg } from "../components/MessageBar";
-
+import { Clock, Flame, Star } from "lucide-react";
+import FeedbackDashboard from "../components/FeedbackDashboard";
+import FeedbackCard from "../components/FeedbackCard";
 const MealDetails = () => {
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const { favCount, setFavCount, cartCount, setCartCount, user } =
     useContext(AllCount);
-
+  console.log(user);
   // ----------------------     STATES     ----------------------------
   const [fav, setFav] = useState(false);
   const [inCart, setInCart] = useState(false);
@@ -32,6 +34,7 @@ const MealDetails = () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/meal/${id}`);
         const { foodItem, reviews } = await res.json();
+        // console.log(reviews);
         setFood(foodItem);
         setAllReviews(reviews);
       } catch (err) {
@@ -260,7 +263,7 @@ const MealDetails = () => {
       setFinalPrice(food.price * quantity);
     }
   }, [food, quantity]);
-  //======================== QUANTITY + PRICE =========================
+
   async function updateQuantity(command) {
     const newQuantity =
       command === "increase" ? quantity + 1 : Math.max(1, quantity - 1);
@@ -302,29 +305,49 @@ const MealDetails = () => {
       );
       const cartItems = await response.json();
       const itemExist = cartItems.find((i) => i.foodId._id === id);
-      setQuantity(itemExist.quantity);
+      if (itemExist) setQuantity(itemExist.quantity);
+      else setQuantity(newQuantity);
     } catch (e) {
       console.log(e);
     }
   }
 
-  // ================================= REVIEWS ==============================
-  const displayedReviews = showAll ? allReviews : allReviews.slice(0, 4);
-  const foodRate =
-    allReviews.length > 0
-      ? Number(
-          (
-            allReviews.reduce((sum, review) => sum + review.rating, 0) /
-            allReviews.length
-          ).toFixed(1),
-        )
-      : 0;
+  // ================================= REVIEWS CALCULATION ==============================
+  const averageRating =
+    allReviews.reduce((sum, item) => sum + item.rating, 0) / allReviews.length;
+  let fiveStar = 0;
+  let fourStar = 0;
+  let threeStar = 0;
+  let twoStar = 0;
+  let oneStar = 0;
+
+  for (let item of allReviews) {
+    switch (item.rating) {
+      case 5:
+        fiveStar++;
+        break;
+      case 4:
+        fourStar++;
+        break;
+      case 3:
+        threeStar++;
+        break;
+      case 2:
+        twoStar++;
+        break;
+      case 1:
+        oneStar++;
+        break;
+    }
+  }
+  // console.log(fiveStar, fourStar, threeStar, twoStar, oneStar);
+  // console.log(averageRating);
 
   // ============================= DESCRIPTION ===============================
   const words = food.description ? food.description.split(" ") : [];
-  const isLongDescription = words.length > 6;
+  const isLongDescription = words.length > 10;
   const truncatedDescription = isLongDescription
-    ? words.slice(0, 6).join(" ")
+    ? words.slice(0, 10).join(" ")
     : food.description;
 
   //================================ MESSAGE TIMEOUT ==========================
@@ -336,6 +359,61 @@ const MealDetails = () => {
     return () => clearTimeout(timer);
   }, [msg]);
 
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    age: "",
+  });
+
+  // ====================testing======================
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
+  // //  console.log(id)
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   console.log(formData);
+  //   const response = await fetch(
+  //     `${import.meta.env.VITE_API_URL}/reviews/testing`,
+  //     {
+  //       method: "POST",
+  //       credentials: "include",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+
+  //       body: JSON.stringify({
+  //         foodId: id,
+  //         name: formData.name,
+  //         text: formData.description,
+  //         rating: formData.age,
+  //       }),
+  //     },
+  //   );
+  // };
+
+  // ================================================= Place order =============================================================
+  
+  const foodObj={
+    foodId:food,
+    quantity:quantity,
+    price: finalPrice,
+    available:food.available
+  }
+  
+  console.log(foodObj)
+  const buy = async () => {
+    navigate("/place-order", {
+      state: { items:[foodObj] },
+    });
+  };
+
   return (
     <div className="fixed inset-0 h-dvh flex flex-col">
       {/* Top navbar */}
@@ -344,65 +422,125 @@ const MealDetails = () => {
       {/* Message */}
       {msg && <ShortMsg message={msg} />}
       <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
-        {/* Food image */}
-        <div className="border w-[90%] h-[30vh] rounded-lg m-auto my-3 relative">
-          <img
-            src={food.image}
-            alt=""
-            className="w-full h-full object-cover rounded-lg"
-          />
-
-          <div className="h-9 w-9 absolute top-2 right-2 flex items-center justify-center rounded-full bg-white p-0.5 cursor-pointer">
-            <Heartclick onClick={handle} isFav={fav} />
-          </div>
-        </div>
-
-        {/* Food information */}
-        <div className="border h-fit px-6 mb-3">
-          <span className="text-2xl font-bold">{food.name}</span>
-
-          <div className="flex justify-between items-center">
-            <span className="text-xl font-semibold">
-              {food.quantity} {food.unit}
-            </span>
-
-            {/* Quantity */}
-            <div className="flex justify-evenly gap-2 items-center bg-zinc-300 rounded-2xl p-1">
-              <button
-                onClick={() => updateQuantity("decrease")}
-                className="bg-white text-black rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
-              >
-                <Minus size={18} />
-              </button>
-
-              <div className="font-semibold mx-1 w-4 text-center">
-                {quantity}
-              </div>
-
-              <button
-                onClick={() => updateQuantity("increase")}
-                className="bg-orange-500 text-white rounded-full p-0.5 border-none cursor-pointer flex items-center justify-center"
-              >
-                <Plus size={18} />
-              </button>
+        {/* Food image and background */}
+        <div className="relative overflow-visible">
+          <div className="absolute w-72 h-72 rounded-full bg-[#fff6cd]/40 blur-3xl mix-blend-screen pointer-events-none transform -translate-y-4"></div>
+          <div className="relative z-10 flex items-center justify-center">
+            <img
+              src={food.image}
+              alt={food.name || "Food item"}
+              className="w-60 h-60 object-cover rounded-full shadow-[0_20px_40px_rgba(255,246,205,0.3)] border-4 border-white/10"
+            />
+            <div className="z-20 h-9 w-9 absolute top-0 right-2 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md p-0.5 cursor-pointer shadow-md hover:scale-105 transition-transform">
+              <Heartclick onClick={handle} isFav={fav} />
             </div>
           </div>
+          <p className="mt-1 text-2xl text-center font-bold">{food.name}</p>
+        </div>
 
-          {/* Price + rating */}
-          <div className="flex gap-1 items-baseline">
-            <span className="text-xl font-semibold">₹{food.price}</span>
+        {/* price and regulator */}
+        <div className="border mt-2 mx-3 px-3 py-2 rounded-xl border-[#ffbee0d6] bg-[#ffebebf0] flex justify-between items-center">
+          <div className="pl-3">
+            <p className="text-xl font-bold text-[#ea005d]">₹{food.price}</p>
+            <p className="text-sm font-semibold">
+              {food.quantity} {food.unit}
+            </p>
+          </div>
+          <div className="flex justify-evenly gap-2 items-center bg-[#f6f6f6] rounded-2xl">
+            <button
+              onClick={() => updateQuantity("decrease")}
+              className="bg-white rounded-full p-2 border-none cursor-pointer flex items-center justify-center"
+            >
+              <Minus size={18} />
+            </button>
 
-            <span className="ml-2 text-amber-500 font-bold">★ {foodRate}</span>
+            <div className="font-semibold mx-1 w-4 text-center">{quantity}</div>
+
+            <button
+              onClick={() => updateQuantity("increase")}
+              className="bg-[#ff013c] text-white rounded-full p-2 border-none cursor-pointer flex items-center justify-center"
+            >
+              <Plus size={18} />
+            </button>
           </div>
         </div>
 
+        {/* extra information */}
+        <div className="mt-2 px-2 flex items-center justify-around">
+          <div className="max-h-15 max-w-35 border border-[#7d7d7d] flex gap-1.5 items-center p-2 rounded-lg">
+            <div className="text-red">
+              <Clock color="#ff2445" />
+            </div>
+            <div>
+              <p className="text-md font-bold">20-25 min</p>
+              <p className="text-xs">Time Required</p>
+            </div>
+          </div>
+          <div className="max-h-15 max-w-35 border border-[#7d7d7d] flex gap-1.5 items-center p-2 rounded-lg">
+            <div className="text-red">
+              <Flame color="#ff7b00" fill="#ff7b00" />
+            </div>
+            <div>
+              <p className="text-md font-bold">450 kcal</p>
+              <p className="text-xs">Calories</p>
+            </div>
+          </div>
+          {allReviews.length > 0 && (
+            <div className="max-h-15 max-w-35 border border-[#7d7d7d] flex gap-1.5 items-center p-2 rounded-lg">
+              <div className="text-red">
+                <Star color="#ffd000" fill="#ffd000" />
+              </div>
+              <div>
+                <p className="text-md font-bold">{averageRating.toFixed(1)}</p>
+                <p className="text-xs">({allReviews.length} reviews)</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* <form onSubmit={handleSubmit} className="border text-center">
+          <div>
+            <label>Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="border mb-5"
+            />
+          </div>
+
+          <div className="flex">
+            <label>Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="border mb-5"
+            />
+          </div>
+
+          <div>
+            <label>Age</label>
+            <input
+              type="number"
+              name="age"
+              value={formData.age}
+              onChange={handleChange}
+              className="border mb-5"
+            />
+          </div>
+
+          <button type="submit" className="border mb-5 p-3">
+            Submit
+          </button>
+        </form> */}
+
         {/* Description */}
-        <div className="border px-6 h-fit mb-4">
-          <div className="text-lg font-bold text-red-700 mb-1">Description</div>
-
-          <p className="text-zinc-700 leading-relaxed text-sm">
+        <div className="px-6 h-fit mt-4 mb-2">
+          <div className="text-lg font-bold text-red-700">Description</div>
+          <p className="text-zinc-700 leading-relaxed text-sm text-justify">
             {fullDescription ? food.description : truncatedDescription}
-
             {isLongDescription && (
               <span
                 onClick={() => setFullDescription(!fullDescription)}
@@ -414,36 +552,44 @@ const MealDetails = () => {
           </p>
         </div>
 
-        {/* Reviews */}
-        <div className="border px-6 mt-5">
-          <div className="text-lg font-bold text-zinc-700 mb-1">Feedbacks</div>
+        {/* feedback section */}
+        {allReviews.length > 0 && (
+          <div className="mt-5">
+            <div className="pl-5 text-lg font-bold text-zinc-700 mb-1 flex gap-1 items-baseline">
+              {/* <span className="border-2 border-[#ff9d00] h-4"></span>Feedbacks */}
+              <span className="border-2 border-[#ff005d] h-4"></span>Feedbacks
+            </div>
 
-          <div className="feedback-con h-fit mb-24 flex flex-col gap-3">
-            {displayedReviews.map((review) => (
-              <FeedBackCard
-                key={review._id}
-                id={review._id}
-                author={review.author}
-                rating={review.rating}
-                like={review.like}
-                unlike={review.unlike}
-                comment={review.comment}
+            {/* feedback dashboard */}
+            <FeedbackDashboard
+              avgRating={averageRating}
+              totalRating={allReviews.length}
+              fiveStar={fiveStar}
+              fourStar={fourStar}
+              threeStar={threeStar}
+              twoStar={twoStar}
+              oneStar={oneStar}
+            />
+
+            {/* feedback card */}
+            {allReviews.map((item) => (
+              <FeedbackCard
+                key={item.author}
+                name={item.author}
+                text={item.comment}
+                star={item.rating}
               />
             ))}
-
-            {allReviews.length > 4 && (
-              <SeeMore
-                text={showAll ? "See Less" : "See More"}
-                onClick={() => {
-                  setShowAll(!showAll);
-                }}
-              />
-            )}
           </div>
-        </div>
+        )}
       </main>
       {/* Bottom action bar */}
-      <BottomActionBar onClick={addCart} price={finalPrice} state={inCart} />
+      <BottomActionBar
+        onClick={addCart}
+        price={finalPrice}
+        state={inCart}
+        buy={buy}
+      />
     </div>
   );
 };

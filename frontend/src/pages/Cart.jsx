@@ -1,7 +1,7 @@
 import CustomNav from "../CategoryComponents/CustomNav";
 import CartCard from "../components/CartCard";
 import BottomBar from "../components/BottomBar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import AllCount from "../context/allCount";
 import Loader from "../components/Loader";
@@ -11,7 +11,7 @@ import { Helmet } from "react-helmet-async";
 
 const Cart = () => {
   const { cartCount, setCartCount, user, setUser } = useContext(AllCount);
-
+  const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
   const [loggedin, setLoggedin] = useState(null);
   const [cartItems, setCartItems] = useState([]);
@@ -80,6 +80,16 @@ const Cart = () => {
     setMsg(text);
     setRefresh(!refresh);
   }
+
+  const placeOrder = () => {
+    navigate("/place-order", {
+      state: {
+        items: cartItems,
+      },
+    });
+  };
+  console.log(cartItems);
+
   return (
     <div className="fixed inset-0 h-dvh flex flex-col">
       <Helmet>
@@ -134,7 +144,7 @@ const Cart = () => {
             <aside
               className=" mx-5  mb-17 md:mx-0 md:mb-0 md:flex md:w-87.5 lg:w-100  md:flex-col
         bg-zinc-100 rounded-xl p-5 shadow-lg"
-        // className="border mx-5  mb-17 md:mx-0 md:mb-0 md:h-full md:w-87.5"
+              // className="border mx-5  mb-17 md:mx-0 md:mb-0 md:h-full md:w-87.5"
             >
               <h2 className="text-2xl font-bold mb-5">Order Summary</h2>
 
@@ -158,6 +168,7 @@ const Cart = () => {
                 </div>
 
                 <button
+                  onClick={placeOrder}
                   className="w-full bg-orange-500 hover:bg-orange-600
             text-white text-lg font-bold py-3 rounded-full transition"
                 >
@@ -174,7 +185,10 @@ const Cart = () => {
               >
                 <p className="font-bold text-2xl">₹{totalPrice}</p>
 
-                <p className="w-3/7 p-2 text-center rounded-md bg-amber-500 font-semibold text-white">
+                <p
+                  onClick={placeOrder}
+                  className="w-3/7 p-2 text-center rounded-md bg-amber-500 font-semibold text-white"
+                >
                   Place Order
                 </p>
               </div>

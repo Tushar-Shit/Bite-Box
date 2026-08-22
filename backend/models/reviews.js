@@ -5,11 +5,9 @@ const reviews = new mongoose.Schema({
         ref: "FoodItems",
     },
     author: String,
+    authorId:String,
     rating: Number,
-    like: Number,
-    unlike: Number,
     comment: String,
-
 });
 
 const Reviews = mongoose.model("review", reviews);

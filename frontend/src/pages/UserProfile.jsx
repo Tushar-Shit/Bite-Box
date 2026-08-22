@@ -1,10 +1,11 @@
 import { SquarePen } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import CustomNav from "../CategoryComponents/CustomNav";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import FoodLoader from "../components/Loader";
 import BottomBar from "../components/BottomBar";
+import AllCount from "../context/allCount";
 // Support component
 const KeyValue = ({ keyName, value }) => {
   return (
@@ -18,11 +19,11 @@ const KeyValue = ({ keyName, value }) => {
 };
 
 const UserProfile = () => {
+  const { user, setUser } = useContext(AllCount);
   const [loader, setLoader] = useState(true);
-  const [user, setUser] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
   const [joinDate, setJoinDate] = useState("");
   const [edit, setEdit] = useState(false);
-
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -43,13 +44,25 @@ const UserProfile = () => {
         );
 
         const data = await response.json();
-
         if (data.code === "NU" || data.code === "NL") {
           console.log(data.message);
+          setLoader(false);
           return;
         }
         setLoader(false);
-        setUser(data);
+        setCurrentUser(data);
+
+        // Store all required user data in context
+        setUser({
+          userId: data._id,
+          userName: data.username || "",
+          userEmail: data.email || "",
+          userRole: data.role || "user",
+          userMobile: data.mobile || "",
+          userAddress1: data.address1 || "",
+          userAddress2: data.address2 || "",
+          userCreatedAt: data.createdAt || "",
+        });
 
         setFormData({
           username: data.username || "",
@@ -61,15 +74,14 @@ const UserProfile = () => {
         });
 
         const dateObj = new Date(data.createdAt);
-
         const day = dateObj.getDate();
         const month = dateObj.toLocaleDateString("en-US", {
           month: "long",
         });
         const year = dateObj.getFullYear();
-
         const suffix = (d) => {
           if (d > 3 && d < 21) return "th";
+
           switch (d % 10) {
             case 1:
               return "st";
@@ -85,14 +97,15 @@ const UserProfile = () => {
         setJoinDate(`${day}${suffix(day)} ${month} ${year}`);
       } catch (err) {
         console.log(err);
+        setLoader(false);
       }
     }
+
     getUser();
-  }, []);
+  }, [setUser]);
 
   function handleChange(e) {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -101,23 +114,24 @@ const UserProfile = () => {
 
   function handleCancel() {
     setFormData({
-      username: user.username || "",
-      email: user.email || "",
-      age: user.age || "",
-      mobile: user.mobile || "",
-      address1: user.address1 || "",
-      address2: user.address2 || "",
+      username: currentUser.username || "",
+      email: currentUser.email || "",
+      age: currentUser.age || "",
+      mobile: currentUser.mobile || "",
+      address1: currentUser.address1 || "",
+      address2: currentUser.address2 || "",
     });
-
     setEdit(false);
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+
     if (formData.username.trim() === "") {
       alert("Invalid username");
       return;
     }
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/user/profile`,
@@ -136,18 +150,32 @@ const UserProfile = () => {
           }),
         },
       );
-
       const data = await response.json();
-
       if (!response.ok) {
         alert(data.message || "Something went wrong.");
         return;
       }
 
-      setUser((prev) => ({
-        ...prev,
+      // Create updated complete user object
+      const updatedUser = {
+        ...currentUser,
         ...formData,
-      }));
+      };
+
+      // Update local currentUser
+      setCurrentUser(updatedUser);
+
+      // Update context user
+      setUser({
+        userId: updatedUser._id,
+        userName: updatedUser.username || "",
+        userEmail: updatedUser.email || "",
+        userRole: updatedUser.role || "user",
+        userMobile: updatedUser.mobile || "",
+        userAddress1: updatedUser.address1 || "",
+        userAddress2: updatedUser.address2 || "",
+        userCreatedAt: updatedUser.createdAt || "",
+      });
 
       setEdit(false);
     } catch (err) {
@@ -156,6 +184,8 @@ const UserProfile = () => {
     }
   }
 
+  console.log("Current User:", currentUser);
+  console.log("Context User:", user);
   return (
     <div className="fixed inset-0 h-dvh flex flex-col bg-zinc-50/50 antialiased selection:bg-amber-100 z-0">
       <Helmet>
@@ -190,11 +220,11 @@ const UserProfile = () => {
               {/* Meta Typography Profile Details */}
               <div className="mt-3 space-y-0.5 z-0">
                 <p className="text-xl font-extrabold text-zinc-900 tracking-tight">
-                  {user.username}
+                  {currentUser.username}
                 </p>
                 <p className="text-sm font-medium text-zinc-500 flex items-center justify-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  {user.email}
+                  {currentUser.email}
                 </p>
                 <p className="inline-flex items-center gap-1 mt-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-100/40">
                   Joined {joinDate}
@@ -313,27 +343,33 @@ const UserProfile = () => {
                   {/* Information Row Segment Grid list */}
                   <div className="divide-y divide-zinc-100/80 space-y-3.5 z-0">
                     <div className="pt-0">
-                      <KeyValue keyName="Full Name" value={user.username} />
+                      <KeyValue
+                        keyName="Full Name"
+                        value={currentUser.username}
+                      />
                     </div>
                     <div className="pt-3.5">
-                      <KeyValue keyName="Email Address" value={user.email} />
+                      <KeyValue
+                        keyName="Email Address"
+                        value={currentUser.email}
+                      />
                     </div>
                     <div className="pt-3.5">
                       <KeyValue
                         keyName="Mobile No."
-                        value={user.mobile || "NIL"}
+                        value={currentUser.mobile || "NIL"}
                       />
                     </div>
                     <div className="pt-3.5">
                       <KeyValue
                         keyName="Address 1"
-                        value={user.address1 || "NIL"}
+                        value={currentUser.address1 || "NIL"}
                       />
                     </div>
                     <div className="pt-3.5">
                       <KeyValue
                         keyName="Address 2"
-                        value={user.address2 || "NIL"}
+                        value={currentUser.address2 || "NIL"}
                       />
                     </div>
                   </div>

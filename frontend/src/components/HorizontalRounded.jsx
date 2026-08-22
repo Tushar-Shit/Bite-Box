@@ -66,7 +66,7 @@ const HorizontalRounded = ({
           
           {available ? (
             <p className="inline-flex items-center gap-1 text-xs font-extrabold text-emerald-700 bg-white/60 px-2 py-0.5 rounded-full border border-emerald-200/40">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
               <span>Available</span>
             </p>
           ) : (

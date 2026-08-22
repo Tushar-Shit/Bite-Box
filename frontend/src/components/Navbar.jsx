@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import AllCount from "../context/allCount";
 import { UserRound, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+import BottomBar from "./BottomBar";
 
 const Navbar = ({ onClick }) => {
   const { user } = useContext(AllCount);
@@ -21,7 +22,7 @@ const Navbar = ({ onClick }) => {
     setName(user.userName.split(" ")[0]);
   }, [user]);
   return (
-    <nav className="flex h-16 w-full items-center justify-between bg-linear-to-r from-red-600 to-orange-500 px-4 text-white shadow-md">
+    <nav className="flex h-16 md:h-18 w-full items-center justify-between bg-linear-to-r from-red-600 to-orange-500 px-4 text-white shadow-md lg:px-20 lg:pl-50">
       {/* Logo */}
       <div className="flex items-center gap-3">
         {menu && (
@@ -38,6 +39,10 @@ const Navbar = ({ onClick }) => {
           Bite<span className="text-yellow-300">Box</span>
         </Link>
       </div>
+
+      {/* <div className="hidden md:flex">
+        <BottomBar />
+      </div> */}
 
       {/* Right side */}
       {loggedin ? (

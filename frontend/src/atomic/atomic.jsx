@@ -15,7 +15,7 @@ const SeeMore = ({ text, onClick }) => {
     <button
       className="w-full flex justify-center border-none bg-transparent cursor-pointer font-bold"
     >
-        <div className="w-26 h-18 rounded-full flex items-center justify-center bg-zinc-300">
+        <div className="w-30 py-3 rounded-full flex items-center justify-center bg-zinc-300">
           <span className="pl-2">{text}</span>
           <span className="text-red-500"><ChevronRight size={22} fill="red" /></span>
         </div>

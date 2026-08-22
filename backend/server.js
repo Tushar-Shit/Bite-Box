@@ -34,7 +34,7 @@ connectDB();
 app.use(
   cors({
     origin: ["http://10.97.194.131:5173",
-      "http://192.168.31.96:5173",
+      "http://172.30.22.131:5173",
       "https://bite-box-weld.vercel.app"]
     , credentials: true,
   })
@@ -90,6 +90,7 @@ app.get("/meal/:id", async (req, res) => {
 
 //for keep alive the backend in render
 app.get("/health", async (req, res) => {
+  console.log("hello");
   return res.status(200).json({ code: "success", message: "Active successfull." });
 })
 
