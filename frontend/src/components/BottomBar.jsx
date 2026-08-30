@@ -167,7 +167,29 @@ const BottomBar = ({ update }) => {
 
 export default BottomBar;
 
+import { useNavigate } from "react-router-dom";
 const BottomActionBar = ({ onClick, price, state, buy }) => {
+  const navigate = useNavigate();
+  const checkUser = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/profile`,
+        {
+          credentials: "include",
+        },
+      );
+
+      const data = await response.json();
+      if (data.code === "NU" || data.code === "NL") {
+        console.log(data.message);
+        navigate("/login");
+        return;
+      }
+      buy();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="flex justify-around py-4 items-center rounded-t-lg bg-zinc-300">
       {state ? (
@@ -198,7 +220,7 @@ const BottomActionBar = ({ onClick, price, state, buy }) => {
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          buy();
+          checkUser();
         }}
       >
         Buy at <span>₹{price}</span>

@@ -8,13 +8,13 @@ export default defineConfig({
   ],
   server: {
     host:true,
-    proxy: {
-      '/api': {
-        target: 'http://10.23.245.131:7000',
-        changeOrigin: true,
-        secure: false,
-         rewrite: (path) => path.replace(/^\/api/, ''),
-      }
-    }
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://10.23.245.131:7000',
+    //     changeOrigin: true,
+    //     secure: false,
+    //      rewrite: (path) => path.replace(/^\/api/, ''),
+    //   }
+    // }
   }
 })

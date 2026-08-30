@@ -16,7 +16,9 @@ import Search from "./pages/Search";
 import ResetPassword from "./components/ResetPassword";
 import Sidebar from "./components/Sidebar";
 import OrderDetails from "./pages/OrderDetails";
-import PlaceOrder from"./pages/PlaceOrder"
+import PlaceOrder from "./pages/PlaceOrder";
+import Dashboard from "./pages/Dashboard";
+import AdminOrder from "./pages/AdminOrder";
 const App = () => {
   const { user, setUser } = useContext(AllCount);
   useEffect(() => {
@@ -50,11 +52,9 @@ const App = () => {
   return (
     <div>
       <Routes>
-        route
         <Route path="/" element={<Home />}>
           <Route path="sidebar" element={<Sidebar />} />
         </Route>
-
 
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-email" element={<HelpingPage />} />
@@ -74,7 +74,8 @@ const App = () => {
         <Route path="/help" element={<HelpingPage />} />
         {/* for test and development purpose */}
         <Route path="/search" element={<Search />} />
-        {/* <Route path="/categories/:items/:id" element={<MealDetails />} /> */}
+        <Route path="/admin" element={<Dashboard />} />
+        <Route path="/admin/order" element={<AdminOrder />} />
       </Routes>
     </div>
   );

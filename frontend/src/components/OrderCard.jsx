@@ -1,7 +1,41 @@
 import { CalendarDays, CreditCard, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-const OrderCard = () => {
-  const status = "Delivered";
+import { useState } from "react";
+// import { exportString } from "node:ffi";
+
+
+
+const OrderCard = ({
+  id,
+  orderId,
+  orderAmount,
+  status,
+  payMode,
+  items,
+  date_time,
+  totalOrder
+}) => {
+  let orderItems;
+  let remain = 0;
+  if (items.length > 3) {
+    orderItems = items.slice(0, 2);
+    remain = items.length - 2;
+  } else {
+    orderItems = items;
+  }
+  const date = new Date(date_time);
+
+  const formattedDate = date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const formattedTime = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 
   const statusStyle = {
     Delivered: {
@@ -32,7 +66,7 @@ const OrderCard = () => {
       <div className="flex items-center justify-between px-1 pb-2">
         {/* Order ID */}
         <span className="text-lg font-bold text-zinc-900 truncate">
-          #OT62HC729XWS7E
+          #{orderId}
         </span>
 
         {/* Status */}
@@ -49,9 +83,9 @@ const OrderCard = () => {
           {/* Image */}
           <div className="w-30 shrink-0">
             <img
-              src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300"
+              src={items[0].image}
               alt="Fish Finger"
-              className="w-full h-full object-cover rounded-xl"
+              className="w-full h-full max-h-25 object-cover rounded-xl"
             />
           </div>
 
@@ -60,33 +94,24 @@ const OrderCard = () => {
             {/* Date + Time */}
             <div className="flex items-center gap-1.5 text-xs text-[#686868] mb-2">
               <CalendarDays size={15} className="text-[#ff338b]" />
-
-              <span>18 November, 2026</span>
-
+              <span>{formattedDate}</span>
               <span className="text-zinc-400">•</span>
-
-              <span>07:45 PM</span>
+              <span>{formattedTime}</span>
             </div>
 
             {/* Items */}
-            <div className="space-y-1">
-              {/* Item 1 */}
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm text-zinc-800 truncate">
-                  Fish Finger
-                </span>
-
-                <span className="shrink-0 min-w-7 h-6 px-2 flex items-center justify-center rounded-md bg-white border border-zinc-200 text-xs font-semibold text-zinc-700">
-                  ×3
-                </span>
-              </div>
-
-              
-              {/* More Items */}
+            {orderItems.map((item) => (
+              <FoodItem
+                key={item.name}
+                name={item.name}
+                quantity={item.quantity}
+              />
+            ))}
+            {remain > 0 && (
               <span className="inline-block mt-0.5 text-xs font-semibold text-[#ff338b]">
-                + 2 more items
+                + {remain} more items
               </span>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -102,7 +127,7 @@ const OrderCard = () => {
           <div>
             <p className="text-[11px] text-zinc-500">Total Amount</p>
 
-            <p className="font-bold text-zinc-900">₹550</p>
+            <p className="font-bold text-zinc-900">₹{orderAmount}</p>
           </div>
         </div>
 
@@ -115,13 +140,14 @@ const OrderCard = () => {
           <div>
             <p className="text-[11px] text-zinc-500">Payment</p>
 
-            <p className="text-sm font-semibold text-zinc-900">Online</p>
+            <p className="text-sm font-bold text-zinc-900">{payMode}</p>
           </div>
         </div>
 
         {/* View */}
         <Link
-          to="/orders/xyeheiw6711"
+          to={`/orders/${orderId}`}
+          state={totalOrder}
           className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-pink-50 border border-pink-200 text-pink-600 text-sm font-semibold transition hover:bg-pink-100 active:scale-95"
         >
           <span>View</span>
@@ -133,4 +159,17 @@ const OrderCard = () => {
   );
 };
 
+
+const FoodItem = ({ name, quantity }) => {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-sm text-zinc-800 truncate">{name}</span>
+        <span className="shrink-0 min-w-7 h-6 px-2 flex items-center justify-center rounded-md bg-white border border-zinc-200 text-xs font-semibold text-zinc-700">
+          ×{quantity}
+        </span>
+      </div>
+    </div>
+  );
+};
 export default OrderCard;

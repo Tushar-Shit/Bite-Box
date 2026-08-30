@@ -255,7 +255,7 @@ const Home = () => {
                   unit={item.unit}
                   isFav={favFoods.some((food) => food._id === item._id)}
                   inCart={
-                    user.userName
+                    user && user.userName
                       ? cartFoods.some(
                           (cartFood) => cartFood.foodId._id === item._id,
                         )
@@ -339,7 +339,7 @@ const Home = () => {
                   unit={item.unit}
                   isFav={favFoods.some((food) => food._id === item._id)}
                   inCart={
-                    user.userName
+                    user && user.userName
                       ? cartFoods.some(
                           (cartFood) => cartFood.foodId._id === item._id,
                         )

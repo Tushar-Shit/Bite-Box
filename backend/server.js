@@ -24,7 +24,9 @@ import userRoute from "./routes/user.js";
 import updateRoute from "./routes/update.js";
 
 //middleware
+import checkAuth from "./middleware/authentication.js"
 import errorHandler from "./middleware/errorHandler.js";
+import Order from "./models/order.js";
 
 const app = express();
 const port = process.env.PORT || 7000;
@@ -34,6 +36,7 @@ connectDB();
 app.use(
   cors({
     origin: ["http://10.97.194.131:5173",
+      "http://10.97.194.131:5174",
       "http://172.30.22.131:5173",
       "https://bite-box-weld.vercel.app"]
     , credentials: true,
@@ -87,6 +90,52 @@ app.get("/meal/:id", async (req, res) => {
   const reviews = await Reviews.find({ food_belong: id });
   res.json({ foodItem, reviews });
 })
+
+
+app.get("/order", checkAuth, async (req, res) => {
+  const data = await Order.find({ customerId: req.user.toString() }).sort({ createdAt: -1 });
+  if (data.length === 0) { return res.json({ message: "No order yet" }); }
+  console.log(data)
+  res.json({ data })
+})
+app.post("/order", checkAuth, async (req, res) => {
+  const { food,
+    deliveryCharge,
+    amount,
+    finalAmount,
+    customerName,
+    mobile,
+    location,
+  } = req.body;
+
+  const date = new Date();
+  const formattedDate =
+    String(date.getDate()).padStart(2, "0") +
+    String(date.getMonth() + 1).padStart(2, "0") +
+    String(date.getFullYear()).slice(-2);
+
+  const lastFour = mobile.slice(-4);
+  const random = Math.floor(Math.random() * 100) + 1;
+  const orderId = `${formattedDate}-${random}-${lastFour}`
+
+  const paymentMode = "online";
+  const status = "Delivered"
+  const what = Order.create({
+    items: food, customerId: req.user, orderId, status,
+    deliveryCharge, amount,
+    finalAmount, customerName,
+    mobile, location, paymentMode
+  });
+  // console.log(food);
+  res.json({
+    message: "Your order has been placed successfully."
+  })
+
+})
+
+
+
+
 
 //for keep alive the backend in render
 app.get("/health", async (req, res) => {

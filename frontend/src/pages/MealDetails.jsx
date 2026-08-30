@@ -8,6 +8,7 @@ import AllCount from "../context/allCount";
 import { useNavigate, useParams } from "react-router-dom";
 import { ShortMsg } from "../components/MessageBar";
 import { Clock, Flame, Star } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import FeedbackDashboard from "../components/FeedbackDashboard";
 import FeedbackCard from "../components/FeedbackCard";
 const MealDetails = () => {
@@ -15,7 +16,7 @@ const MealDetails = () => {
   const navigate = useNavigate();
   const { favCount, setFavCount, cartCount, setCartCount, user } =
     useContext(AllCount);
-  console.log(user);
+  // console.log(user);
   // ----------------------     STATES     ----------------------------
   const [fav, setFav] = useState(false);
   const [inCart, setInCart] = useState(false);
@@ -399,23 +400,26 @@ const MealDetails = () => {
   // };
 
   // ================================================= Place order =============================================================
-  
-  const foodObj={
-    foodId:food,
-    quantity:quantity,
+
+  const foodObj = {
+    foodId: food,
+    quantity: quantity,
     price: finalPrice,
-    available:food.available
-  }
-  
-  console.log(foodObj)
+    available: food.available,
+  };
+
+  // console.log(foodObj);
   const buy = async () => {
     navigate("/place-order", {
-      state: { items:[foodObj] },
+      state: { items: [foodObj] },
     });
   };
 
   return (
     <div className="fixed inset-0 h-dvh flex flex-col">
+      <Helmet>
+        <title>BiteBox | Meal Details</title>
+      </Helmet>
       {/* Top navbar */}
       <CustomNav text="Meal Details" />
 

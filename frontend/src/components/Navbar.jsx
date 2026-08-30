@@ -47,8 +47,8 @@ const Navbar = ({ onClick }) => {
       {/* Right side */}
       {loggedin ? (
         <button
-          type="button"
-          onClick={onClick}
+          // type="button"
+          // onClick={onClick}
           className="flex items-center gap-2 rounded-full bg-white/15 px-2 py-1.5 backdrop-blur-sm transition hover:bg-white/25 active:scale-95"
         >
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-red-600">
