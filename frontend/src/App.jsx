@@ -17,8 +17,8 @@ import ResetPassword from "./components/ResetPassword";
 import Sidebar from "./components/Sidebar";
 import OrderDetails from "./pages/OrderDetails";
 import PlaceOrder from "./pages/PlaceOrder";
-import Dashboard from "./pages/Dashboard";
-import AdminOrder from "./pages/AdminOrder";
+import Dashboard from "../../app/src/pages/Dashboard";
+import AdminOrder from "../../app/src/pages/AdminOrder";
 const App = () => {
   const { user, setUser } = useContext(AllCount);
   useEffect(() => {
@@ -74,8 +74,6 @@ const App = () => {
         <Route path="/help" element={<HelpingPage />} />
         {/* for test and development purpose */}
         <Route path="/search" element={<Search />} />
-        <Route path="/admin" element={<Dashboard />} />
-        <Route path="/admin/order" element={<AdminOrder />} />
       </Routes>
     </div>
   );

@@ -22,6 +22,7 @@ import categoryRoute from "./routes/category.js";
 import reviewRoute from "./routes/reviews.js";
 import userRoute from "./routes/user.js";
 import updateRoute from "./routes/update.js";
+import adminRoute from "./routes/admin.js";
 
 //middleware
 import checkAuth from "./middleware/authentication.js"
@@ -35,10 +36,12 @@ connectDB();
 // middleware functions
 app.use(
   cors({
-    origin: ["http://10.97.194.131:5173",
-      "http://10.97.194.131:5174",
+    origin: [
+      "http://10.90.88.131:5173",
+      "http://10.90.88.131:5174",
       "http://172.30.22.131:5173",
-      "https://bite-box-weld.vercel.app"]
+      "https://bite-box-weld.vercel.app"
+      ]
     , credentials: true,
   })
 );
@@ -75,6 +78,7 @@ app.use("/auth", authentication);
 app.use("/user", userRoute);
 app.use("/update", updateRoute);
 app.use("/reviews", reviewRoute);
+app.use("/admin",adminRoute);
 
 //route for popular, trending, recomendations
 app.get("/tag/:anything", async (req, res) => {
@@ -92,12 +96,20 @@ app.get("/meal/:id", async (req, res) => {
 })
 
 
+//always gives the current date's data
 app.get("/order", checkAuth, async (req, res) => {
-  const data = await Order.find({ customerId: req.user.toString() }).sort({ createdAt: -1 });
+  const user = req.user;
+  const data = await Order.find({
+    customerId: user
+  }).sort({ createdAt: -1 });
+
+
   if (data.length === 0) { return res.json({ message: "No order yet" }); }
-  console.log(data)
   res.json({ data })
 })
+
+
+
 app.post("/order", checkAuth, async (req, res) => {
   const { food,
     deliveryCharge,
@@ -119,7 +131,7 @@ app.post("/order", checkAuth, async (req, res) => {
   const orderId = `${formattedDate}-${random}-${lastFour}`
 
   const paymentMode = "online";
-  const status = "Delivered"
+  const status = "Pending"
   const what = Order.create({
     items: food, customerId: req.user, orderId, status,
     deliveryCharge, amount,
@@ -137,7 +149,10 @@ app.post("/order", checkAuth, async (req, res) => {
 
 
 
-//for keep alive the backend in render
+// for keep alive the backend in render
+
+
+
 app.get("/health", async (req, res) => {
   console.log("hello");
   return res.status(200).json({ code: "success", message: "Active successfull." });

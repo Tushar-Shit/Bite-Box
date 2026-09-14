@@ -128,8 +128,11 @@ const Home = () => {
           },
         );
         const cartArray = await data.json();
-        if (cartArray.length >= 0) setCartFoods(cartArray);
-        else setCartFoods([]);
+        if (cartArray.length >= 0) {
+          console.log(cartArray);
+          // setCartFoods(cartArray);
+          // setCartFoods([...cartArray]);
+        } else setCartFoods([]);
       } catch (err) {
         console.log(err);
       }

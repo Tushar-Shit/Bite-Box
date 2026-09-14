@@ -124,11 +124,12 @@ const ItemList = () => {
               id={item._id}
               isFav={favFoods.some((food) => food._id === item._id)}
               inCart={
-                user.userName
+                cartFoods.length > 0 &&
+                (user.userName
                   ? cartFoods.some(
                       (cartFood) => cartFood.foodId._id === item._id,
                     )
-                  : cartFoods.some((food) => food._id === item._id)
+                  : cartFoods.some((food) => food._id === item._id))
               }
               available={item.available}
               satisfymessage={satisfymessage}

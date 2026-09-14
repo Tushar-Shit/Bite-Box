@@ -2,13 +2,13 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import categoryData from "./categoryData";
-import foodData from "./Fooddata";
-import reviewData from "./reviewData";
 import mongoose from "mongoose";
-import Category from "../models/categories";
-import FoodItems from "../models/foodItem";
-import Reviews from "../models/reviews";
+import categoryData from "./categoryData.js";
+import foodData from "./Fooddata.js";
+import reviewData from "./reviewData.js";
+import Category from "../models/categories.js";
+import FoodItems from "../models/foodItem.js";
+import Reviews from "../models/reviews.js";
 // from 'dotenv').config();
 
 
