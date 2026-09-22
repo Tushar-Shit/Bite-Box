@@ -11,6 +11,7 @@ import { Clock, Flame, Star } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import FeedbackDashboard from "../components/FeedbackDashboard";
 import FeedbackCard from "../components/FeedbackCard";
+import SquareFC from "../components/SquareFC";
 const MealDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const MealDetails = () => {
   const [fav, setFav] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [food, setFood] = useState({});
+  const [ratings, setRatings] = useState([]);
   const [allReviews, setAllReviews] = useState([]);
   const [quantity, setQuantity] = useState(1);
 
@@ -34,9 +36,10 @@ const MealDetails = () => {
     const getData = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/meal/${id}`);
-        const { foodItem, reviews } = await res.json();
-        // console.log(reviews);
+        const { foodItem, ratings, reviews } = await res.json();
+
         setFood(foodItem);
+        setRatings(ratings);
         setAllReviews(reviews);
       } catch (err) {
         console.log(err);
@@ -315,14 +318,14 @@ const MealDetails = () => {
 
   // ================================= REVIEWS CALCULATION ==============================
   const averageRating =
-    allReviews.reduce((sum, item) => sum + item.rating, 0) / allReviews.length;
+    ratings.reduce((sum, item) => sum + item.rating, 0) / ratings.length;
   let fiveStar = 0;
   let fourStar = 0;
   let threeStar = 0;
   let twoStar = 0;
   let oneStar = 0;
 
-  for (let item of allReviews) {
+  for (let item of ratings) {
     switch (item.rating) {
       case 5:
         fiveStar++;
@@ -427,7 +430,7 @@ const MealDetails = () => {
       {msg && <ShortMsg message={msg} />}
       <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
         {/* Food image and background */}
-        <div className="relative overflow-visible">
+        <div className="relative overflow-visible lg:w-4/9 lg:top-1">
           <div className="absolute w-72 h-72 rounded-full bg-[#fff6cd]/40 blur-3xl mix-blend-screen pointer-events-none transform -translate-y-4"></div>
           <div className="relative z-10 flex items-center justify-center">
             <img
@@ -441,9 +444,8 @@ const MealDetails = () => {
           </div>
           <p className="mt-1 text-2xl text-center font-bold">{food.name}</p>
         </div>
-
         {/* price and regulator */}
-        <div className="border mt-2 mx-3 px-3 py-2 rounded-xl border-[#ffbee0d6] bg-[#ffebebf0] flex justify-between items-center">
+        <div className="border mt-2 mx-3 px-3 py-2 rounded-xl border-[#ffbee0d6] bg-[#ffebebf0] flex justify-between items-center lg:w-22/50">
           <div className="pl-3">
             <p className="text-xl font-bold text-[#ea005d]">₹{food.price}</p>
             <p className="text-sm font-semibold">
@@ -468,9 +470,8 @@ const MealDetails = () => {
             </button>
           </div>
         </div>
-
         {/* extra information */}
-        <div className="mt-2 px-2 flex items-center justify-around">
+        <div className="mt-2 px-2 flex items-center justify-around lg:w-22/50">
           <div className="max-h-15 max-w-35 border border-[#7d7d7d] flex gap-1.5 items-center p-2 rounded-lg">
             <div className="text-red">
               <Clock color="#ff2445" />
@@ -489,19 +490,18 @@ const MealDetails = () => {
               <p className="text-xs">Calories</p>
             </div>
           </div>
-          {allReviews.length > 0 && (
+          {ratings.length > 0 && (
             <div className="max-h-15 max-w-35 border border-[#7d7d7d] flex gap-1.5 items-center p-2 rounded-lg">
               <div className="text-red">
                 <Star color="#ffd000" fill="#ffd000" />
               </div>
               <div>
                 <p className="text-md font-bold">{averageRating.toFixed(1)}</p>
-                <p className="text-xs">({allReviews.length} reviews)</p>
+                <p className="text-xs">({ratings.length} reviews)</p>
               </div>
             </div>
           )}
         </div>
-
         {/* <form onSubmit={handleSubmit} className="border text-center">
           <div>
             <label>Name</label>
@@ -539,9 +539,8 @@ const MealDetails = () => {
             Submit
           </button>
         </form> */}
-
         {/* Description */}
-        <div className="px-6 h-fit mt-4 mb-2">
+        <div className="px-6 h-fit mt-4 mb-2 lg:w-22/50">
           <div className="text-lg font-bold text-red-700">Description</div>
           <p className="text-zinc-700 leading-relaxed text-sm text-justify">
             {fullDescription ? food.description : truncatedDescription}
@@ -555,11 +554,10 @@ const MealDetails = () => {
             )}
           </p>
         </div>
-
         {/* feedback section */}
         {allReviews.length > 0 && (
-          <div className="mt-5">
-            <div className="pl-5 text-lg font-bold text-zinc-700 mb-1 flex gap-1 items-baseline">
+          <div className="mt-5 lg:w-27/50 lg:absolute lg:top-16 lg:right-2">
+            <div className="pl-5 text-lg font-bold text-zinc-700 mb-1 flex gap-1 items-baseline lg:hidden">
               {/* <span className="border-2 border-[#ff9d00] h-4"></span>Feedbacks */}
               <span className="border-2 border-[#ff005d] h-4"></span>Feedbacks
             </div>
@@ -567,7 +565,7 @@ const MealDetails = () => {
             {/* feedback dashboard */}
             <FeedbackDashboard
               avgRating={averageRating}
-              totalRating={allReviews.length}
+              totalRating={ratings.length}
               fiveStar={fiveStar}
               fourStar={fourStar}
               threeStar={threeStar}
@@ -576,24 +574,174 @@ const MealDetails = () => {
             />
 
             {/* feedback card */}
-            {allReviews.map((item) => (
-              <FeedbackCard
-                key={item.author}
-                name={item.author}
-                text={item.comment}
-                star={item.rating}
-              />
-            ))}
+            <div className="mt-2 overflow-x-auto scrollbar-none flex lg:p-0 lg:h-70 lg:overflow-x-hidden lg:block">
+              {allReviews.map((item) => (
+                <FeedbackCard
+                  key={item.comment}
+                  name={item.author}
+                  text={item.comment}
+                  star={item.rating}
+                />
+              ))}
+            </div>
           </div>
         )}
+        {/* suggest some other food items */}
+        <h3 className="m-0 mt-5 text-md pl-3 font-bold lg:hidden">You might like</h3>
+        {/* <div className="flex  lg:absolute lg:right-6 lg:w-[52vw] lg:bottom-1 overflow-x-auto scrollbar-none">
+
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          <SquareFC
+            key="hello"
+            id="6aa7f82eae81240c6679b031"
+            image="https://img.magnific.com/free-psd/roasted-chicken-dinner-platter-delicious-feast_632498-25445.jpg?semt=ais_hybrid&w=740&q=80"
+            name="Vegetable"
+            description="Good for health"
+            servingQuantity="5"
+            quantity="1"
+            price="50"
+            unit="KG"
+            isFav={true}
+            available={true}
+            suggestion={true}
+          />
+          
+        </div> */}
       </main>
       {/* Bottom action bar */}
-      <BottomActionBar
-        onClick={addCart}
-        price={finalPrice}
-        state={inCart}
-        buy={buy}
-      />
+      <div className="lg:w-23/50">
+        <BottomActionBar
+          onClick={addCart}
+          price={finalPrice}
+          state={inCart}
+          buy={buy}
+        />
+      </div>
     </div>
   );
 };

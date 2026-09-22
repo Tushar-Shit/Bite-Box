@@ -15,7 +15,7 @@ router.get("/", asyncHandler(async (req, res) => {
 router.get("/:item", asyncHandler(async (req, res) => {
     const { item } = req.params;
     const category = await Category.findOne({ name: item });
-    const fooditems = await FoodItem.find({ category: category._id });
+    const fooditems = await FoodItem.find({ category: category._id }).populate("rating");
     res.json({ fooditems });
 }));
 

@@ -79,7 +79,7 @@ const Home = () => {
           setTrending(trendingFood.slice(0, 10));
           setPopular(popularFood.slice(0, 4));
           setRecommended(recommendedFood.slice(0, 6));
-          setBestSeller(bestSellerFood.slice(0, 8));
+          setBestSeller(bestSellerFood.slice(0, 5));
           setChefChoice(chefChoiceFood.slice(0, 4));
         }
       } catch (err) {
@@ -130,8 +130,7 @@ const Home = () => {
         const cartArray = await data.json();
         if (cartArray.length >= 0) {
           console.log(cartArray);
-          // setCartFoods(cartArray);
-          // setCartFoods([...cartArray]);
+          setCartFoods(cartArray);
         } else setCartFoods([]);
       } catch (err) {
         console.log(err);
@@ -229,6 +228,7 @@ const Home = () => {
                   isFav={favFoods.some((food) => food._id === item._id)}
                   available={item.available}
                   satisfymessage={satisfymessage}
+                  rating={item.rating}
                 />
               ))}
               <Link to={`/tag/trending`}>
@@ -266,6 +266,7 @@ const Home = () => {
                   }
                   available={item.available}
                   satisfymessage={satisfymessage}
+                  rating={item.rating}
                 />
               ))}
             </div>
@@ -286,6 +287,7 @@ const Home = () => {
                   price={item.price}
                   unit={item.unit}
                   available={item.available}
+                  rating={item.rating}
                 />
               ))}
               <Link to={`/tag/bestseller`}>
@@ -316,6 +318,7 @@ const Home = () => {
                   isFav={favFoods.some((food) => food._id === item._id)}
                   available={item.available}
                   satisfymessage={satisfymessage}
+                  rating={item.rating}
                 />
               ))}
             </div>
@@ -350,6 +353,7 @@ const Home = () => {
                   }
                   available={item.available}
                   satisfymessage={satisfymessage}
+                  rating={item.rating}
                 />
               ))}
             </div>

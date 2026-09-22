@@ -18,10 +18,11 @@ const HorizontalFC = ({
   satisfymessage,
   //design purpose
   view,
+  rating,
 }) => {
   const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
-
+  console.log(rating);
   const [fav, setFav] = useState(isFav);
   const [cartIcon, setCartIcon] = useState(inCart);
   useEffect(() => {
@@ -154,6 +155,11 @@ const HorizontalFC = ({
     }
   };
 
+  //calculating ratings
+  const averageRating = rating.length
+    ? rating.reduce((acc, item) => acc + item.rating, 0) / rating.length
+    : 0;
+
   return (
     <Link
       to={`/meal/${id}`}
@@ -187,7 +193,7 @@ const HorizontalFC = ({
               {name}
             </span>
             {/* <div className="relative z-10 shrink-0  active:scale-90 transition-transform"> */}
-              <Heartclick onClick={handle} isFav={fav} />
+            <Heartclick onClick={handle} isFav={fav} />
             {/* </div> */}
           </div>
 
@@ -256,7 +262,7 @@ const HorizontalFC = ({
                 id="rating"
                 className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-bold text-amber-700"
               >
-                🔥4.3
+                🔥{averageRating}
               </span>
             </div>
 

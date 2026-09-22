@@ -1,5 +1,5 @@
-import React from "react";
-import { Truck } from "lucide-react";
+import React, { useState } from "react";
+import { Truck, Check } from "lucide-react";
 import { format } from "date-fns";
 import { NoOrder, TabStrip } from "./Atomic";
 
@@ -7,7 +7,30 @@ export default function DeliveryOrders({ orders }) {
   const deliveryOrders = orders.filter(
     (order) => order.status === "Out for Delivery",
   );
-console.log(orders)
+  console.log(orders);
+  const [delivered, setDelivered] = useState(null);
+  const handle = async (order, code) => {
+    console.log(order.orderId, code);
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/admin/delivered`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: order.orderId,
+          code: code,
+        }),
+      },
+    );
+    const { message } = await response.json();
+    console.log(message);
+    if (message === "Order Delivered") {
+      setDelivered(true);
+    }
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -26,7 +49,13 @@ console.log(orders)
       {deliveryOrders.length > 0 ? (
         <div className="overflow-x-auto max-h-[calc(100vh-350px)] overflow-y-auto">
           <table className="w-full min-w-225">
-            <TabStrip address={true} amount={true} payment={true} status={true} />
+            <TabStrip
+              address={true}
+              amount={true}
+              payment={true}
+              status={true}
+              action={true}
+            />
 
             <tbody className="divide-y divide-gray-100">
               {deliveryOrders.map((order) => (
@@ -59,7 +88,7 @@ console.log(orders)
                   </td>
 
                   <td className="px-4 py-3">
-                   <p className="font-normal text-gray-800">
+                    <p className="font-normal text-gray-800">
                       {order.location}
                     </p>
                   </td>
@@ -89,11 +118,30 @@ console.log(orders)
                     </span>
                   </td>
 
-                  {/* <td className="px-4 py-3">
-                    <p className="text-[12px] text-gray-500 font-medium whitespace-nowrap">
-                      {format(order.createdAt, "d MMM, yyyy hh:mm a")}
-                    </p>
-                  </td> */}
+                  {/* Accept */}
+                  <td className="px-4 py-3">
+                    {delivered ? (
+                      <button
+                        type="button"
+                        onClick={() => handle(order, "Delivered")}
+                        className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-emerald-200 active:scale-95 transition cursor-pointer
+                        bg-emerald-50 text-emerald-600 border border-emerald-200"
+                      >
+                        <Check className="w-3 h-3" />
+                        Item Delivered Successfully
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handle(order, "Delivered")}
+                        className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-emerald-200 active:scale-95 transition cursor-pointer
+                        bg-emerald-50 text-emerald-600 border border-emerald-200"
+                      >
+                        <Check className="w-3 h-3" />
+                        Delivered
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

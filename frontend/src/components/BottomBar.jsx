@@ -191,21 +191,21 @@ const BottomActionBar = ({ onClick, price, state, buy }) => {
     }
   };
   return (
-    <div className="flex justify-around py-4 items-center rounded-t-lg bg-zinc-300">
+    <div className="flex justify-around py-4 items-center rounded-t-lg bg-zinc-300 lg:bg-white">
       {state ? (
         <div
-          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50 cursor-pointer"
+          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50 cursor-pointer lg:text-gray-300 lg:bg-red-500"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             onClick(e);
           }}
         >
-          <ShoppingCart fill="black" /> Remove Item
+          <ShoppingCart fill="gray" /> Remove Item
         </div>
       ) : (
         <div
-          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50 cursor-pointer"
+          className="w-[40%] flex gap-2 py-2 rounded-lg justify-center text-lg bg-zinc-50 cursor-pointer lg:bg-emerald-600"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -216,7 +216,7 @@ const BottomActionBar = ({ onClick, price, state, buy }) => {
         </div>
       )}
       <div
-        className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold bg-amber-500 cursor-pointer"
+        className="w-[40%] flex py-2 rounded-lg justify-center gap-2 text-lg font-bold text-gray-900 bg-[#e8631c] cursor-pointer"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

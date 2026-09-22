@@ -18,6 +18,7 @@ const ItemList = () => {
   //fetch all food data within a category or tag
   const [fooddata, setFoodData] = useState([]);
   const [favFoods, setFavFoods] = useState([]);
+  // const [ratings, setRatings] = useState([]);
   useEffect(() => {
     async function getData() {
       try {
@@ -28,6 +29,7 @@ const ItemList = () => {
           );
           const { fooditems } = await res.json();
           setFoodData(fooditems);
+          console.log(fooditems);
         }
 
         //fetch tag categories
@@ -53,6 +55,13 @@ const ItemList = () => {
         );
         const { favourites } = await res.json();
         setFavFoods(favourites);
+
+        // const ratingsRes = await fetch(
+        //   `${import.meta.env.VITE_API_URL}/update/favourite`,
+        //   {
+        //     credentials: "include",
+        //   },
+        // );
       } catch (err) {
         console.error(err);
       }
@@ -135,6 +144,7 @@ const ItemList = () => {
               satisfymessage={satisfymessage}
               //design purpose
               view={"list"}
+              rating={item.rating}
             />
           ))}
         </div>

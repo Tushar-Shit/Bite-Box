@@ -12,7 +12,7 @@ const FeedbackCard = ({ name, text, star }) => {
   const totalStar = [1, 2, 3, 4, 5];
   return (
     <div
-      className="border border-[#808080] mx-4 p-2 rounded-xl mb-3"
+      className="bg-zinc-100 border-[#808080] mx-4 p-2 rounded-xl lg:mb-2"
       // style={{ backgroundColor: color[star] }}
     >
       <div className="flex items-center justify-between mb-1">
@@ -24,13 +24,13 @@ const FeedbackCard = ({ name, text, star }) => {
           {totalStar.map((index) => (
             <Star
               size={15}
-              fill={`${index <= star ? "#000000" : "#9b9b9b"}`}
-              color={`${index <= star ? "#000000" : "#9b9b9b"}`}
+              fill={`${index <= star ? "#ff9d00" : "#9b9b9b"}`}
+              color={`${index <= star ? "#ff9d00" : "#9b9b9b"}`}
             />
           ))}
         </div>
       </div>
-      <div className="text-justify text-sm">{text}</div>
+      <div className="text-justify text-sm w-[75vw]">{text}</div>
     </div>
   );
 };

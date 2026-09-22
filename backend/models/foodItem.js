@@ -13,6 +13,10 @@ const foodItem = new mongoose.Schema({
     },
     available: Boolean,
     tag: String,
+    rating: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "review",
+    }],
 });
 
 const FoodItems = mongoose.model("foodItem", foodItem);

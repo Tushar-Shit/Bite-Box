@@ -18,7 +18,7 @@ const Order = () => {
     quantity: item.quantity,
     price: item.price,
   }));
-  // console.log(foodItems);
+  console.log(foodItems);
   const totalAmount = foodItems.reduce((acc, item) => item.price + acc, 0);
   const deliveryCharge = 20;
 
@@ -61,7 +61,9 @@ const Order = () => {
 
   const [updateMessage, setUpdateMessage] = useState(null);
   const registerOrder = async () => {
-    console.log({});
+    if (payOption === "") {
+      return;
+    }
     const response = await fetch(`${import.meta.env.VITE_API_URL}/order`, {
       method: "POST",
       credentials: "include",
@@ -76,6 +78,7 @@ const Order = () => {
         customerName: customerName,
         mobile: customerMobile,
         location: deliveryAddress,
+        paymentMode: payOption,
       }),
     });
     const { message } = await response.json();
@@ -122,7 +125,13 @@ const Order = () => {
   // close success message and update form
   const close = () => {
     setUpdateMessage(null);
-    navigate(-1);
+    navigate("/orders");
+  };
+
+  const [payOption, setPayOption] = useState("");
+  const PaymentOption = (e) => {
+    console.log(e.target.value);
+    setPayOption(e.target.value);
   };
   return (
     <div className="fixed inset-0 h-dvh flex flex-col">
@@ -225,8 +234,33 @@ const Order = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-zinc-900">Payment Options</h2>
           </div>
-          <p className="text-zinc-600">Cash on Delivery</p>
-          <p className="text-zinc-600">Online Payment</p>
+          <form>
+            <div className="flex gap-1 mb-2 p-0 ">
+              <input
+                type="radio"
+                name="payment_method"
+                id="COD"
+                value="Cash on Delivery"
+                onChange={PaymentOption}
+              />
+              <label htmlFor="COD" className="text-zinc-600">
+                Cash on Delivery
+              </label>
+            </div>
+
+            <div className="flex gap-1 mb-2 p-0 ">
+              <input
+                type="radio"
+                name="payment_method"
+                id="online"
+                value="Online"
+                onChange={PaymentOption}
+              />
+              <label htmlFor="online" className="text-zinc-600">
+                Online Payment
+              </label>
+            </div>
+          </form>
           <div className="flex justify-center">
             <button
               onClick={registerOrder}

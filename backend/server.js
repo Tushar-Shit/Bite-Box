@@ -37,11 +37,13 @@ connectDB();
 app.use(
   cors({
     origin: [
+      "https://svhfpqz2-5173.inc1.devtunnels.ms/",
+      "https://svhfpqz2-5174.inc1.devtunnels.ms/",
       "http://10.90.88.131:5173",
       "http://10.90.88.131:5174",
       "http://172.30.22.131:5173",
       "https://bite-box-weld.vercel.app"
-      ]
+    ]
     , credentials: true,
   })
 );
@@ -53,11 +55,11 @@ app.use(cookieParser());
 // home route
 app.get("/", async (req, res) => {
   try {
-    const trendingFood = await FoodItem.find({ tag: "trending" }).limit(5);
-    const popularFood = await FoodItem.find({ tag: "popular" }).limit(4);
-    const recommendedFood = await FoodItem.find({ tag: "recommended" }).limit(4);
-    const bestSellerFood = await FoodItem.find({ tag: "bestseller" }).limit(5);
-    const chefChoiceFood = await FoodItem.find({ tag: "chefchoice" }).limit(4);
+    const trendingFood = await FoodItem.find({ tag: "trending" }).limit(5).populate("rating");
+    const popularFood = await FoodItem.find({ tag: "popular" }).limit(4).populate("rating");
+    const recommendedFood = await FoodItem.find({ tag: "recommended" }).limit(4).populate("rating");
+    const bestSellerFood = await FoodItem.find({ tag: "bestseller" }).limit(5).populate("rating");
+    const chefChoiceFood = await FoodItem.find({ tag: "chefchoice" }).limit(4).populate("rating");
 
     const everything = {
       trendingFood,
@@ -78,7 +80,7 @@ app.use("/auth", authentication);
 app.use("/user", userRoute);
 app.use("/update", updateRoute);
 app.use("/reviews", reviewRoute);
-app.use("/admin",adminRoute);
+app.use("/admin", adminRoute);
 
 //route for popular, trending, recomendations
 app.get("/tag/:anything", async (req, res) => {
@@ -90,9 +92,12 @@ app.get("/tag/:anything", async (req, res) => {
 //meal details page's data
 app.get("/meal/:id", async (req, res) => {
   const { id } = req.params;
-  const foodItem = await FoodItem.findById(id);
-  const reviews = await Reviews.find({ food_belong: id });
-  res.json({ foodItem, reviews });
+  const foodItem = await FoodItem.findById(id)
+  // .populate("rating");
+  // console.log(foodItem)
+  const ratings = await Reviews.find({ food_belong: id });
+  const reviews = ratings.filter(item => item.comment);
+  res.json({ foodItem, ratings, reviews });
 })
 
 
@@ -118,6 +123,7 @@ app.post("/order", checkAuth, async (req, res) => {
     customerName,
     mobile,
     location,
+    paymentMode
   } = req.body;
 
   const date = new Date();
@@ -130,7 +136,7 @@ app.post("/order", checkAuth, async (req, res) => {
   const random = Math.floor(Math.random() * 100) + 1;
   const orderId = `${formattedDate}-${random}-${lastFour}`
 
-  const paymentMode = "online";
+  // const paymentMode = "online";
   const status = "Pending"
   const what = Order.create({
     items: food, customerId: req.user, orderId, status,
@@ -145,9 +151,24 @@ app.post("/order", checkAuth, async (req, res) => {
 
 })
 
+//get order by orderId
+app.get("/order/status/:orderId", async (req, res) => {
+  const { orderId } = req.params;
+  console.log(orderId);
+  const order = await Order.findOne({ orderId });
+  res.json({ order });
+});
 
+//update order status
+app.patch("/order/status/:orderId", async (req, res) => {
+  const { orderId } = req.params;
+  console.log(orderId)
+  const { status } = req.body;
 
-
+  const order = await Order.findOneAndUpdate({ orderId }, { status }, { after: true });
+  console.log(order)
+  res.json({ order, message: "order cancelled successfully" });
+});
 
 // for keep alive the backend in render
 

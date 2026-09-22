@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 // import { exportString } from "node:ffi";
 
-
-
 const OrderCard = ({
   id,
   orderId,
@@ -13,7 +11,7 @@ const OrderCard = ({
   payMode,
   items,
   date_time,
-  totalOrder
+  totalOrder,
 }) => {
   let orderItems;
   let remain = 0;
@@ -61,7 +59,11 @@ const OrderCard = ({
   const currentStatus = statusStyle[status] || statusStyle.Pending;
 
   return (
-    <div className="w-full border border-[#c7c7c7] rounded-xl p-2 bg-[#f3f3f3] shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+    <Link
+      to={`/orders/${orderId}`}
+      state={totalOrder}
+      className="w-full border border-[#c7c7c7] rounded-xl p-2 bg-[#f3f3f3] shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+    >
       {/* Card Header */}
       <div className="flex items-center justify-between px-1 pb-2">
         {/* Order ID */}
@@ -145,20 +147,19 @@ const OrderCard = ({
         </div>
 
         {/* View */}
-        <Link
-          to={`/orders/${orderId}`}
-          state={totalOrder}
+        <p
+          // to={`/orders/${orderId}`}
+          // state={totalOrder}
           className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-pink-50 border border-pink-200 text-pink-600 text-sm font-semibold transition hover:bg-pink-100 active:scale-95"
         >
           <span>View</span>
 
           <ChevronRight size={17} />
-        </Link>
+        </p>
       </div>
-    </div>
+    </Link>
   );
 };
-
 
 const FoodItem = ({ name, quantity }) => {
   return (

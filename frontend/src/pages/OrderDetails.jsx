@@ -1,7 +1,9 @@
+import React, { useEffect, useState } from "react";
 import CustomNav from "../CategoryComponents/CustomNav";
 import BottomBar from "../components/BottomBar";
 import { useLocation } from "react-router-dom";
 import {
+  CircleAlert,
   CalendarDays,
   Check,
   FileText,
@@ -11,12 +13,15 @@ import {
   RefreshCcw,
   ShoppingBag,
   Wallet,
+  Star,
+  Pencil,
 } from "lucide-react";
 
 const OrderDetails = () => {
+  const [order, setOrder] = useState(null);
   const location = useLocation();
   const data = location.state;
-// console.log(data)
+  // console.log(data);
   const date = new Date(data.createdAt);
   const formattedDate = date.toLocaleDateString("en-GB", {
     day: "numeric",
@@ -29,78 +34,328 @@ const OrderDetails = () => {
     hour12: true,
   });
 
+  const [informationText, setInformationText] = useState("");
+  useEffect(() => {
+    const status = async () => {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/order/status/${data.orderId}`,
+        {
+          credentials: "include",
+        },
+      );
+      const { order } = await response.json();
+      setOrder(order);
+      switch (order.status || "Pending") {
+        case "Pending":
+          setInformationText("Your order has been placed successfully.");
+          break;
+        case "Preparing":
+          setInformationText(" Your order is preparing with love. ");
+          break;
+        case "Out for Delivery":
+          setInformationText("Your order is out for delivery.");
+          break;
+        case "Delivered":
+          setInformationText("Your order has been delivered successfully. ");
+          break;
+        case "Rejected":
+          setInformationText("Your order is rejected by the restaurant.");
+          break;
+        case "Cancelled":
+          setInformationText("Your order has been cancelled successfully.");
+          break;
+      }
+      // console.log(order);
+    };
+    status();
+  }, []);
+
+  const [showCancel, setShowCancel] = useState(false);
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (!e.target.closest(".cancel-button")) {
+        setShowCancel(false);
+      }
+    };
+
+    const handleScroll = () => {
+      setShowCancel(false);
+    };
+
+    document.addEventListener("click", handleOutsideClick);
+
+    const main = document.querySelector("main");
+    main?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+      main?.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const [cancelPopup, setCancelPopup] = useState(false);
+
+  const handleCancel = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/order/status/${data.orderId}`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "Cancelled" }),
+      },
+    );
+    const { message } = await response.json();
+    if (message === "order cancelled successfully") {
+      window.location.reload();
+    }
+    setCancelPopup(false);
+  };
+
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+
+  const handleReview = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/reviews/add-review`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating, review, order: order }),
+      },
+    );
+    const { message } = await response.json();
+    if (message === "success") {
+      console.log("rating done");
+    }
+  };
+
   return (
     <div className="fixed inset-0 h-dvh flex flex-col">
       <CustomNav text="Order Details" />
+      {cancelPopup && (
+        <section className="h-screen w-full absolute bg-[#000000]/40 flex items-center justify-center">
+          <div className="py-5 px-4 text-center rounded-lg bg-white">
+            <p className="text-lg">Do you really wants to cancel this order?</p>
+            <div className="mt-5 flex items-center justify-center gap-4">
+              <button
+                onClick={handleCancel}
+                className="py-1 px-8 bg-gray-400 text-white rounded-lg"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => {
+                  setCancelPopup(false);
+                }}
+                className="py-1 px-8 bg-green-700 text-white rounded-lg"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
       <main className="flex-1 min-h-0 overflow-y-auto scrollbar-none py-3 px-2 flex flex-col gap-3">
         {/* ==========================  ORDER SUMMARY ========================= */}
         <section className="border border-zinc-300 bg-white rounded-2xl  shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4 mb-4">
           {/* Date + Time */}
-          <div className="flex items-center gap-2 text-sm text-zinc-500 mb-3">
-            <CalendarDays size={18} className="text-pink-500" />
-            <span>{formattedDate}</span>
-            <span>•</span>
-            <span>{formattedTime}</span>
+          <div className="flex items-center justify-between  text-sm text-zinc-500 mb-3">
+            <div className="flex gap-1">
+              <CalendarDays size={18} className="text-pink-500" />
+              <span>{formattedDate}</span>
+              <span>•</span>
+              <span>{formattedTime}</span>
+            </div>
+            {order?.status === "Delivered" ||
+            order?.status === "Rejected" ||
+            order?.status === "Cancelled" ||
+            order?.status === "Out for Delivery" ? null : (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowCancel(true);
+                }}
+              >
+                <CircleAlert size={20} color="grey" />
+              </span>
+            )}
           </div>
 
+          <div className="flex items-center justify-between">
+            {order?.status === "Rejected" || order?.status === "Cancelled" ? (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm font-semibold">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                {order?.status}
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 border border-green-200 text-green-600 text-sm font-semibold">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                {order?.status}
+              </div>
+            )}
+            <span
+              className={`cancel-button bg-red-50 p-1 px-3 border border-red-100 rounded-xl text-red-500 ${
+                showCancel ? "block" : "hidden"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCancelPopup(true);
+              }}
+            >
+              Cancel
+            </span>
+          </div>
           <h1 className="text-2xl font-bold text-zinc-900 mb-3">
             Order #{data.orderId}
           </h1>
-          
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 border border-green-200 text-green-600 text-sm font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-            {data.status}
-          </div>
 
-          <p className="text-sm text-zinc-600 mt-3">
-            Your order has been delivered successfully.
-          </p>
+          <p className="text-sm text-zinc-600 mt-3">{informationText}</p>
 
           {/* ======================= ORDER TIMELINE ========================== */}
-          <div className="mt-5 pt-5 border-t border-zinc-300">
+          <div className="mt-5 pt-2 border-t border-zinc-300">
             <div className="flex items-start justify-between">
-              {/* Order Placed */}
-              <TimelineStep
-                icon={<FileText size={17} />}
-                title="Order Placed"
-                time="07:45 PM"
-                active
-              />
+              {order?.status === "Rejected" || order?.status === "Cancelled" ? (
+                <>
+                  <TimelineStep
+                    icon={<FileText size={17} />}
+                    title="Order Placed"
+                    time=""
+                    active
+                  />
+                  <div className="flex-1 h-0.5 bg-red-500 mt-5 mx-1" />
+                  <TimelineStep
+                    icon={<ShoppingBag size={17} />}
+                    title={order?.status}
+                    time=""
+                    active
+                  />
+                </>
+              ) : (
+                <>
+                  {/* order placed */}
+                  <TimelineStep
+                    icon={<FileText size={17} />}
+                    title="Order Placed"
+                    time=""
+                    completed
+                  />
 
-              {/* Line */}
-              <div className="flex-1 h-0.5 bg-green-500 mt-5 mx-1" />
+                  {/* line after order placed */}
+                  {order?.status === "Preparing" ||
+                  order?.status === "Out for Delivery" ||
+                  order?.status === "Delivered" ? (
+                    <div className="flex-1 h-0.5 bg-green-500 mt-5 mx-1" />
+                  ) : (
+                    <div className="flex-1 h-0.5 bg-gray-300 mt-5 mx-1" />
+                  )}
 
-              {/* Preparing */}
-              <TimelineStep
-                icon={<ShoppingBag size={17} />}
-                title="Preparing"
-                time="07:50 PM"
-                active
-              />
+                  {/* preparing  */}
+                  <TimelineStep
+                    icon={<ShoppingBag size={17} />}
+                    title="Preparing"
+                    time=""
+                    // active
+                    completed={
+                      order?.status === "Preparing" ||
+                      order?.status === "Out for Delivery" ||
+                      order?.status === "Delivered"
+                        ? true
+                        : false
+                    }
+                  />
 
-              <div className="flex-1 h-0.5 bg-green-500 mt-5 mx-1" />
+                  {/* line after preparing */}
+                  {order?.status === "Out for Delivery" ||
+                  order?.status === "Delivered" ? (
+                    <div className="flex-1 h-0.5 bg-green-500 mt-5 mx-1" />
+                  ) : (
+                    <div className="flex-1 h-0.5 bg-gray-300 mt-5 mx-1" />
+                  )}
 
-              {/* On the way */}
-              <TimelineStep
-                icon={<Package size={17} />}
-                title="On the Way"
-                time="08:05 PM"
-                active
-              />
+                  {/* On the way */}
+                  <TimelineStep
+                    icon={<Package size={17} />}
+                    title="On the Way"
+                    time=""
+                    // active
+                    completed={
+                      order?.status === "Out for Delivery" ||
+                      order?.status === "Delivered"
+                        ? true
+                        : false
+                    }
+                  />
 
-              <div className="flex-1 h-0.5 bg-green-500 mt-5 mx-1" />
-
-              {/* Delivered */}
-              <TimelineStep
-                icon={<Check size={17} />}
-                title="Delivered"
-                time="08:24 PM"
-                active
-                completed
-              />
+                  {/* line after on the way */}
+                  {order?.status === "Delivered" ? (
+                    <div className="flex-1 h-0.5 bg-green-500 mt-5 mx-1" />
+                  ) : (
+                    <div className="flex-1 h-0.5 bg-gray-300 mt-5 mx-1" />
+                  )}
+                  {/* Delivered */}
+                  <TimelineStep
+                    icon={<Check size={17} />}
+                    title="Delivered"
+                    time=""
+                    // active
+                    completed={order?.status === "Delivered" ? true : false}
+                  />
+                </>
+              )}
             </div>
           </div>
         </section>
+
+        {order?.status === "Delivered" && (
+          <section className="bg-white rounded-2xl border border-zinc-300 shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4">
+            <h2 className="text-xl font-bold text-zinc-900 mb-4">
+              Rating & Feedback
+            </h2>
+
+            {/* Stars */}
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  size={32}
+                  strokeWidth={1.5}
+                  onClick={() => setRating(star)}
+                  className={`cursor-pointer transition ${
+                    star <= rating
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-zinc-300"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Review */}
+            <div className="flex flex-col mt-4">
+              <textarea
+                placeholder="Write a review..."
+                name="review"
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+                rows={4}
+                className="w-full p-3 border border-zinc-200 rounded-xl resize-none outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200"
+              />
+
+              <button
+                disabled={rating === 0}
+                onClick={handleReview}
+                className="self-end border py-1.5 px-5 rounded-lg mt-3 bg-emerald-50 border-emerald-200 text-green-800 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Submit
+              </button>
+            </div>
+          </section>
+        )}
 
         {/* =========================== ORDER ITEMS  ================================ */}
         <section className="bg-white rounded-2xl border border-zinc-300 shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4">
@@ -215,8 +470,9 @@ const OrderDetails = () => {
                 {data.paymentMode}
               </p>
               <p className="text-sm text-zinc-500 mt-1">
-                Paid on 50th june 2080
-                03:45PM
+                Paid on <span>{formattedDate}</span>
+                <span className="px-1">•</span>
+                <span>{formattedTime}</span>
               </p>
             </div>
           </div>

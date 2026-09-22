@@ -32,9 +32,11 @@ export default function PendingOrders({ orders }) {
     }
   };
 
+  const [reasonBox, setReasonBox] = useState(false);
   const handleReason = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     console.log("hello");
+    setReasonBox(true);
   };
 
   return (
@@ -192,7 +194,7 @@ export default function PendingOrders({ orders }) {
           message="New orders will appear here when they are placed."
         />
       )}
-      <div className="h-full w-full absolute top-0 bg-black/20 flex items-center justify-center">
+      {/* <div className="h-full w-full absolute top-0 bg-black/20 flex items-center justify-center">
         <form className="p-4 px-8 rounded-2xl bg-white">
           <p className="text-lg font-bold mb-4">
             Pick your reason for rejection:
@@ -263,11 +265,14 @@ export default function PendingOrders({ orders }) {
             </label>
           </div>
 
-          <button type="submit" onClick={handleReason()} className="mt-4 w-full bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition">
+          <button
+            type="submit"
+            className="mt-4 w-full bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition"
+          >
             Submit
           </button>
         </form>
-      </div>
+      </div> */}
     </div>
   );
 }

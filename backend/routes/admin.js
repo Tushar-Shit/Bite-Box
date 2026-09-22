@@ -65,6 +65,22 @@ router.patch("/preparing-orders", asyncHandler(async (req, res) => {
 }));
 
 
+router.patch("/delivered", asyncHandler(async (req, res) => {
+    const { orderId, code } = req.body;
+
+
+    const order = await Order.findOne({ orderId });
+    console.log(order);
+    if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+    }
+    order.status = "Delivered";
+    await order.save();
+    return res.json({ message: "Order Delivered", order });
+
+}));
+
+
 router.get("/orders/search/:query", asyncHandler(async (req, res) => {
     const { query } = req.params;
     console.log(query)
@@ -78,5 +94,6 @@ router.get("/orders/search/:query", asyncHandler(async (req, res) => {
     console.log(data);
     res.json({ data });
 }));
+
 
 export default router;
