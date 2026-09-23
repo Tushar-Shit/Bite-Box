@@ -17,8 +17,8 @@ import ResetPassword from "./components/ResetPassword";
 import Sidebar from "./components/Sidebar";
 import OrderDetails from "./pages/OrderDetails";
 import PlaceOrder from "./pages/PlaceOrder";
-import Dashboard from "../../app/src/pages/Dashboard";
-import AdminOrder from "../../app/src/pages/AdminOrder";
+// import Dashboard from "../../app/src/pages/Dashboard";
+// import AdminOrder from "../../app/src/pages/AdminOrder";
 const App = () => {
   const { user, setUser } = useContext(AllCount);
   useEffect(() => {
