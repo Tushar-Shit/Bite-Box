@@ -22,7 +22,7 @@ const HorizontalFC = ({
 }) => {
   const { favCount, setFavCount, cartCount, setCartCount, user, setUser } =
     useContext(AllCount);
-  console.log(rating);
+  // console.log(rating);
   const [fav, setFav] = useState(isFav);
   const [cartIcon, setCartIcon] = useState(inCart);
   useEffect(() => {

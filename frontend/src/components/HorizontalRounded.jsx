@@ -130,6 +130,7 @@ const HorizontalRounded = ({
             if (item <= averageRating) {
               return (
                 <Star
+                  key={item}
                   size={13}
                   fill={colorClass.starFill}
                   color={colorClass.starStroke || "currentColor"}
@@ -139,6 +140,7 @@ const HorizontalRounded = ({
             } else {
               return (
                 <Star
+                  key={item}
                   size={13}
                   stroke="currentColor"
                   className="text-zinc-400"
@@ -146,7 +148,7 @@ const HorizontalRounded = ({
                 />
               );
             }
-          })}         
+          })}
         </div>
       </div>
     </Link>
