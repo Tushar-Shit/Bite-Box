@@ -37,12 +37,10 @@ connectDB();
 app.use(
   cors({
     origin: [
-      "https://svhfpqz2-5173.inc1.devtunnels.ms/",
-      "https://svhfpqz2-5174.inc1.devtunnels.ms/",
       "http://10.90.88.131:5173",
       "http://10.90.88.131:5174",
       "http://172.30.22.131:5173",
-      "https://bite-box-weld.vercel.app"
+      "https://bite-box-ten.vercel.app"
     ]
     , credentials: true,
   })
