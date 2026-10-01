@@ -95,7 +95,7 @@ const SquareFC = ({
 
 
  //calculating ratings
-  const averageRating = rating.length
+  const averageRating = rating?.length
     ? rating.reduce((acc, item) => acc + item.rating, 0) / rating.length
     : 0;
 

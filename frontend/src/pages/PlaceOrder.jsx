@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { MapPin, Phone } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  CirclePlus,
+  EllipsisVertical,
+  SquarePen,
+  Trash,
+} from "lucide-react";
 import CustomNav from "../CategoryComponents/CustomNav";
 import BottomBar from "../components/BottomBar";
 import OrderCard from "../components/OrderCard";
@@ -9,8 +16,10 @@ const Order = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { items } = location.state;
+console.log(items);
+  // all foods and pricing details
   const foodItems = items.map((item) => ({
-    foodId: item.foodId,
+    foodId: item.foodId._id,
     image: item.foodId.image,
     name: item.foodId.name,
     unit: item.foodId.unit,
@@ -18,21 +27,16 @@ const Order = () => {
     quantity: item.quantity,
     price: item.price,
   }));
-  console.log(foodItems);
   const totalAmount = foodItems.reduce((acc, item) => item.price + acc, 0);
   const deliveryCharge = 20;
 
+  // ===================================   delivery address functionaities   =========================================
   const [customer, setCustomer] = useState({});
   const [customerName, setCustomerName] = useState(null);
   const [customerMobile, setCustomerMobile] = useState(null);
   const [deliveryAddress, setDeliveryAddress] = useState(null);
-  let [updateAddress, setUpdateAddress] = useState(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    mobile: "",
-    address: "",
-  });
 
+  //extract user details for delivery require fields "NAME, MOBILE, DELIVERY ADDRESS"
   useEffect(() => {
     async function getUser() {
       try {
@@ -48,10 +52,10 @@ const Order = () => {
           console.log(data.message);
           return;
         }
-        setCustomer(data);
-        setCustomerMobile(data.mobile);
-        setCustomerName(data.username);
-        setDeliveryAddress(data.address1 ? data.address1 : data.address2);
+        // console.log(data);
+        setCustomerName(data.lastDeliveryAddress.customerName);
+        setCustomerMobile(data.lastDeliveryAddress.mobile);
+        setDeliveryAddress(data.lastDeliveryAddress.location);
       } catch (err) {
         console.log(err);
       }
@@ -59,35 +63,50 @@ const Order = () => {
     getUser();
   }, [location.state.food, location.state.user]);
 
-  const [updateMessage, setUpdateMessage] = useState(null);
-  const registerOrder = async () => {
-    if (payOption === "") {
-      return;
+  const [selectAddress, setSelectAddress] = useState(null); //popup for saved address
+  const [updateAddress, setUpdateAddress] = useState(null); //popup for update address
+  const [allSavedAddress, setAllSavedAddress] = useState([]); //all saved address values
+
+  // extract all saved addresses from database and open saved address popup
+  const extractSaveAddress = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/profile`,
+        {
+          credentials: "include",
+        },
+      );
+      const data = await response.json();
+      setAllSavedAddress(data.address);
+      setSelectAddress(true);
+    } catch (err) {
+      console.log(err);
     }
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/order`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        food: foodItems,
-        deliveryCharge: deliveryCharge,
-        amount: totalAmount,
-        finalAmount: deliveryCharge + totalAmount,
-        customerName: customerName,
-        mobile: customerMobile,
-        location: deliveryAddress,
-        paymentMode: payOption,
-      }),
-    });
-    const { message } = await response.json();
-    setUpdateMessage(message);
-    console.log(message);
   };
 
-  // ======================================== Address update code  =========================================================
+  //pick an address option, set it and close the saved address popup
+  const pickedAddress = (address) => {
+    console.log(address);
+    setCustomerName(address.customerName);
+    setCustomerMobile(address.mobile);
+    setDeliveryAddress(address.location);
+    setSelectAddress(null);
+  };
 
+  // close the saved address popup and open the update address popup
+  const edit = () => {
+    setSelectAddress(null);
+    setUpdateAddress(true);
+  };
+
+  //variables for form data
+  const [formData, setFormData] = useState({
+    name: "",
+    mobile: "",
+    address: "",
+  });
+
+  //sync the form data
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -96,15 +115,8 @@ const Order = () => {
     }));
   };
 
-  const edit = () => {
-    setUpdateAddress(true);
-    formData.name = customerName;
-    formData.mobile = customerMobile;
-    formData.address = deliveryAddress;
-  };
-
-  // const [newAddress, setNewAddress] = useState("");
-  const handleSave = (e) => {
+  // handle the new address entry, update UI, save into database
+  const handleSave = async (e) => {
     e.preventDefault();
     if (
       formData.name.trim() === "" ||
@@ -113,26 +125,125 @@ const Order = () => {
     ) {
       return;
     }
+    // set UI
     setDeliveryAddress(formData.address);
     setCustomerMobile(formData.mobile);
     setCustomerName(formData.name);
     setUpdateAddress(null);
+
+    // save the new address into database
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/add-address`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customerName: formData.name,
+            location: formData.address,
+            mobile: formData.mobile,
+          }),
+        },
+      );
+      const { message } = await response.json();
+      formData.name = "";
+      formData.mobile = "";
+      formData.address = "";
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const closeForm = () => {
-    setUpdateAddress(null);
-  };
-  // close success message and update form
-  const close = () => {
-    setUpdateMessage(null);
-    navigate("/orders");
-  };
-
+  // ============================================== payment options  ====================================
   const [payOption, setPayOption] = useState("");
   const PaymentOption = (e) => {
     console.log(e.target.value);
     setPayOption(e.target.value);
   };
+
+  //============================================ place the actual order===================================
+  const [failed, setFailed] = useState(null); //failed popup if validation failed
+  const [updateMessage, setUpdateMessage] = useState(null); //order conformation popup
+
+  // order place code, after click pay button this block runs
+  const registerOrder = async () => {
+    if (
+      payOption === "" ||
+      customerName === "" ||
+      customerMobile === "" ||
+      deliveryAddress === "" ||
+      !customerName ||
+      !customerMobile ||
+      !deliveryAddress
+    ) {
+      console.log("order again");
+      setFailed(
+        "Please check delivery details and payment options before ordering.",
+      );
+      return;
+    }
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/order`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          food: foodItems,
+          deliveryCharge: deliveryCharge,
+          amount: totalAmount,
+          finalAmount: deliveryCharge + totalAmount,
+          customerName: customerName,
+          mobile: customerMobile,
+          location: deliveryAddress,
+          paymentMode: payOption,
+        }),
+      });
+      const { message } = await response.json();
+      if (message !== "Your order has been placed successfully.") {
+        return setFailed("Something went worng please try again later.");
+      }
+
+      // save the order address
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/update-last-address`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerName: customerName,
+          mobile: customerMobile,
+          location: deliveryAddress,
+        }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      setUpdateMessage(message);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // close all popups
+  const closeForm = () => {
+    setFailed(null);
+    setSelectAddress(null);
+    setUpdateAddress(null);
+  };
+
+  // close corformation popup anr redirect to orders page
+  const close = () => {
+    setUpdateMessage(null);
+    navigate("/orders");
+  };
+
   return (
     <div className="fixed inset-0 h-dvh flex flex-col">
       <Helmet>
@@ -144,7 +255,10 @@ const Order = () => {
         <section className="bg-white rounded-2xl border border-zinc-300 shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4">
           <div className="flex items-center justify-between gap-1">
             <h2 className="text-xl font-bold text-zinc-900">Deliver to:</h2>
-            <button onClick={edit} className="border p-1 rounded-lg ">
+            <button
+              onClick={extractSaveAddress}
+              className="border p-1 rounded-lg cursor-pointer"
+            >
               Change
             </button>
           </div>
@@ -242,8 +356,9 @@ const Order = () => {
                 id="COD"
                 value="Cash on Delivery"
                 onChange={PaymentOption}
+                className="cursor-pointer"
               />
-              <label htmlFor="COD" className="text-zinc-600">
+              <label htmlFor="COD" className="text-zinc-600 cursor-pointer">
                 Cash on Delivery
               </label>
             </div>
@@ -255,8 +370,9 @@ const Order = () => {
                 id="online"
                 value="Online"
                 onChange={PaymentOption}
+                className="cursor-pointer"
               />
-              <label htmlFor="online" className="text-zinc-600">
+              <label htmlFor="online" className="text-zinc-600 cursor-pointer">
                 Online Payment
               </label>
             </div>
@@ -277,20 +393,52 @@ const Order = () => {
 
       {/* success message  */}
       {updateMessage && (
-        <section className="h-screen w-full absolute bg-[#000000]/40 flex items-center justify-center">
-          <div className="h-50 px-4 text-center rounded-lg bg-white flex items-center justify-center relative">
-            <span
-              onClick={close}
-              className="absolute top-3 right-4 text-xl font-bold cursor-pointer"
-            >
-              &#10007;
-            </span>
-            <p className="text-green-700">{updateMessage}</p>
+        <MessageBox updateMessage={updateMessage} close={close} />
+      )}
+      {failed && (
+        <MessageBox updateMessage={failed} close={closeForm} fail={true} />
+      )}
+
+      {/* =================== Select address options ======================= */}
+      {selectAddress && (
+        <section className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+          <div className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 py-4 text-left align-middle shadow-2xl transition-all border border-orange-100 mx-4">
+            <h3 className="mb-4 text-center text-xl font-bold leading-6 text-slate-900">
+              Saved Address
+            </h3>
+            <form className="max-h-[35vh] w-full flex flex-col gap-3 overflow-y-auto scrollbar-none">
+              {allSavedAddress.map((item) => (
+                <AddressOption
+                  key={item.location}
+                  address={item}
+                  onSelect={pickedAddress}
+                />
+              ))}
+            </form>
+
+            <div className="flex items-center justify-end gap-3 pt-3">
+              <button
+                type="button"
+                onClick={closeForm}
+                className="w-1/3 inline-flex justify-center rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600 border border-red-100 transition-all hover:bg-red-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={edit}
+                className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-green-600 py-3 text-sm font-bold text-white shadow-md shadow-green-600/20 transition-all hover:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 cursor-pointer"
+              >
+                <span className="flex items-center gap-1">
+                  <CirclePlus size={20} /> Add New Address
+                </span>
+              </button>
+            </div>
           </div>
         </section>
       )}
 
-      {/*=================== Edit Form ======================= */}
+      {/* =================== Edit Form ======================= */}
       {updateAddress && (
         <section className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300">
           <form
@@ -358,14 +506,14 @@ const Order = () => {
               <button
                 type="button"
                 onClick={closeForm}
-                className="w-1/3 inline-flex justify-center rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600 border border-red-100 transition-all hover:bg-red-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-1/3 inline-flex justify-center rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600 border border-red-100 transition-all hover:bg-red-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                className="w-2/3 inline-flex justify-center items-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-green-600/20 transition-all hover:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="w-2/3 inline-flex justify-center items-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-green-600/20 transition-all hover:bg-green-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 cursor-pointer"
               >
                 <span>Save</span>
               </button>
@@ -373,9 +521,83 @@ const Order = () => {
           </form>
         </section>
       )}
+
       <BottomBar />
     </div>
   );
 };
 
+// extra components for this page only
+const AddressOption = ({ address, onSelect }) => {
+  const [action, setAction] = useState(false);
+
+  return (
+    <div
+      onClick={() => onSelect(address)}
+      className="relative border flex gap-2 items-center rounded-lg p-1.5 cursor-pointer"
+    >
+      <div className="border border-gray-300 p-3 rounded-md bg-slate-200">
+        <MapPin />
+      </div>
+
+      <div className="w-[75%]">
+        <p className="font-bold">{address.customerName}</p>
+
+        <p className="text-xs text-gray-600 line-clamp-3">{address.location}</p>
+
+        <p className="flex items-center gap-1 font-bold text-sm">
+          <Phone size={15} fill="black" />
+          {address.mobile}
+        </p>
+      </div>
+
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          setAction(true);
+        }}
+        className="cursor-pointer hover:text-red-500"
+      >
+        <EllipsisVertical />
+      </div>
+
+      {action && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-white absolute right-0 p-1"
+        >
+          <div className="flex items-center gap-1 text-sm mb-2">
+            <SquarePen size={15} />
+            Edit
+          </div>
+
+          <div className="flex items-center gap-1 text-sm text-red-500">
+            <Trash size={15} color="red" />
+            Delete
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MessageBox = ({ updateMessage, close, fail }) => {
+  return (
+    <section className="h-screen w-full absolute bg-[#000000]/40 flex items-center justify-center">
+      <div className="h-50 px-4 text-center rounded-lg bg-white flex items-center justify-center relative">
+        <span
+          onClick={close}
+          className="absolute top-3 right-4 text-xl font-bold cursor-pointer"
+        >
+          &#10007;
+        </span>
+        <p className={fail ? "text-red-400" : "text-green-700"}>
+          {updateMessage}
+        </p>
+      </div>
+    </section>
+  );
+};
+
 export default Order;
+export { AddressOption };

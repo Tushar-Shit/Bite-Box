@@ -1,11 +1,25 @@
 import mongoose from "mongoose";
+
 const reviews = new mongoose.Schema({
+    orderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "order",
+        required: true,
+    },
+
     food_belong: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "FoodItems",
+        ref: "foodItem",
+        required: true,
     },
+
+    authorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true,
+    },
+
     author: String,
-    authorId:String,
     rating: Number,
     comment: String,
 });

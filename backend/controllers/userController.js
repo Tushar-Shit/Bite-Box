@@ -36,82 +36,147 @@ export const updateProfile = async (req, res) => {
     res.status(200).json({ message: "successfull" })
 }
 
+
+// add the new delivery address entry into database
+export const updateAddress = async (req, res) => {
+    const { customerName,
+        location,
+        mobile } = req.body;
+
+    // validator
+    if (!customerName || !location || !mobile || customerName === "" || location === "" || mobile === "") {
+        return res.status(400).json({ message: "failed" })
+    }
+
+
+    // create an object to push in array
+    const addressDetails = { customerName, location, mobile }
+
+
+    // find user and push object
+    const user = await Users.findByIdAndUpdate(
+        req.user,
+        {
+            $push: {
+                address: addressDetails
+            }
+        },
+        {
+            new: true,
+            runValidators: true
+        }
+    );
+
+    res.status(200).json({ message: "successfull" })
+}
+
+
+// update the last delivery address
+export const updateLastAddress = async (req, res) => {
+    const { customerName,
+        location,
+        mobile } = req.body;
+
+    // validator
+    if (!customerName || !location || !mobile || customerName === "" || location === "" || mobile === "") {
+        return res.status(400).json({ message: "failed" })
+    }
+
+    // find user and push object
+    const user = await Users.findByIdAndUpdate(
+        req.user,
+        {           
+            $set: {
+                "lastDeliveryAddress.customerName": customerName,
+                "lastDeliveryAddress.mobile": mobile.toString(),
+                "lastDeliveryAddress.location": location
+            }
+        },
+        {
+            new: true,
+            runValidators: true
+        }
+    );
+
+    res.status(200).json({ message: "successfull" })
+}
+
 //user email change otp send/resend
 export const emailChange = async (req, res) => {
-        const userId = req.user;
-        const { newemail, username, useremail } = req.body;
+    const userId = req.user;
+    const { newemail, username, useremail } = req.body;
 
-        const userExist = await Users.findOne({ email: newemail })
-        if (userExist) {
-            return res.status(400).json({
-                code: "failed",
-                message: "This email is already registered."
-            })
-        }
+    const userExist = await Users.findOne({ email: newemail })
+    if (userExist) {
+        return res.status(400).json({
+            code: "failed",
+            message: "This email is already registered."
+        })
+    }
 
-        const otp = Math.floor(100000 + Math.random() * 900000);
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
-        await PendingSignup.deleteOne({ email: useremail });
+    await PendingSignup.deleteOne({ email: useremail });
 
-        // Save pending signup
-        await PendingSignup.create({
-            username: username,
-            email: useremail,
-            password: newemail,
-            OTP: otp,
-            expiresAt: new Date(Date.now() + 5 * 60 * 1000),
-        });
+    // Save pending signup
+    await PendingSignup.create({
+        username: username,
+        email: useremail,
+        password: newemail,
+        OTP: otp,
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
 
-        //converting the JSX template into html
-        const html = await render(
-            React.createElement(ChangeEmailOTP, {
-                username,
-                otp,
-            })
-        );
+    //converting the JSX template into html
+    const html = await render(
+        React.createElement(ChangeEmailOTP, {
+            username,
+            otp,
+        })
+    );
 
-        //send the actual otp to user
-        await sendEmail(
-            newemail,
-            `${otp} - use this code to change your Email in Bitebox`,
-            html
-        );
-        // console.log("hello");
-        return res.status(200).json({
-            code: "success",
-            message: `OTP sent successfully to ${newemail}`,
-            email: newemail,
-        });
+    //send the actual otp to user
+    await sendEmail(
+        newemail,
+        `${otp} - use this code to change your Email in Bitebox`,
+        html
+    );
+    // console.log("hello");
+    return res.status(200).json({
+        code: "success",
+        message: `OTP sent successfully to ${newemail}`,
+        email: newemail,
+    });
 }
 
 //user email change verify code and actual email change
 export const verifyCode = async (req, res) => {
-        const { OTP } = req.body;
-        const userId = req.user;
-        const email = req.email;
+    const { OTP } = req.body;
+    const userId = req.user;
+    const email = req.email;
 
-        const data = await PendingSignup.findOne({
-            email: email,
-            OTP: OTP
+    const data = await PendingSignup.findOne({
+        email: email,
+        OTP: OTP
+    });
+    if (!data) {
+        return res.status(400).json({
+            code: "failed",
+            message: "Invalid OTP or maybe expired, please try again."
         });
-        if (!data) {
-            return res.status(400).json({
-                code: "failed",
-                message: "Invalid OTP or maybe expired, please try again."
-            });
-        }
-        const userData = await Users.findByIdAndUpdate(
-            userId,
-            { email: data.password },
-            { new: true }
-        );
-        return res.status(200).json({
-            code: "success",
-            message: "Email change successful",
-        })
+    }
+    const userData = await Users.findByIdAndUpdate(
+        userId,
+        { email: data.password },
+        { new: true }
+    );
+    return res.status(200).json({
+        code: "success",
+        message: "Email change successful",
+    })
 }
 
-//userpassword change
+//user password change
 export const passwordChange = async (req, res) => {
     const { currentPass, newPass } = req.body;
     const userData = await Users.findById(req.user);

@@ -37,7 +37,7 @@ const MealDetails = () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/meal/${id}`);
         const { foodItem, ratings, reviews } = await res.json();
-
+        console.log("food details",foodItem, ratings,reviews);
         setFood(foodItem);
         setRatings(ratings);
         setAllReviews(reviews);
@@ -369,39 +369,7 @@ const MealDetails = () => {
     age: "",
   });
 
-  // ====================testing======================
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
-  // //  console.log(id)
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   console.log(formData);
-  //   const response = await fetch(
-  //     `${import.meta.env.VITE_API_URL}/reviews/testing`,
-  //     {
-  //       method: "POST",
-  //       credentials: "include",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-
-  //       body: JSON.stringify({
-  //         foodId: id,
-  //         name: formData.name,
-  //         text: formData.description,
-  //         rating: formData.age,
-  //       }),
-  //     },
-  //   );
-  // };
-
+ 
   // ================================================= Place order =============================================================
 
   const foodObj = {
@@ -438,7 +406,7 @@ const MealDetails = () => {
               alt={food.name || "Food item"}
               className="w-60 h-60 object-cover rounded-full shadow-[0_20px_40px_rgba(255,246,205,0.3)] border-4 border-white/10"
             />
-            <div className="z-20 h-9 w-9 absolute top-0 right-2 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md p-0.5 cursor-pointer shadow-md hover:scale-105 transition-transform">
+            <div className="z-20 h-9 w-9 absolute top-2 right-2 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md p-0.5 cursor-pointer shadow-md hover:scale-105 transition-transform">
               <Heartclick onClick={handle} isFav={fav} />
             </div>
           </div>
@@ -502,43 +470,7 @@ const MealDetails = () => {
             </div>
           )}
         </div>
-        {/* <form onSubmit={handleSubmit} className="border text-center">
-          <div>
-            <label>Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="border mb-5"
-            />
-          </div>
-
-          <div className="flex">
-            <label>Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="border mb-5"
-            />
-          </div>
-
-          <div>
-            <label>Age</label>
-            <input
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              className="border mb-5"
-            />
-          </div>
-
-          <button type="submit" className="border mb-5 p-3">
-            Submit
-          </button>
-        </form> */}
+      
         {/* Description */}
         <div className="px-6 h-fit mt-4 mb-2 lg:w-22/50">
           <div className="text-lg font-bold text-red-700">Description</div>
@@ -574,7 +506,7 @@ const MealDetails = () => {
             />
 
             {/* feedback card */}
-            <div className="mt-2 overflow-x-auto scrollbar-none flex lg:p-0 lg:h-70 lg:overflow-x-hidden lg:block">
+            <div className="mt-2 overflow-x-auto scrollbar-none lg:p-0 lg:h-70 lg:overflow-x-hidden lg:block">
               {allReviews.map((item) => (
                 <FeedbackCard
                   key={item.comment}
@@ -587,8 +519,10 @@ const MealDetails = () => {
           </div>
         )}
         {/* suggest some other food items */}
-        <h3 className="m-0 mt-5 text-md pl-3 font-bold lg:hidden">You might like</h3>
-        {/* <div className="flex  lg:absolute lg:right-6 lg:w-[52vw] lg:bottom-1 overflow-x-auto scrollbar-none">
+        <h3 className="m-0 mt-5 text-md pl-3 font-bold lg:hidden">
+          You might like
+        </h3>
+        <div className="flex  lg:absolute lg:right-6 lg:w-[52vw] lg:bottom-1 overflow-x-auto scrollbar-none">
 
           <SquareFC
             key="hello"
@@ -731,7 +665,7 @@ const MealDetails = () => {
             suggestion={true}
           />
           
-        </div> */}
+        </div>
       </main>
       {/* Bottom action bar */}
       <div className="lg:w-23/50">

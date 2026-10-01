@@ -1,11 +1,26 @@
 import mongoose from "mongoose";
+const addressOption = new mongoose.Schema({
+  customerName: {
+    type: String,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  mobile: {
+    type: String,
+    required: true,
+  }
+}, { _id: false });
+
 
 const userSchema = new mongoose.Schema(
   {
     tokenVersion: {
       type: Number,
       required: true,
-      default:0,
+      default: 0,
     },
     username: {
       type: String,
@@ -28,11 +43,10 @@ const userSchema = new mongoose.Schema(
     mobile: {
       type: String,
       unique: true,
-      sparse:true,
+      sparse: true,
       trim: true,
     },
-    address1: String,
-    address2: String,
+    address: [addressOption],
     resetPasswordToken: String,
     resetPasswordExpires: Date,
     favourites: [{
@@ -43,6 +57,20 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "cart",
     },
+    lastDeliveryAddress: {
+      customerName: {
+        type: String,
+        required: true
+      },
+      location: {
+        type: String,
+        required: true
+      },
+      mobile: {
+        type: String,
+        required: true
+      }
+    }
   },
 
   {

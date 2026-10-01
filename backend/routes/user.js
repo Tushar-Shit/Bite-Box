@@ -6,12 +6,17 @@ import {
     emailChange,
     verifyCode,
     passwordChange,
+    updateAddress,
+    updateLastAddress
 } from "../controllers/userController.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 const router = express.Router({ mergeParams: true });
 
 router.get("/profile", authentication, asyncHandler(profile));    //provide user data
 router.patch("/profile", authentication, asyncHandler(updateProfile));    //update user data
+
+router.patch("/add-address", authentication,  asyncHandler(updateAddress))
+router.patch("/update-last-address", authentication,  asyncHandler(updateLastAddress))
 
 
 router.post("/email-change", authentication, asyncHandler(emailChange));  //send OTP to user

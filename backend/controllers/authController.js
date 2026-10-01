@@ -8,6 +8,7 @@ import PendingSignup from "../models/pendingSignup.js";
 import SignupOTP from "../emails/singupOTP.jsx"; //email template
 import ForgetPassword from "../emails/ForgetPassword.jsx"; //email template
 import sendEmail, { sendResetEmail } from "../utils/sendEmail.js";
+import { log } from "console";
 const isProduction = process.env.PROJECT_MODE === "production";
 
 
@@ -273,7 +274,7 @@ export const forgetPassword = async (req, res) => {
   await userData.save();
   const html = await render(
     React.createElement(ForgetPassword, {
-      resetLink: `https://bite-box-weld.vercel.app/reset-password/${resetToken}`
+      resetLink: `https://bite-box-ten.vercel.app/reset-password/${resetToken}`
     })
   );
   await sendResetEmail(

@@ -1,43 +1,76 @@
-import express from "express"
-import Category from "../models/categories.js"
-import FoodItem from "../models/foodItem.js"
-import Reviews from "../models/reviews.js"
-import authentication from "../middleware/authentication.js"
-import Users from "../models/user.js"
-const router = express.Router({ mergeParams: true });
+import mongoose from "mongoose";
+import express from "express";
+import authentication from "../middleware/authentication.js";
+import Reviews from "../models/reviews.js";
+import Users from "../models/user.js";
+import FoodItem from "../models/foodItem.js";
 
+const router = express.Router();
 
-// Add rating and review to all the items in that order
 router.post("/add-review", authentication, async (req, res) => {
   try {
-    const { rating, review, order } = req.body;
-
-    const customer = await Users.findOne({
-      _id: req.user
-    });
-
-    if (!customer) {
-      return res.json({ message: "failed" });
+    const { selectedItems, rating, review, orderId } = req.body;
+console.log(selectedItems);
+    // Validate selected items
+    if (!Array.isArray(selectedItems) || selectedItems.length === 0) {
+      return res.status(400).json({
+        message: "No food items selected",
+      });
     }
 
-    const reviewPromises = order.items.map(async (item) => {
+    // Validate orderId
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({
+        message: "Invalid order ID",
+      });
+    }
+
+    // Find customer
+    const customer = await Users.findById(req.user);
+
+    if (!customer) {
+      return res.status(401).json({
+        message: "Customer not found",
+      });
+    }
+
+    // Create reviews for all selected items
+    const reviewPromises = selectedItems.map(async (item) => {
+      console.log("Received item:", item);
+      console.log("Item type:", typeof item);
+
+      // Validate food ID
+      if (!mongoose.Types.ObjectId.isValid(item)) {
+        throw new Error(`Invalid food item ID: ${item}`);
+      }
+
+      // Convert string -> ObjectId
+      const foodId = new mongoose.Types.ObjectId(item);
+
+      console.log("Converted foodId:", foodId);
 
       // Create review
       const newReview = await Reviews.create({
-        food_belong: item.foodId,
+        orderId: new mongoose.Types.ObjectId(orderId),
+        food_belong: foodId,
+        authorId: customer._id,
         author: customer.username,
-        authorId: customer._id.toString(),
         rating: rating,
-        comment: review
+        comment: review,
       });
+
+      console.log("Created review:", newReview);
 
       // Add review ID to FoodItem
       await FoodItem.findByIdAndUpdate(
-        item.foodId,
+        foodId,
         {
           $push: {
-            rating: newReview._id
-          }
+            rating: newReview._id,
+          },
+        },
+        {
+          returnDocument: "after",
         }
       );
 
@@ -46,51 +79,17 @@ router.post("/add-review", authentication, async (req, res) => {
 
     await Promise.all(reviewPromises);
 
-    return res.json({
-      message: "success"
+    return res.status(201).json({
+      message: "success",
     });
-
   } catch (error) {
-    console.error(error);
+    console.error("ADD REVIEW ERROR:", error);
 
     return res.status(500).json({
-      message: "error",
-      error: error.message
+      message: "Failed to add review",
+      error: error.message,
     });
   }
 });
-
-
-
-// router.post("/testing", authentication, async (req, res) => {
-//     const { foodId, name, text, rating } = req.body
-//     const response = await Reviews.create({
-//         food_belong: foodId,
-//         author: name,
-//         authorId: req.user,
-//         comment: text,
-//         rating: rating
-//     });
-// })
-// router.patch("/like/:id", async (req, res) => {
-//     const { id } = req.params;
-//     const { totalLike } = req.body;
-//     try {
-//         await Reviews.findByIdAndUpdate(id, { $set: { like: totalLike } })
-//     }
-//     catch (err) {
-//         console.log(err);
-//     }
-// })
-// router.patch("/unlike/:id", async (req, res) => {
-//     const { id } = req.params;
-//     const { totalLike } = req.body;
-//     try {
-//         await Reviews.findByIdAndUpdate(id, { $set: { unlike: totalLike } })
-//     }
-//     catch (err) {
-//         console.log(err);
-//     }
-// })
 
 export default router;
